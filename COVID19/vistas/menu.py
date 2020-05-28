@@ -41,7 +41,7 @@ grupo_uci_reg = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 grupo_casos_genero= pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto16/CasosGeneroEtario.csv')
-
+data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto2/2020-05-25-CasosConfirmados.csv')
 
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
@@ -280,8 +280,7 @@ def regiones(request):
 
 def busqueda_region(request):
 
-    data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
-    data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto2/2020-05-22-CasosConfirmados.csv')
+    
 
     ultima_fecha_cl = data_chile.columns
     ultima_fecha_cl= ultima_fecha_cl[-1]
