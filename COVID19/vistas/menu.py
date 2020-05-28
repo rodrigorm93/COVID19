@@ -371,7 +371,7 @@ def busqueda_casos_por_grupo(request):
                     title=titulo,
                     text=fecha_grupo_edad 
                     )
-    fig.update_xaxes(title_text="Regiones")
+    fig.update_xaxes(title_text="Grupos de Edad")
     fig.update_yaxes(title_text="Numero de casos")
 
    
@@ -384,7 +384,7 @@ def busqueda_casos_por_grupo(request):
                 textfont_size=12,
                 marker=dict(#colors=colors, 
                             line=dict(color='#000000', width=2)))
-    layout = go.Layout(width=600, height=500,title_text = '<b>Porcentaje de Casos acumulados por Grupo de Edad '+fecha_grupo_edad+'</b>',
+    layout = go.Layout(width=600, height=500,title_text = '<b>Porcentaje de Casos acumulados por Grupo de Edad: '+fecha_grupo_edad+'</b>',
                   font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 
@@ -407,7 +407,7 @@ def busqueda_fallecidos_por_grupo(request):
                     title=titulo,
                     text=fecha_grupo_fallecidos 
                     )
-    fig.update_xaxes(title_text="Regiones")
+    fig.update_xaxes(title_text="Grupos de Edad")
     fig.update_yaxes(title_text="Numero de casos")
 
     graph1 = fig.to_html(full_html=False)
@@ -420,7 +420,7 @@ def busqueda_fallecidos_por_grupo(request):
                 hoverinfo='label+percent', 
                 textfont_size=12,
                 marker=dict(line=dict(color='#000000', width=2)))
-    layout = go.Layout(width=500, height=500,title_text = '<b>Porcentaje de personas fallecidas  : '+fecha_grupo_fallecidos+'</b>',
+    layout = go.Layout(width=500, height=500,title_text = '<b>Porcentaje de personas fallecidas : '+fecha_grupo_fallecidos+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 
