@@ -448,7 +448,7 @@ def busqueda_por_grupo_edad(request):
             fallecidos_por_grupo.append(f_j)
 
 
-        data_fallecidos = pd.DataFrame({'Tipo':['Edad Seleccionada','Poblacion Total'],'Fallecidos': [grupo_fallecidos[grupo_fallecidos['Grupo de edad']==grupo_edad][fecha_grupo_fallecidos].sum(),grupo_fallecidos[fecha_grupo_fallecidos].sum()]})
+        data_fallecidos = pd.DataFrame({'Tipo':['Edad Seleccionada','Total'],'Fallecidos': [grupo_fallecidos[grupo_fallecidos['Grupo de edad']==grupo_edad][fecha_grupo_fallecidos].sum(),grupo_fallecidos[fecha_grupo_fallecidos].sum()]})
 
         fig2 = make_subplots(rows=1, cols=2)
 
