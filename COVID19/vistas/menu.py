@@ -42,6 +42,8 @@ fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCienci
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 grupo_casos_genero= pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto16/CasosGeneroEtario.csv')
 data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto2/2020-05-25-CasosConfirmados.csv')
+num_vent = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto20/NumeroVentiladores.csv')
+pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto23/PacientesCriticos.csv')
 
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
@@ -72,6 +74,26 @@ num_rec = data_chile_r.iloc[2,-1].sum()
 num_cases_cl = int(num_cases_cl)
 num_rec = int(num_rec)
 num_death = int(num_death)
+
+
+   #ventiladores 
+
+dates_vent = num_vent.loc[:, '2020-04-14': ultima_fecha_cl]
+dates_vent = dates_vent.keys()
+
+ventiladores_oc =[]
+ventiladores_dis = []
+ventiladores_total = []
+for i in dates_vent:
+    oc = num_vent[num_vent['Ventiladores']=='ocupados'][i].sum()
+    dis = num_vent[num_vent['Ventiladores']=='disponibles'][i].sum()
+    total = num_vent[num_vent['Ventiladores']=='total'][i].sum()
+
+    ventiladores_oc.append(oc)
+    ventiladores_dis.append(dis)
+    ventiladores_total.append(total)
+
+
 
 def menu(request):
 
@@ -518,3 +540,75 @@ def busqueda_hosp_por_grupo(request):
 
 
     return render(request,"hospitalizaciones_grupo_edad.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+
+
+def num_ventiladores(request):
+
+
+    #GRAFICO 1
+    trace = go.Scatter(
+                x=dates_vent,
+                y=ventiladores_dis,
+                name="Ventiladores Disponibles",
+                mode='lines+markers',
+                line_color='green')
+    trace2 = go.Scatter(
+                    x=dates_vent,
+                    y=ventiladores_oc,
+                    name="Ventiladores Ocupados",
+                    mode='lines+markers',
+                    line_color='red')
+
+    layout = go.Layout(template="ggplot2", width=800, height=600,title_text = '<b>Numero de Ventiladores Fecha: '+ ultima_fecha_cl+'</b>',
+                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
+    fig = go.Figure(data = [trace,trace2], layout = layout)
+
+    ventiladiores = num_vent.drop([0],axis=0)
+    #GRAFICO 2
+    fig2 = make_subplots(rows=1, cols=2)
+    colors = ['green','red']
+    trace1 = go.Pie(
+                    labels=ventiladiores['Ventiladores'],
+                    values=ventiladiores[ultima_fecha_cl],
+                    hoverinfo='label+percent', 
+                    textfont_size=12,
+                    marker=dict(colors=colors, 
+                                line=dict(color='#000000', width=2)))
+    layout = go.Layout(width=500, height=500,title_text = '<b>Porcentaje de ventiladores Fecha: '+ultima_fecha_cl+'</b>',
+                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
+    fig2 = go.Figure(data = [trace1], layout = layout)
+
+
+    graph1 = fig.to_html(full_html=False)
+
+    graph2 = fig2.to_html(full_html=False)
+
+
+
+    return render(request,"numero_ventiladores.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+
+def casos_criticos(request):
+
+
+
+
+    #GRAFICO 1
+    trace = go.Scatter(
+                x=pacientes_criticos.iloc[:,1:].columns,
+                y=pacientes_criticos.iloc[0,1:],
+                name="Pacientes Criticos",
+                mode='lines+markers',
+                line_color='red')
+
+    layout = go.Layout(template="ggplot2", width=800, height=600,title_text = '<b>Numero de Pacientes Criticos Fecha: '+ ultima_fecha_cl+'</b>',
+                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
+    fig = go.Figure(data = [trace], layout = layout)
+
+
+    graph1 = fig.to_html(full_html=False)
+
+    #graph2 = fig2.to_html(full_html=False)
+
+
+
+    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
