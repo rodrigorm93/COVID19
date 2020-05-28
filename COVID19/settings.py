@@ -25,7 +25,7 @@ SECRET_KEY = 'd%tr5zum!bn%h9^jed8^jo*t4ydvjwxvi*#z^qs^c4fyt-b58t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -48,6 +48,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+STATIFILE_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'COVID19.urls'
 
@@ -121,6 +124,7 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),   
-)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+django_heroku.settings(locals())

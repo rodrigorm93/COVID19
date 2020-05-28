@@ -18,7 +18,6 @@ from django.urls import path
 from COVID19.vistas.menu import menu,regiones,busqueda_region,busqueda_hospitalizacion_region,busqueda_casos_por_grupo,busqueda_fallecidos_por_grupo,busqueda_por_grupo_edad,busqueda_hosp_por_grupo
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', menu),
     path('region/', regiones),
     path('buscar_region/', busqueda_region),
