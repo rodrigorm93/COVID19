@@ -11,9 +11,14 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+STATIC_DIR= os.path.join(BASE_DIR,'static')
+TEMPLATES_DIR = os.path.join(BASE_DIR,'COVID19/plantillas/startbootstrap-sb-admin-2-gh-pages')
+
 #Definir la ruta de los css,js,etc de nuestra plantilla
 
 # Quick-start development settings - unsuitable for production
@@ -57,7 +62,7 @@ ROOT_URLCONF = 'COVID19.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['C:/Users/Rodrigo/Proyecto COVID19/COVID19/COVID19/plantillas/startbootstrap-sb-admin-2-gh-pages'],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,6 +130,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [STATIC_DIR,]
 
 django_heroku.settings(locals())
