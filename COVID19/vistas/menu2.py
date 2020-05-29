@@ -99,76 +99,91 @@ def total_defunciones_chile(request):
     trace = go.Scatter(
                     x=registros_meses,
                     y=año_2010,
-                    name="Fallecidos 2010",
+                    name="2010",
                     mode='lines+markers',
                     line_color='#800080')
     trace2 = go.Scatter(
                     x=registros_meses,
                     y=año_2011,
-                    name="Fallecidos 2011",
+                    name="2011",
                     mode='lines+markers',
                     line_color='green')
     trace3 = go.Scatter(
                     x=registros_meses,
                     y=año_2012,
-                    name="Fallecidos 2012",
+                    name="2012",
                     mode='lines+markers',
                     line_color='#000080')
     trace4 = go.Scatter(
                     x=registros_meses,
                     y=año_2013,
-                    name="Fallecidos 2013",
+                    name="2013",
                     mode='lines+markers',
                     line_color='#00FFFF')
     trace5 = go.Scatter(
                     x=registros_meses,
                     y=año_2014,
-                    name="Fallecidos 2014",
+                    name="2014",
                     mode='lines+markers',
                     line_color='#FFFF00')
     trace6 = go.Scatter(
                     x=registros_meses,
                     y=año_2015,
-                    name="Fallecidos 2015",
+                    name="2015",
                     mode='lines+markers',
                     line_color='#000000')
     trace7 = go.Scatter(
                     x=registros_meses,
                     y=año_2016,
-                    name="Fallecidos 2016",
+                    name="2016",
                     mode='lines+markers',
                     line_color='#808080')
     trace8 = go.Scatter(
                     x=registros_meses,
                     y=año_2017,
-                    name="Fallecidos 2017",
+                    name="2017",
                     mode='lines+markers',
                     line_color='#008080')
     trace9 = go.Scatter(
                     x=registros_meses,
                     y=año_2018,
-                    name="Fallecidos 2018",
+                    name="2018",
                     mode='lines+markers',
                     line_color='#00FF00')
     trace10 = go.Scatter(
                     x=registros_meses,
                     y=año_2019,
-                    name="Fallecidos 2019",
+                    name="2019",
                     mode='lines+markers',
                     line_color='#800000')
     trace11 = go.Scatter(
                     x=registros_meses,
                     y=año_2020,
-                    name="Fallecidos 2020",
+                    name="2020",
                     mode='lines+markers',
                     line_color='red')
 
 
-    layout = go.Layout(template="ggplot2", width=1000, height=600,title_text = '<b>Numero de Fallecidos entre 2010- '+str(now)+' </b>',
+    layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Fallecidos entre 2010- '+str(now)+' </b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig = go.Figure(data = [trace,trace2,trace3,trace4,trace5,trace6,trace7,trace8,trace9,trace10,trace11], layout = layout)
 
     graph1 = fig.to_html(full_html=False)
 
+    suma_4meses = total_fallecimientos_mes
+    col_list= ['January','February','March','April']
+    suma_4meses['Total 4 Meses'] = suma_4meses[col_list].sum(axis=1)
 
-    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    fig2 = px.bar(x=suma_4meses['Total 4 Meses'], y=total_fallecimientos_mes['Años'], 
+             title='Total de Fallecidos en los meses de Enero a Abril',
+              text=suma_4meses['Total 4 Meses'], 
+             orientation='h', )
+    fig2.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
+
+    fig2.update_layout(template = 'plotly_white')
+    fig2.update_xaxes(title_text="Número de Fallecidos")
+    fig2.update_yaxes(title_text="Años")
+
+    graph2 = fig2.to_html(full_html=False)
+
+    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})

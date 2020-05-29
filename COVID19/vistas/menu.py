@@ -201,8 +201,7 @@ def menu(request):
     tm = temp.melt(id_vars="Fecha", value_vars=['Activos', 'Fallecidos(Acumulados)','Recuperados(Acumulados)'])
     fig = px.treemap(tm, path=["variable"], values="value",color_discrete_sequence=[recovered, active, death])
 
-    fig.layout.update(title_text='Activos vs. Recuperados '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False, width=600,
-            height=400,font=dict(
+    fig.layout.update(title_text='Activos vs. Recuperados '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False,font=dict(
             size=15,
             color="Black"    
         ))
@@ -216,7 +215,7 @@ def menu(request):
                     mode='lines+markers',
                     line_color='red')
 
-    layout = go.Layout(template="ggplot2", width=850, height=800, title_text = '<b>Numero de Casos por día</b>',
+    layout = go.Layout(template="ggplot2", title_text = '<b>Numero de Casos por día</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace], layout = layout)
 
@@ -229,8 +228,7 @@ def menu(request):
     fig5 = go.Figure()
     fig5.add_trace(go.Scatter(x=data_total_cl_2['Fecha'], y=data_total_cl_2['Totales Activos'], name='Activos',line_color='#fe9801'))
     fig5.add_trace(go.Scatter(x=data_total_cl_2['Fecha'], y=data_total_cl_2['Recuperados(Acumulados)'], name='Recuperados(Acumulados)',line_color='green'))
-    fig5.layout.update(title_text='Activo vs. Recuperados '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False, width=630,
-                height=600,font=dict(
+    fig5.layout.update(title_text='Activo vs. Recuperados '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False, font=dict(
                 size=15,
                 color="Black"    
             ))
@@ -265,8 +263,7 @@ def regiones(request):
              x=ultima_fecha_cl, y="Region", 
              title=titulo,
               text=ultima_fecha_cl, 
-             orientation='h', 
-             width=800, height=700)
+             orientation='h')
     fig2.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
 
     fig2.update_layout(template = 'plotly_white')
@@ -330,8 +327,7 @@ def busqueda_region(request):
 
         fig2 = px.bar(x=data_casos_por_comuna_maule['Comuna'], y=data_casos_por_comuna_maule['Casos Confirmados'],
                         title='Numero de casos Totales Confirmados en la Region '+region+' Fecha: '+fecha,
-                    text=data_casos_por_comuna_maule['Casos Confirmados'],width=900,
-                        height =600,
+                    text=data_casos_por_comuna_maule['Casos Confirmados'],
                         
             )
         fig2.update_xaxes(title_text="Comunas")
@@ -370,7 +366,7 @@ def busqueda_hospitalizacion_region(request):
                 hoverinfo='label+percent', 
                 textfont_size=12,
                 marker=dict(line=dict(color='#000000', width=2)))
-    layout = go.Layout(width=600, height=650,title_text = '<b>Porcentaje de personas Hospitalizadas por Región </b>',
+    layout = go.Layout(title_text = '<b>Porcentaje de personas Hospitalizadas por Región </b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 
@@ -405,7 +401,7 @@ def busqueda_casos_por_grupo(request):
                 textfont_size=12,
                 marker=dict(#colors=colors, 
                             line=dict(color='#000000', width=2)))
-    layout = go.Layout(width=600, height=500,title_text = '<b>Porcentaje de Casos acumulados por Grupo de Edad: '+fecha_grupo_edad+'</b>',
+    layout = go.Layout(title_text = '<b>Porcentaje de Casos acumulados por Grupo de Edad: '+fecha_grupo_edad+'</b>',
                   font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 
@@ -441,7 +437,7 @@ def busqueda_fallecidos_por_grupo(request):
                 hoverinfo='label+percent', 
                 textfont_size=12,
                 marker=dict(line=dict(color='#000000', width=2)))
-    layout = go.Layout(width=500, height=500,title_text = '<b>Porcentaje de personas fallecidas : '+fecha_grupo_fallecidos+'</b>',
+    layout = go.Layout(title_text = '<b>Porcentaje de personas fallecidas : '+fecha_grupo_fallecidos+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 
@@ -479,7 +475,7 @@ def busqueda_por_grupo_edad(request):
                         hoverinfo='label+percent', 
                         textfont_size=12,
                         marker=dict(line=dict(color='#000000', width=2)))
-        layout = go.Layout(width=500, height=500,title_text = '<b>Porcentajes de Fallecidos : '+fecha_grupo_fallecidos+'</b>',
+        layout = go.Layout(title_text = '<b>Porcentajes de Fallecidos : '+fecha_grupo_fallecidos+'</b>',
                         font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
         fig2 = go.Figure(data = [trace1], layout = layout)
 
@@ -491,7 +487,7 @@ def busqueda_por_grupo_edad(request):
                 mode='lines+markers',
                 line_color='red')
 
-        layout = go.Layout(template="ggplot2", width=800, height=600,title_text = '<b>Numero Fallecidos '+ grupo_edad +' :'+ ultima_fecha_cl+'</b>',
+        layout = go.Layout(template="ggplot2",title_text = '<b>Numero Fallecidos '+ grupo_edad +' :'+ ultima_fecha_cl+'</b>',
                             font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
         fig = go.Figure(data = [trace], layout = layout)
 
@@ -528,7 +524,7 @@ def busqueda_hosp_por_grupo(request):
                     textfont_size=12,
                     marker=dict(colors=colors, 
                                 line=dict(color='#000000', width=2)))
-    layout = go.Layout(width=500, height=500,title_text = '<b>Porcentaje de personas hospitalizadas: '+ultima_fecha_cl+'</b>',
+    layout = go.Layout(title_text = '<b>Porcentaje de personas hospitalizadas: '+ultima_fecha_cl+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 
@@ -559,7 +555,7 @@ def num_ventiladores(request):
                     mode='lines+markers',
                     line_color='red')
 
-    layout = go.Layout(template="ggplot2", width=800, height=600,title_text = '<b>Numero de Ventiladores Fecha: '+ ultima_fecha_cl+'</b>',
+    layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Ventiladores Fecha: '+ ultima_fecha_cl+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig = go.Figure(data = [trace,trace2], layout = layout)
 
@@ -574,7 +570,7 @@ def num_ventiladores(request):
                     textfont_size=12,
                     marker=dict(colors=colors, 
                                 line=dict(color='#000000', width=2)))
-    layout = go.Layout(width=500, height=500,title_text = '<b>Porcentaje de ventiladores Fecha: '+ultima_fecha_cl+'</b>',
+    layout = go.Layout(title_text = '<b>Porcentaje de ventiladores Fecha: '+ultima_fecha_cl+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 
@@ -600,7 +596,7 @@ def casos_criticos(request):
                 mode='lines+markers',
                 line_color='red')
 
-    layout = go.Layout(template="ggplot2", width=800, height=600,title_text = '<b>Numero de Pacientes Criticos Fecha: '+ ultima_fecha_cl+'</b>',
+    layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Pacientes Criticos Fecha: '+ ultima_fecha_cl+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig = go.Figure(data = [trace], layout = layout)
 
