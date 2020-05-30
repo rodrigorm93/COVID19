@@ -214,7 +214,7 @@ def modelo_predictivo(request):
 
     poly = PolynomialFeatures(degree=5)
 
-    model_kr_cl_1 = load(BASE_DIR+'\model\model_covi19_chile2.joblib') 
+    model_kr_cl_1 = load(STATIC_DIR+'/model/model_covi19_chile2.joblib') 
     days_in_future_cl = 20
     future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
     adjusted_dates_cl = future_forcast_cl[:-days_in_future_cl]
