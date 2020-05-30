@@ -68,11 +68,11 @@
   <div class="row">
 
     <!-- Area Chart -->
-    <div class="col-xl-8-3 col-lg-7-3">
+    <div class="col-xl-8 col-lg-7">
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Regiones</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Exámenes PCR por región</h6>
           <div class="dropdown no-arrow">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -88,6 +88,7 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
+              
           {{grafico1|safe}}
         </div>
       </div>
@@ -98,7 +99,7 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Busqueda por Regiones</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Porcentaje Exámenes PCR por región</h6>
           <div class="dropdown no-arrow">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -113,33 +114,13 @@
           </div>
         </div>
         <!-- Card Body -->
+
+        
         <div class="card-body">
-          <form action='/buscar_region/' method="GET">
+            
 
-            <select name="region" id="region">
-              <option value="Arica y Parinacota">Arica y Parinacota</option>
-              <option value="Tarapacá">Tarapacá</option>
-              <option value="Antofagasta">Antofagasta</option>
-              <option value="Atacama">Atacama</option>
-              <option value="Coquimbo">Coquimbo</option>
-              <option value="Valparaíso">Valparaíso</option>
-              <option value="Metropolitana">Metropolitana</option>
-              <option value="O’Higgins">O’Higgins</option>
-              <option value="Maule">Maule</option>
-              <option value="Ñuble">Ñuble</option>
-              <option value="Biobío">Biobío</option>
-              <option value="Araucanía">Araucanía</option>
-              <option value="Los Ríos">Los Ríos</option>
-              <option value="Los Lagos">Los Lagos</option>
-              <option value="Aysén">Aysén</option>
-              <option value="Magallanes">Magallanes</option>
-  
-          </select>
+            {{grafico2|safe}}
 
-          <button type="submit">Buscar</button>
-
-          </form>
-    
         </div>
       </div>
     </div>
@@ -150,6 +131,7 @@
 
     <!-- Content Column -->
     <div class="col-lg-6 mb-4">
+        
 
       <!-- Project Card Example -->
 

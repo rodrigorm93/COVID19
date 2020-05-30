@@ -32,6 +32,10 @@ from plotly.subplots import make_subplots
 from plotly.subplots import make_subplots
 
 from datetime import date
+
+from joblib import dump, load
+
+
 now = date.today()
 
 
@@ -43,6 +47,19 @@ grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Dat
 
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
+
+confirmed_chile = data_chile.loc[:, '2020-03-03': ultima_fecha_cl]
+dates_chile = confirmed_chile.keys()
+days_chile = np.array([i for i in range(len(dates_chile))]).reshape(-1, 1)
+
+casos_chile = []
+
+for i in dates_chile:
+   
+    casos_chile.append(data_chile[i].iloc[16])
+
+
+
 num_cases_cl = data_chile.drop([16],axis=0)
 num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
 num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
@@ -187,3 +204,51 @@ def total_defunciones_chile(request):
     graph2 = fig2.to_html(full_html=False)
 
     return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+
+def modelo_predictivo(request):
+
+    poly = PolynomialFeatures(degree=5)
+
+    model_kr_cl_1 = load('../COVID19/static/model/model_covi19_chile2.joblib') 
+    days_in_future_cl = 20
+    future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
+    adjusted_dates_cl = future_forcast_cl[:-days_in_future_cl]
+    start_cl = '03/03/2020'
+    start_date_cl = datetime.datetime.strptime(start_cl, '%m/%d/%Y')
+    future_forcast_dates_cl = []
+    for i in range(len(future_forcast_cl)):
+        future_forcast_dates_cl.append((start_date_cl + datetime.timedelta(days=i)).strftime('%m/%d/%Y'))
+
+    future_forcast_cl = poly.fit_transform(future_forcast_cl)
+
+    kr_pred_cl = model_kr_cl_1.predict(future_forcast_cl)
+
+
+    Predict_df_cl_1= pd.DataFrame()
+    Predict_df_cl_1["Fecha"] = list(future_forcast_dates_cl[-days_in_future_cl-1:])
+    Predict_df_cl_1["N° Casos"] =np.round(kr_pred_cl[-days_in_future_cl-1:])
+
+       
+    trace1 = go.Scatter(
+                    x= np.array(future_forcast_dates_cl),
+                    y=casos_chile,
+                    name="Casos Confirmados",
+                    mode='lines+markers',
+                    line_color='green')
+
+    trace2 = go.Scatter(
+                    x=Predict_df_cl_1["Fecha"],
+                    y=Predict_df_cl_1["N° Casos"],
+                    name="Predicciones",
+                    mode='lines+markers',
+                    line_color='blue')
+
+    layout = go.Layout(template="ggplot2", width=900, height=600, title_text ='<b>Prediccion del Número de casos para los siguientes '+str(days_in_future_cl)+' días en Chile</b>',
+                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
+    fig = go.Figure(data = [trace1,trace2], layout = layout)
+
+    graph1 = fig.to_html(full_html=False)
+    
+    graph2 = Predict_df_cl_1.to_html()
+
+    return render(request,"predicciones.html", {"grafico1":graph1,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})

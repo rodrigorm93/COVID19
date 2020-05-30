@@ -45,6 +45,8 @@ data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCienci
 num_vent = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto20/NumeroVentiladores.csv')
 pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto23/PacientesCriticos.csv')
 
+
+
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
 
@@ -157,7 +159,7 @@ def menu(request):
         
 
 
-    chile = folium.Map(location=[-30.0000000,-71.0000000], zoom_start=4,max_zoom=6,min_zoom=4,height=500,width="80%")
+    chile = folium.Map(location=[-30.0000000,-71.0000000], zoom_start=4,max_zoom=6,min_zoom=4)
 
 
     for i in range(0,len(data_chile_map[data_chile[ultima_fecha_cl]>0].Region)):
@@ -585,9 +587,6 @@ def num_ventiladores(request):
 
 def casos_criticos(request):
 
-
-
-
     #GRAFICO 1
     trace = go.Scatter(
                 x=pacientes_criticos.iloc[:,1:].columns,
@@ -608,3 +607,41 @@ def casos_criticos(request):
 
 
     return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+
+def examenes_pcr(request):
+
+    exa_pcr = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
+    exa_pcr = exa_pcr.fillna(0)
+
+    fecha = exa_pcr.columns
+    fecha =fecha[-1]
+
+    colum = exa_pcr.drop(['Codigo region','Poblacion','Region'],axis=1)
+    list_col = colum.columns
+    exa_pcr['Total'] = exa_pcr[list_col].sum(axis=1)
+    exa_pcr= exa_pcr.drop(['Codigo region','Poblacion'],axis=1)
+
+    #Grafico 1
+    titulo ='Total de Examenes PCR realizados Fecha: '+fecha
+
+    fig = px.bar(exa_pcr.sort_values('Total'),
+                x='Region', y='Total',
+                title=titulo,
+                text= 'Total'
+                
+    )
+    fig.update_xaxes(title_text="Regiones")
+    fig.update_yaxes(title_text="Numero de casos")
+
+    #Grafico 2
+
+    fig2 = px.pie(exa_pcr, values='Total', names='Region')
+    fig2.update_traces(textposition='inside')
+    fig2.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
+
+    
+    graph1 = fig.to_html(full_html=False)
+
+    graph2 = fig2.to_html(full_html=False)
+    
+    return render(request,"num_examenes_pcr.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
