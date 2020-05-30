@@ -3,7 +3,7 @@ from django.template import Template, Context
 from django.template import loader
 
 from django.shortcuts import render
-
+import os
 
 import numpy as np
 import pandas as pd
@@ -209,7 +209,7 @@ def modelo_predictivo(request):
 
     poly = PolynomialFeatures(degree=5)
 
-    model_kr_cl_1 = load('../COVID19/static/model/model_covi19_chile2.joblib') 
+    model_kr_cl_1 = load('static\model\model_covi19_chile2.joblib') 
     days_in_future_cl = 20
     future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
     adjusted_dates_cl = future_forcast_cl[:-days_in_future_cl]
