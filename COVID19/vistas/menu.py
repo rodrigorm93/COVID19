@@ -173,7 +173,7 @@ def menu(request):
             "<li>Confirmed: "+str(data_chile_map.iloc[i,total])+"</li>"+
             "</ul>",
         
-            radius=(int(np.log2(data_chile_map.iloc[i,total]+1)))*7000,
+            radius=(int(np.log2(data_chile_map.iloc[i,total]+1)))*10000,
 
             color='#ff6600',
             fill_color='#ff8533',
@@ -191,7 +191,7 @@ def menu(request):
 
     num_active = data_chile_r.iloc[4,-1].sum()
 
-    datos_chile_rdca = pd.DataFrame({'Fecha':[ultima_fecha_cl],'Fallecidos(Acumulados)':[num_death],'Cases Confirmados (Acumulados)': [num_cases_cl],'Recuperados(Acumulados)':[num_rec],
+    datos_chile_rdca = pd.DataFrame({'Fecha':[ultima_fecha_cl],'Fallecidos':[num_death],'Cases Confirmados (Acumulados)': [num_cases_cl],'Recuperados':[num_rec],
                                     'Activos': [num_active] })
     temp = datos_chile_rdca
 
@@ -200,8 +200,8 @@ def menu(request):
     recovered = '#21bf73' 
     active = '#fe9801' 
 
-    tm = temp.melt(id_vars="Fecha", value_vars=['Activos', 'Fallecidos(Acumulados)','Recuperados(Acumulados)'])
-    fig = px.treemap(tm, path=["variable"], values="value",color_discrete_sequence=[recovered, active, death])
+    tm = temp.melt(id_vars="Fecha", value_vars=['Activos', 'Fallecidos','Recuperados'])
+    fig = px.treemap(tm, path=["variable"], values="value",color_discrete_sequence=[active,recovered,death])
 
     fig.layout.update(title_text='Activos vs. Recuperados '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False,font=dict(
             size=15,
@@ -225,11 +225,11 @@ def menu(request):
     #Grafico 3
 
     data_total_cl_2 = pd.DataFrame({'Fecha': pd.to_datetime(fechas_chile),'Totales Activos':activos_por_dia, 
-                                'Fallecidos(Acumulados)': fallecidos_por_dia,'Recuperados(Acumulados)':recuperados_por_dia,'Casos Totales(Acumulados)':casos_por_dia_totales })
+                                'Fallecidos': fallecidos_por_dia,'Recuperados':recuperados_por_dia,'Casos Totales(Acumulados)':casos_por_dia_totales })
 
     fig5 = go.Figure()
     fig5.add_trace(go.Scatter(x=data_total_cl_2['Fecha'], y=data_total_cl_2['Totales Activos'], name='Activos',line_color='#fe9801'))
-    fig5.add_trace(go.Scatter(x=data_total_cl_2['Fecha'], y=data_total_cl_2['Recuperados(Acumulados)'], name='Recuperados(Acumulados)',line_color='green'))
+    fig5.add_trace(go.Scatter(x=data_total_cl_2['Fecha'], y=data_total_cl_2['Recuperados'], name='Recuperados',line_color='green'))
     fig5.layout.update(title_text='Activo vs. Recuperados '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False, font=dict(
                 size=15,
                 color="Black"    
@@ -241,11 +241,11 @@ def menu(request):
     graph = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
     graph3 = fig5.to_html(full_html=False)
+    ultima_fecha = ultima_fecha_cl
 
 
 
-
-    return render(request,"principal.html", {"mapa": m, "grafico1":graph,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"principal.html", {"mapa": m,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 def regiones(request):
@@ -403,7 +403,7 @@ def busqueda_casos_por_grupo(request):
                 textfont_size=12,
                 marker=dict(#colors=colors, 
                             line=dict(color='#000000', width=2)))
-    layout = go.Layout(title_text = '<b>Porcentaje de Casos acumulados por Grupo de Edad: '+fecha_grupo_edad+'</b>',
+    layout = go.Layout(title_text = '<b>Porcentaje de Casos por Grupo de Edad: '+fecha_grupo_edad+'</b>',
                   font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 
@@ -519,16 +519,12 @@ def busqueda_hosp_por_grupo(request):
     #Grafico 2
 
     colors = ['gold', 'darkorange', 'crimson','mediumturquoise', 'sandybrown', 'grey',  'lightgreen','navy','deeppink','purple']
-    trace1 = go.Pie(
-                    labels=grupo_uci['Grupo de edad'],
-                    values=grupo_uci[ultima_fecha_cl],
-                    hoverinfo='label+percent', 
-                    textfont_size=12,
-                    marker=dict(colors=colors, 
-                                line=dict(color='#000000', width=2)))
-    layout = go.Layout(title_text = '<b>Porcentaje de personas hospitalizadas: '+ultima_fecha_cl+'</b>',
-                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig2 = go.Figure(data = [trace1], layout = layout)
+    
+    
+ 
+    fig2 = px.pie(grupo_uci, values=ultima_fecha_cl, names='Grupo de edad')
+    fig2.update_traces(textposition='inside')
+    fig2.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
 
 
     graph1 = fig.to_html(full_html=False)
