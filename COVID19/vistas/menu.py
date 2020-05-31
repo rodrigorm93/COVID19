@@ -173,8 +173,7 @@ def menu(request):
             "<li>Confirmed: "+str(data_chile_map.iloc[i,total])+"</li>"+
             "</ul>",
         
-            radius=(int(np.log2(data_chile_map.iloc[i,total]+1)))*10000,
-
+            radius=(int(np.log2(data_chile_map.iloc[i,total]+1)))*15000,
             color='#ff6600',
             fill_color='#ff8533',
             fill=True).add_to(chile)
@@ -224,19 +223,17 @@ def menu(request):
 
     #Grafico 3
 
-    data_total_cl_2 = pd.DataFrame({'Fecha': pd.to_datetime(fechas_chile),'Totales Activos':activos_por_dia, 
-                                'Fallecidos': fallecidos_por_dia,'Recuperados':recuperados_por_dia,'Casos Totales(Acumulados)':casos_por_dia_totales })
+    data_rfa = pd.DataFrame({'Fecha': pd.to_datetime(fechas_chile),'Activos':activos_por_dia, 
+                                'Fallecidos': fallecidos_por_dia,'Recuperados':recuperados_por_dia})
 
-    fig5 = go.Figure()
-    fig5.add_trace(go.Scatter(x=data_total_cl_2['Fecha'], y=data_total_cl_2['Totales Activos'], name='Activos',line_color='#fe9801'))
-    fig5.add_trace(go.Scatter(x=data_total_cl_2['Fecha'], y=data_total_cl_2['Recuperados'], name='Recuperados',line_color='green'))
-    fig5.layout.update(title_text='Activo vs. Recuperados '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False, font=dict(
-                size=15,
-                color="Black"    
-            ))
-    fig5.layout.plot_bgcolor = 'White'
-    fig5.layout.paper_bgcolor = 'White'
+    rest_grouped = data_rfa.groupby('Fecha')['Recuperados', 'Fallecidos', 'Activos'].sum().reset_index()
 
+    temp = rest_grouped.melt(id_vars="Fecha", value_vars=['Recuperados', 'Fallecidos', 'Activos'],
+                    var_name='Casos', value_name='count')
+
+
+    fig5 = px.area(temp, x="Fecha", y="count", color='Casos',
+                title='Casos - Chile: Area Plot', color_discrete_sequence = ['green', 'red', 'orange'])
 
     graph = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
