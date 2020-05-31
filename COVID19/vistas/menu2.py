@@ -35,6 +35,7 @@ from datetime import date
 
 from joblib import dump, load
 
+from statsmodels.tsa.api import Holt,SimpleExpSmoothing,ExponentialSmoothing
 
 now = date.today()
 
@@ -207,14 +208,15 @@ def total_defunciones_chile(request):
 
 def modelo_predictivo(request):
 
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    STATIC_DIR= os.path.join(BASE_DIR,'static')
+    days_chile2 = np.array([i for i in range(len(dates_chile))])
+
+    datewise = pd.DataFrame({'Days Since': list(days_chile2), 'Confirmed':casos_chile})
 
 
-    poly = PolynomialFeatures(degree=5)
 
-    model_kr_cl_1 = load(STATIC_DIR+'/model/model_covi19_chile2.joblib') 
+    es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=10,trend='add', seasonal='mul').fit()
+
     days_in_future_cl = 20
     future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
     adjusted_dates_cl = future_forcast_cl[:-days_in_future_cl]
@@ -223,34 +225,21 @@ def modelo_predictivo(request):
     future_forcast_dates_cl = []
     for i in range(len(future_forcast_cl)):
         future_forcast_dates_cl.append((start_date_cl + datetime.timedelta(days=i)).strftime('%m/%d/%Y'))
-
-    future_forcast_cl = poly.fit_transform(future_forcast_cl)
-
-    kr_pred_cl = model_kr_cl_1.predict(future_forcast_cl)
-
-
+        
     Predict_df_cl_1= pd.DataFrame()
-    Predict_df_cl_1["Fecha"] = list(future_forcast_dates_cl[-days_in_future_cl-1:])
-    Predict_df_cl_1["N° Casos"] =np.round(kr_pred_cl[-days_in_future_cl-1:])
+    Predict_df_cl_1["Fecha"] = list(future_forcast_dates_cl[-days_in_future_cl:])
+    Predict_df_cl_1["N° Casos"] =np.round(list(es.forecast(20)))
+    Predict_df_cl_1
 
        
-    trace1 = go.Scatter(
-                    x= np.array(future_forcast_dates_cl),
-                    y=casos_chile,
-                    name="Casos Confirmados",
-                    mode='lines+markers',
-                    line_color='green')
+    fig=go.Figure()
+    fig.add_trace(go.Scatter(x=np.array(future_forcast_dates_cl), y=datewise["Confirmed"],
+                        mode='lines+markers',name="Casos Reales"))
+    fig.add_trace(go.Scatter(x=Predict_df_cl_1['Fecha'], y=Predict_df_cl_1["N° Casos"],
+                        mode='lines+markers',name="Predicción de Casos",))
 
-    trace2 = go.Scatter(
-                    x=Predict_df_cl_1["Fecha"],
-                    y=Predict_df_cl_1["N° Casos"],
-                    name="Predicciones",
-                    mode='lines+markers',
-                    line_color='blue')
-
-    layout = go.Layout(template="ggplot2", width=900, height=600, title_text ='<b>Prediccion del Número de casos para los siguientes '+str(days_in_future_cl)+' días en Chile</b>',
-                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig = go.Figure(data = [trace1,trace2], layout = layout)
+    fig.update_layout(title="Proyección de casos en 20 días",
+                    xaxis_title="Fecha",yaxis_title="Número de Casos",legend=dict(x=0,y=1,traceorder="normal"))
 
     graph1 = fig.to_html(full_html=False)
     
