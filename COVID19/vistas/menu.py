@@ -41,7 +41,7 @@ grupo_uci_reg = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 grupo_casos_genero= pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto16/CasosGeneroEtario.csv')
-data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto2/2020-05-25-CasosConfirmados.csv')
+data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto2/2020-05-29-CasosConfirmados.csv')
 num_vent = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto20/NumeroVentiladores.csv')
 pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto23/PacientesCriticos.csv')
 
@@ -316,7 +316,7 @@ def busqueda_region(request):
         n_casos_region_f = int(n_casos_region_f)
 
 
-        fecha='2020-05-22'
+        fecha='2020-05-29'
         data_casos_por_comuna_maule = data_casos_por_comuna[data_casos_por_comuna['Region']==region]
 
         data_casos_por_comuna_maule = data_casos_por_comuna_maule.sort_values('Casos Confirmados')
