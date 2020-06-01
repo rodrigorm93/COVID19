@@ -215,7 +215,7 @@ def modelo_predictivo(request):
 
 
 
-    es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=10,trend='add', seasonal='mul').fit()
+    es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=3,trend='add', seasonal='mul').fit()
 
     days_in_future_cl = 20
     future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
