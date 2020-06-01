@@ -44,9 +44,10 @@ grupo_casos_genero= pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Da
 data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto2/2020-05-29-CasosConfirmados.csv')
 num_vent = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto20/NumeroVentiladores.csv')
 pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto23/PacientesCriticos.csv')
+data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
 
 
-
+fecha='2020-05-29'
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
 
@@ -316,7 +317,7 @@ def busqueda_region(request):
         n_casos_region_f = int(n_casos_region_f)
 
 
-        fecha='2020-05-29'
+        
         data_casos_por_comuna_maule = data_casos_por_comuna[data_casos_por_comuna['Region']==region]
 
         data_casos_por_comuna_maule = data_casos_por_comuna_maule.sort_values('Casos Confirmados')
@@ -324,18 +325,39 @@ def busqueda_region(request):
         total_maule= data_casos_por_comuna_maule['Casos Confirmados'].sum()
         total_maule = str(total_maule)
 
-        fig2 = px.bar(x=data_casos_por_comuna_maule['Comuna'], y=data_casos_por_comuna_maule['Casos Confirmados'],
+        fig = px.bar(x=data_casos_por_comuna_maule['Comuna'], y=data_casos_por_comuna_maule['Casos Confirmados'],
                         title='Numero de casos Totales Confirmados en la Region '+region+' Fecha: '+fecha,
                     text=data_casos_por_comuna_maule['Casos Confirmados'],
                         
             )
-        fig2.update_xaxes(title_text="Comunas")
-        fig2.update_yaxes(title_text="Numero de Casos")
-        graph1 = fig2.to_html(full_html=False)
+
+
+            #grafico2 
+        data_casos_por_comuna_maule = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Region']==region]
+        data_casos_por_comuna_maule = data_casos_por_comuna_maule.reset_index()
+        data_casos_por_comuna_maule = data_casos_por_comuna_maule.drop(data_casos_por_comuna_maule.index[len(data_casos_por_comuna_maule)-1])
+
+
+        fig2 = px.bar(data_casos_por_comuna_maule.sort_values(fecha), 
+                    x=fecha, y='Comuna',color_discrete_sequence=['#84DCC6'],height=900,
+                    title='Número de casos Activos en la Región '+region, text=fecha, orientation='h')
+        fig2.update_xaxes(title_text="Número de Casos Activos")
+        fig2.update_yaxes(title_text="Comunas")
+
+        n_casos_activos =data_casos_por_comuna_maule[fecha].sum()
+        n_casos_activos = int(n_casos_activos)
+
+        #tabla
+        data = data_casos_por_comuna_maule[['Comuna',fecha]]
+        data = data.rename(columns={fecha:'N° Casos Activos'})
+
+        graph1 = fig.to_html(full_html=False)
+        graph2 = fig2.to_html(full_html=False)
+        tabla1 = data.to_html()
 
 
 
-        return render(request,"por_comuna_casos.html", {"grafico1":graph1,"n_casos":n_casos_region,"num_death":n_casos_region_f})
+        return render(request,"por_comuna_casos.html", {"grafico1":graph1,"grafico2":graph2,"tabla1":tabla1,"n_casos":n_casos_region,"num_death":n_casos_region_f,"n_casos_activos":n_casos_activos})
 
     else:
         mensaje='ERROR'

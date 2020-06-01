@@ -15,7 +15,7 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Numero de Casos Acumulados</div>
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Número de Casos Acumulados</div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos}}</div>
             </div>
             <div class="col-auto">
@@ -37,7 +37,7 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Numero de Fallecidos</div>
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Número de Fallecidos</div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_death}}</div>
             </div>
             <div class="col-auto">
@@ -47,8 +47,31 @@
         </div>
       </div>
     </div>
+
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Número de Casos Activos</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos_activos}}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-calendar fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
   </div>
 
+
+     <!-- Pending Requests Card Example -->
+ 
   <!-- Content Row -->
 
   <div class="row">
@@ -136,6 +159,8 @@
 
     <!-- Content Column -->
     <div class="col-lg-6 mb-4">
+          
+      {{grafico2|safe}}
 
       <!-- Project Card Example -->
   
@@ -145,7 +170,8 @@
     <div class="col-lg-5 mb-4">
 
       <!-- Illustrations -->
-    
+      {{tabla1|safe}}
+
 
 
     </div>

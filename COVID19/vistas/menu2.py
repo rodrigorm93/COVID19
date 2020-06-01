@@ -229,7 +229,6 @@ def modelo_predictivo(request):
     Predict_df_cl_1= pd.DataFrame()
     Predict_df_cl_1["Fecha"] = list(future_forcast_dates_cl[-days_in_future_cl:])
     Predict_df_cl_1["N° Casos"] =np.round(list(es.forecast(20)))
-    Predict_df_cl_1
 
        
     fig=go.Figure()
