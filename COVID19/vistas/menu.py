@@ -356,7 +356,6 @@ def busqueda_region(request):
         tabla1 = data.to_html()
 
 
-
         return render(request,"por_comuna_casos.html", {"grafico1":graph1,"grafico2":graph2,"tabla1":tabla1,"n_casos":n_casos_region,"num_death":n_casos_region_f,"n_casos_activos":n_casos_activos})
 
     else:
