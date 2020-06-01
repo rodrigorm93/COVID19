@@ -21,6 +21,9 @@
   <!-- Custom styles for this template-->
   <link href="{% static 'css/sb-admin-2.css' %}" rel="stylesheet">
 
+  <link href="{% static 'css/load.css' %}" rel="stylesheet">
+
+
 </head>
 
 <body id="page-top">
@@ -143,7 +146,14 @@
       <li class="nav-item">
         <a class="nav-link" href="../predicciones">
           <i class="fas fa-fw fa-chart-area"></i>
-          <span>Proyeccion de casos a 20 dias</span></a>
+          <span>Proyeccion de Casos a 20 días</span></a>
+      </li>
+
+
+      <li class="nav-item">
+        <a class="nav-link" href="../predicciones_fallecidos">
+          <i class="fas fa-fw fa-chart-area"></i>
+          <span>Proyeccion de Fallecidos en 20 días</span></a>
       </li>
 
       <!-- Sidebar Toggler (Sidebar) -->
@@ -221,9 +231,14 @@
        
           <!-- CONTENIDO -->
 
+
+              
+        <div class="contenedor_loader">
+          <div class='loader'> </div>
+        </div>
+
           {% block content %} {% endblock %}
-
-
+          
 
         </div>
         <!-- /.container-fluid -->
@@ -290,6 +305,9 @@
   <!-- Page level custom scripts -->
   <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
   <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+
+  <script src="{% static 'js/scriptLoad.js' %}"></script>
+
 
 </body>
 

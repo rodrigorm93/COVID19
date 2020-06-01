@@ -40,7 +40,7 @@ from statsmodels.tsa.api import Holt,SimpleExpSmoothing,ExponentialSmoothing
 now = date.today()
 
 
-total_fallecimientos_mes = pd.read_csv('https://raw.githubusercontent.com/rodrigorm93/Datos-Chile/master/Total-Defunciones/total_fallecimientos_mes.csv', sep=',')
+total_fallecimientos_mes = pd.read_csv('https://raw.githubusercontent.com/rodrigorm93/Datos-Chile/master/Total-Defunciones%202010-2020/total_fallecimientos_mes.csv', sep=',')
 data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
@@ -189,7 +189,7 @@ def total_defunciones_chile(request):
     graph1 = fig.to_html(full_html=False)
 
     suma_4meses = total_fallecimientos_mes
-    col_list= ['January','February','March','April']
+    col_list= ['January','February','March','April','May']
     suma_4meses['Total 4 Meses'] = suma_4meses[col_list].sum(axis=1)
 
     fig2 = px.bar(x=suma_4meses['Total 4 Meses'], y=total_fallecimientos_mes['Años'], 
@@ -207,15 +207,31 @@ def total_defunciones_chile(request):
     return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 def modelo_predictivo(request):
-
-
+    
+    
     days_chile2 = np.array([i for i in range(len(dates_chile))])
 
     datewise = pd.DataFrame({'Days Since': list(days_chile2), 'Confirmed':casos_chile})
 
+    x_train=datewise.iloc[:int(datewise.shape[0]*0.95)]
+    x_test=datewise.iloc[int(datewise.shape[0]*0.95):]
+    y_pred=x_test.copy()
+
+    rmse = 10000
+    seasonal_periods = 0
+    for i in range(2,43):
+
+        es=ExponentialSmoothing(np.asarray(x_train['Confirmed']),seasonal_periods=i,trend='add', seasonal='mul').fit()
+        y_pred["prediccion"]=es.forecast(len(x_test))
+        
+        # evaluating with RMSE
+        rm = np.sqrt(mean_squared_error(y_pred["Confirmed"],y_pred["Confirmed"]))
+        if(rm<rmse):
+            rmse = rm
+            seasonal_periods = i
 
 
-    es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=3,trend='add', seasonal='mul').fit()
+    es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=seasonal_periods,trend='add', seasonal='mul').fit()
 
     days_in_future_cl = 20
     future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
@@ -245,3 +261,71 @@ def modelo_predictivo(request):
     graph2 = Predict_df_cl_1.to_html()
 
     return render(request,"predicciones.html", {"grafico1":graph1,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+
+
+def modelo_predictivo_fallecidos(request):
+    data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
+
+    fechas_chile_crec = data_crec_por_dia.columns[-1]
+    fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
+    fechas_chile = fechas_chile.keys()
+    fallecidos_por_dia =[]
+    for i in fechas_chile:
+        f = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][i].sum()
+        fallecidos_por_dia.append(f)
+    
+    days_fallecidos_chile = np.array([i for i in range(len(fechas_chile))])
+
+    data_ch_fallecidos = pd.DataFrame({'Días': list(days_fallecidos_chile), 'Fallecidos': [int(x) for x in fallecidos_por_dia]})
+    casos_f = data_ch_fallecidos['Fallecidos']+1
+    data_ch_fallecidos = pd.DataFrame({'Días': list(days_fallecidos_chile), 'Fallecidos':casos_f})
+        
+    x_train=data_ch_fallecidos.iloc[:int(data_ch_fallecidos.shape[0]*0.95)]
+    x_test=data_ch_fallecidos.iloc[int(data_ch_fallecidos.shape[0]*0.95):]
+    y_pred=x_test.copy()
+
+    rmse = 10000
+    degree = 0
+    for i in range(2,43):
+
+        es=ExponentialSmoothing(np.asarray(x_train['Fallecidos']),seasonal_periods=i,trend='add', seasonal='mul').fit()
+        y_pred["prediccion"]=es.forecast(len(x_test))
+        #model_scores.append(np.sqrt(mean_squared_error(y_pred["Confirmed"],y_pred["Holt's Winter Model"])))
+
+        # evaluating with RMSE
+        rm = np.sqrt(mean_squared_error(y_pred["Fallecidos"],y_pred["prediccion"]))
+        if(rm<rmse):
+            rmse = rm
+            degree = i
+
+
+    es=ExponentialSmoothing(np.asarray(data_ch_fallecidos['Fallecidos']),seasonal_periods=degree,trend='add', seasonal='mul').fit()
+
+
+    days_in_future_cl = 20
+    future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
+    adjusted_dates_cl = future_forcast_cl[:-days_in_future_cl]
+    start_cl = '03/03/2020'
+    start_date_cl = datetime.datetime.strptime(start_cl, '%m/%d/%Y')
+    future_forcast_dates_cl = []
+    for i in range(len(future_forcast_cl)):
+        future_forcast_dates_cl.append((start_date_cl + datetime.timedelta(days=i)).strftime('%m/%d/%Y'))
+            
+    Predict_df_cl_1= pd.DataFrame()
+    Predict_df_cl_1["Fecha"] = list(future_forcast_dates_cl[-days_in_future_cl:])
+    Predict_df_cl_1["N° Fallecidos"] =np.round(list(es.forecast(20)))
+        
+    fig=go.Figure()
+    fig.add_trace(go.Scatter(x=np.array(future_forcast_dates_cl), y=data_ch_fallecidos["Fallecidos"],
+                            mode='lines+markers',name="Fallecidos Reales"))
+    fig.add_trace(go.Scatter(x=Predict_df_cl_1['Fecha'], y=Predict_df_cl_1["N° Fallecidos"],
+                            mode='lines+markers',name="Predicción de Fallecidos",))
+
+    fig.update_layout(title="Proyección de Fallecidos en 20 días",
+                        xaxis_title="Fecha",yaxis_title="Número de Fallecidos",legend=dict(x=0,y=1,traceorder="normal"))
+
+    graph1 = fig.to_html(full_html=False)
+    
+    graph2 = Predict_df_cl_1.to_html()
+
+    return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
