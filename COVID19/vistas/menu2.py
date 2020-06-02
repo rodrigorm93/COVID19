@@ -61,10 +61,26 @@ for i in dates_chile:
 
 
 
+#Lenar con 0 filas nulas
+data_chile_r = data_chile_r.fillna(0)
+
+#ver el caso de que no se actualicen los registros
+
+
 num_cases_cl = data_chile.drop([16],axis=0)
 num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
 num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
 num_rec = data_chile_r.iloc[2,-1].sum()
+num_rec = int(num_rec)
+
+estado_r='Act'+ultima_fecha_cl
+estado_f='Act'+ultima_fecha_cl
+estado_a='Act'+ultima_fecha_cl
+
+if (num_rec==0):
+    num_rec = data_chile_r.iloc[2,len(data_chile_r.columns)-2].sum()
+    fecha = data_chile_r.columns[-2]
+    estado_r='NoAct('+data_chile_r.columns[-2]+')'
 
 num_cases_cl = int(num_cases_cl)
 num_rec = int(num_rec)
@@ -206,7 +222,7 @@ def total_defunciones_chile(request):
 
     graph2 = fig2.to_html(full_html=False)
 
-    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 def modelo_predictivo(request):
     
@@ -245,13 +261,13 @@ def modelo_predictivo(request):
     
     graph2 = Predict_df_cl_1.to_html()
 
-    return render(request,"predicciones.html", {"grafico1":graph1,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"predicciones.html", {"grafico1":graph1,"tabla1":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 def modelo_predictivo_fallecidos(request):
     data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
-    seasonal_periods = 14
+    seasonal_periods = 15
 
     fechas_chile_crec = data_crec_por_dia.columns[-1]
     fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
@@ -297,4 +313,4 @@ def modelo_predictivo_fallecidos(request):
     
     graph2 = Predict_df_cl_1.to_html()
 
-    return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"tabla1":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})

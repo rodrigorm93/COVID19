@@ -47,6 +47,8 @@ pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/D
 data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
 
 
+
+
 fecha='2020-05-29'
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
@@ -69,10 +71,27 @@ for grupo in data_casos_grupo_edad_mf['Grupo de edad']:
 
 
 
+
+#Lenar con 0 filas nulas
+data_chile_r = data_chile_r.fillna(0)
+
+
 num_cases_cl = data_chile.drop([16],axis=0)
 num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
 num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
 num_rec = data_chile_r.iloc[2,-1].sum()
+num_rec = int(num_rec)
+
+#ver el caso de que no se actualicen los registros
+
+estado_r='Act'+ultima_fecha_cl
+estado_f='Act'+ultima_fecha_cl
+estado_a='Act'+ultima_fecha_cl
+
+if (num_rec==0):
+    num_rec = data_chile_r.iloc[2,len(data_chile_r.columns)-2].sum()
+    fecha = data_chile_r.columns[-2]
+    estado_r='NoAct('+data_chile_r.columns[-2]+')'
 
 num_cases_cl = int(num_cases_cl)
 num_rec = int(num_rec)
@@ -243,7 +262,7 @@ def menu(request):
 
 
 
-    return render(request,"principal.html", {"mapa": m,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"principal.html", {"mapa": m,"estado_r":estado_r,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 def regiones(request):
@@ -294,7 +313,7 @@ def regiones(request):
 
   
 
-    return render(request,"region.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"region.html", {"grafico1":graph1,"estado_r":estado_r,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 def busqueda_region(request):
@@ -394,7 +413,7 @@ def busqueda_hospitalizacion_region(request):
     graph2 = fig2.to_html(full_html=False)
 
 
-    return render(request,"hospitalizaciones_region.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"hospitalizaciones_region.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 def busqueda_casos_por_grupo(request):
@@ -428,7 +447,7 @@ def busqueda_casos_por_grupo(request):
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
 
-    return render(request,"casos_grupo.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"casos_grupo.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 
@@ -465,7 +484,7 @@ def busqueda_fallecidos_por_grupo(request):
 
 
 
-    return render(request,"fallecidos_grupo.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"fallecidos_grupo.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 
@@ -515,7 +534,7 @@ def busqueda_por_grupo_edad(request):
         graph2 = fig2.to_html(full_html=False)
 
 
-        return render(request,"grupo_edad_f.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+        return render(request,"grupo_edad_f.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
     else:
         mensaje='ERROR'
@@ -551,7 +570,7 @@ def busqueda_hosp_por_grupo(request):
 
 
 
-    return render(request,"hospitalizaciones_grupo_edad.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"hospitalizaciones_grupo_edad.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 def num_ventiladores(request):
@@ -597,7 +616,7 @@ def num_ventiladores(request):
 
 
 
-    return render(request,"numero_ventiladores.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"numero_ventiladores.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 def casos_criticos(request):
 
@@ -620,7 +639,7 @@ def casos_criticos(request):
 
 
 
-    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 def examenes_pcr(request):
 
@@ -658,4 +677,4 @@ def examenes_pcr(request):
 
     graph2 = fig2.to_html(full_html=False)
     
-    return render(request,"num_examenes_pcr.html", {"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"num_examenes_pcr.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
