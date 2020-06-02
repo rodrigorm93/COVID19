@@ -192,6 +192,10 @@ def total_defunciones_chile(request):
     col_list= ['January','February','March','April','May']
     suma_4meses['Total 4 Meses'] = suma_4meses[col_list].sum(axis=1)
 
+
+
+    fig2.update_layout(template = 'plotly_white')
+
     fig2 = px.bar(x=suma_4meses['Total 4 Meses'], y=total_fallecimientos_mes['Años'], 
              title='Total de Fallecidos en los meses de Enero a Abril',
               text=suma_4meses['Total 4 Meses'], 
@@ -208,28 +212,11 @@ def total_defunciones_chile(request):
 
 def modelo_predictivo(request):
     
+    seasonal_periods = 3
     
     days_chile2 = np.array([i for i in range(len(dates_chile))])
 
     datewise = pd.DataFrame({'Days Since': list(days_chile2), 'Confirmed':casos_chile})
-
-    x_train=datewise.iloc[:int(datewise.shape[0]*0.95)]
-    x_test=datewise.iloc[int(datewise.shape[0]*0.95):]
-    y_pred=x_test.copy()
-
-    rmse = 10000
-    seasonal_periods = 0
-    for i in range(2,43):
-
-        es=ExponentialSmoothing(np.asarray(x_train['Confirmed']),seasonal_periods=i,trend='add', seasonal='mul').fit()
-        y_pred["prediccion"]=es.forecast(len(x_test))
-        
-        # evaluating with RMSE
-        rm = np.sqrt(mean_squared_error(y_pred["Confirmed"],y_pred["Confirmed"]))
-        if(rm<rmse):
-            rmse = rm
-            seasonal_periods = i
-
 
     es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=seasonal_periods,trend='add', seasonal='mul').fit()
 
@@ -266,6 +253,8 @@ def modelo_predictivo(request):
 def modelo_predictivo_fallecidos(request):
     data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
+    seasonal_periods = 14
+
     fechas_chile_crec = data_crec_por_dia.columns[-1]
     fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
     fechas_chile = fechas_chile.keys()
@@ -280,26 +269,8 @@ def modelo_predictivo_fallecidos(request):
     casos_f = data_ch_fallecidos['Fallecidos']+1
     data_ch_fallecidos = pd.DataFrame({'Días': list(days_fallecidos_chile), 'Fallecidos':casos_f})
         
-    x_train=data_ch_fallecidos.iloc[:int(data_ch_fallecidos.shape[0]*0.95)]
-    x_test=data_ch_fallecidos.iloc[int(data_ch_fallecidos.shape[0]*0.95):]
-    y_pred=x_test.copy()
 
-    rmse = 10000
-    degree = 0
-    for i in range(2,43):
-
-        es=ExponentialSmoothing(np.asarray(x_train['Fallecidos']),seasonal_periods=i,trend='add', seasonal='mul').fit()
-        y_pred["prediccion"]=es.forecast(len(x_test))
-        #model_scores.append(np.sqrt(mean_squared_error(y_pred["Confirmed"],y_pred["Holt's Winter Model"])))
-
-        # evaluating with RMSE
-        rm = np.sqrt(mean_squared_error(y_pred["Fallecidos"],y_pred["prediccion"]))
-        if(rm<rmse):
-            rmse = rm
-            degree = i
-
-
-    es=ExponentialSmoothing(np.asarray(data_ch_fallecidos['Fallecidos']),seasonal_periods=degree,trend='add', seasonal='mul').fit()
+    es=ExponentialSmoothing(np.asarray(data_ch_fallecidos['Fallecidos']),seasonal_periods=seasonal_periods,trend='add', seasonal='mul').fit()
 
 
     days_in_future_cl = 20
