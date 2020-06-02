@@ -194,10 +194,8 @@ def total_defunciones_chile(request):
 
 
 
-    fig2.update_layout(template = 'plotly_white')
-
-    fig2 = px.bar(x=suma_4meses['Total 4 Meses'], y=total_fallecimientos_mes['Años'], 
-             title='Total de Fallecidos en los meses de Enero a Abril',
+    fig2 = px.bar(x=suma_4meses['Total 4 Meses'], y=suma_4meses['Años'], 
+             title='Total de Fallecidos en los meses de Enero a Mayo',
               text=suma_4meses['Total 4 Meses'], 
              orientation='h', )
     fig2.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
