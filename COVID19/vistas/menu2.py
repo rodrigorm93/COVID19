@@ -226,7 +226,7 @@ def total_defunciones_chile(request):
 
 def modelo_predictivo(request):
     
-    seasonal_periods = 3
+    seasonal_periods = 6
     
     days_chile2 = np.array([i for i in range(len(dates_chile))])
 
