@@ -114,38 +114,34 @@ for i in dates_vent:
     ventiladores_dis.append(dis)
     ventiladores_total.append(total)
 
+data_chile_map = data_chile.drop([16,9],axis=0)
+data_chile_map = data_chile_map.reset_index()
+total =len(data_chile.columns)
 
+fechas_chile_crec = data_crec_por_dia.columns[-1]
+fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
+fechas_chile = fechas_chile.keys()
+
+casos_por_dia_totales =[]
+fallecidos_por_dia =[]
+recuperados_por_dia=[]
+for i in fechas_chile:
+    c_t = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos nuevos totales'][i].sum()
+    f = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][i].sum()
+    r = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados'][i].sum()
+
+    fallecidos_por_dia.append(f)
+    casos_por_dia_totales.append(c_t)
+    recuperados_por_dia.append(r)
+
+
+activos_por_dia = []
+for i in fechas_chile:
+    activos = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'][i].sum()
+    activos_por_dia.append(activos)
 
 def menu(request):
 
-    
-    data_chile_map = data_chile.drop([16,9],axis=0)
-    data_chile_map = data_chile_map.reset_index()
-    total =len(data_chile.columns)
-
-    fechas_chile_crec = data_crec_por_dia.columns[-1]
-    fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
-    fechas_chile = fechas_chile.keys()
-
-
-
-    casos_por_dia_totales =[]
-    fallecidos_por_dia =[]
-    recuperados_por_dia=[]
-    for i in fechas_chile:
-        c_t = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos nuevos totales'][i].sum()
-        f = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][i].sum()
-        r = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados'][i].sum()
-
-        fallecidos_por_dia.append(f)
-        casos_por_dia_totales.append(c_t)
-        recuperados_por_dia.append(r)
-
-
-    activos_por_dia = []
-    for i in fechas_chile:
-        activos = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'][i].sum()
-        activos_por_dia.append(activos)
 
     # Adding Location data (Latitude,Longitude)
     locations = {
@@ -176,8 +172,6 @@ def menu(request):
         data_chile_map.loc[data_chile_map.Region == index,"Long"] = locations[index][1]
         #print(locations[index][0])
         
-
-
     chile = folium.Map(location=[-30.0000000,-71.0000000], zoom_start=4,max_zoom=6,min_zoom=4)
 
 
@@ -316,9 +310,11 @@ def regiones(request):
 
 def busqueda_region(request):
 
-
     ultima_fecha_cl = data_chile.columns
     ultima_fecha_cl= ultima_fecha_cl[-1]
+
+    ultima_fecha_region_fallecidos = fallecidos_por_region.columns
+    ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
 
     fecha =fecha_comuna
     #ultima_fecha_cl = fecha_comuna
@@ -327,17 +323,47 @@ def busqueda_region(request):
     if request.GET['region']:
 
         region = request.GET['region']
+        print(region)
 
-        n_casos_region = data_chile[data_chile['Region'] ==region][ultima_fecha_cl].values
-        n_casos_region = int(n_casos_region)
+
+        if(region=='Tarapaca'):
+            region2 = 'Tarapacá'
+        elif(region=='Valparaiso'):
+            region2 = 'Valparaíso'
+        elif(region=='Del Libertador General Bernardo O’Higgins'):
+            region2 = 'O’Higgins'
+        elif(region=='Nuble'):
+            region2 = 'Ñuble'
+        elif(region=='Biobio'):
+            region2 = 'Biobío'
+        elif(region=='La Araucania'):
+            region2 = 'Araucanía'
+        elif(region=='Los Rios'):
+            region2 = 'Los Ríos'
+        elif(region=='Aysen'):
+            region2 = 'Aysén'
+        elif(region=='Magallanes y la Antartica'):
+            region2 = 'Magallanes'
+        else:
+            region2=region
+            
+
+
+
+        n_casos_region = data_chile[data_chile['Region'] ==region2][ultima_fecha_cl].values
+        n_casos_region =  str(int(n_casos_region))+' ('+ultima_fecha_cl+')'
+
+
 
         
-        n_casos_region_f = fallecidos_por_region[fallecidos_por_region['Region']==region][ultima_fecha_cl]
-        n_casos_region_f = int(n_casos_region_f)
+        n_casos_region_f = fallecidos_por_region[fallecidos_por_region['Region']==region2][ultima_fecha_region_fallecidos]
+        n_casos_region_f = str(int(n_casos_region_f))+' ('+ultima_fecha_region_fallecidos+')'
+
+
 
 
         
-        data_casos_por_comuna_maule = data_casos_por_comuna[data_casos_por_comuna['Region']==region]
+        data_casos_por_comuna_maule = data_casos_por_comuna[data_casos_por_comuna['Region']==region2]
 
         data_casos_por_comuna_maule = data_casos_por_comuna_maule.sort_values('Casos Confirmados')
 
@@ -345,7 +371,7 @@ def busqueda_region(request):
         total_maule = str(total_maule)
 
         fig = px.bar(x=data_casos_por_comuna_maule['Comuna'], y=data_casos_por_comuna_maule['Casos Confirmados'],
-                        title='Numero de casos Totales Confirmados en la Region '+region+' Fecha: '+fecha,
+                        title='Numero de casos Totales Confirmados en la Region '+region2+' Fecha: '+fecha,
                     text=data_casos_por_comuna_maule['Casos Confirmados'],
                         
             )
@@ -359,12 +385,12 @@ def busqueda_region(request):
 
         fig2 = px.bar(data_casos_por_comuna_maule.sort_values(fecha), 
                     x=fecha, y='Comuna',color_discrete_sequence=['#84DCC6'],height=900,
-                    title='Número de casos Activos en la Región '+region, text=fecha, orientation='h')
+                    title='Número de casos Activos en la Región '+region+' fecha: '+fecha, text=fecha, orientation='h')
         fig2.update_xaxes(title_text="Número de Casos Activos")
         fig2.update_yaxes(title_text="Comunas")
 
         n_casos_activos =data_casos_por_comuna_maule[fecha].sum()
-        n_casos_activos = int(n_casos_activos)
+        n_casos_activos = str(int(n_casos_activos))+' ('+fecha+')'
 
         #tabla
         data = data_casos_por_comuna_maule[['Comuna',fecha]]
