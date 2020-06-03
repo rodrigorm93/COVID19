@@ -49,7 +49,7 @@ data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/M
 
 
 
-fecha='2020-05-29'
+fecha_comuna='2020-05-29'
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
 
@@ -90,7 +90,6 @@ estado_a='Act'+ultima_fecha_cl
 
 if (num_rec==0):
     num_rec = data_chile_r.iloc[2,len(data_chile_r.columns)-2].sum()
-    fecha = data_chile_r.columns[-2]
     estado_r='NoAct('+data_chile_r.columns[-2]+')'
 
 num_cases_cl = int(num_cases_cl)
@@ -318,10 +317,12 @@ def regiones(request):
 
 def busqueda_region(request):
 
-    
 
     ultima_fecha_cl = data_chile.columns
     ultima_fecha_cl= ultima_fecha_cl[-1]
+
+    fecha =fecha_comuna
+    #ultima_fecha_cl = fecha_comuna
 
 
     if request.GET['region']:
