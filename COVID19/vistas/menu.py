@@ -116,6 +116,8 @@ for i in dates_vent:
 
 data_chile_map = data_chile.drop([16,9],axis=0)
 data_chile_map = data_chile_map.reset_index()
+data_chile_map = data_chile_map.drop('index',axis=1)
+
 total =len(data_chile.columns)
 
 fechas_chile_crec = data_crec_por_dia.columns[-1]
@@ -167,12 +169,15 @@ def menu(request):
 
     data_chile_map["Lat"] = ""
     data_chile_map["Long"] = ""
+
     for index in data_chile_map.Region :
         data_chile_map.loc[data_chile_map.Region == index,"Lat"] = locations[index][0]
         data_chile_map.loc[data_chile_map.Region == index,"Long"] = locations[index][1]
         #print(locations[index][0])
         
-    chile = folium.Map(location=[-30.0000000,-71.0000000], zoom_start=4,max_zoom=6,min_zoom=4)
+
+
+    chile = folium.Map(location=[-30.0000000,-71.0000000], zoom_start=4,max_zoom=6,min_zoom=4,height=500,width="80%")
 
 
     for i in range(0,len(data_chile_map[data_chile[ultima_fecha_cl]>0].Region)):
@@ -183,10 +188,11 @@ def menu(request):
         tooltip = "<h5 style='text-align:center;font-weight: bold'>"+data_chile_map.iloc[i].Region+"</h5>"+
                         "<hr style='margin:10px;'>"+
                         "<ul style='color: #444;list-style-type:circle;align-item:left;padding-left:20px;padding-right:20px'>"+
-            "<li>Confirmed: "+str(data_chile_map.iloc[i,total])+"</li>"+
+            "<li>Confirmed: "+str(data_chile_map.iloc[i,total-1])+"</li>"+
             "</ul>",
         
-            radius=(int(np.log2(data_chile_map.iloc[i,total]+1)))*15000,
+            radius=(int(np.log2(data_chile_map.iloc[i,total-1]+1)))*14000,
+
             color='#ff6600',
             fill_color='#ff8533',
             fill=True).add_to(chile)
@@ -252,9 +258,21 @@ def menu(request):
     graph3 = fig5.to_html(full_html=False)
     ultima_fecha = ultima_fecha_cl
 
+    #Grafico4
+    data_sintomas = data_chile_r[data_chile_r['Fecha']=='Casos nuevos con sintomas'].iloc[0,1:].sum()
+    data_sin_sintomas = data_chile_r[data_chile_r['Fecha']=='Casos nuevos sin sintomas'].iloc[0,1:].sum()
+    data_casos_por_sintomas = pd.DataFrame({'Tipo':['Casos nuevos con sintomas','Casos nuevos sin sintomas'],'Numero de casos':[data_sintomas,data_sin_sintomas]})
+    fig4 = px.pie(data_casos_por_sintomas, values='Numero de casos', names='Tipo')
+    fig4.update_traces(textposition='inside')
+    fig4.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
+
+    graph4 = fig4.to_html(full_html=False)
 
 
-    return render(request,"principal.html", {"mapa": m,"estado_r":estado_r,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+
+
+
+    return render(request,"principal.html", {"mapa": m,"estado_r":estado_r,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico3":graph3,"grafico4":graph4,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 def regiones(request):
@@ -646,6 +664,9 @@ def num_ventiladores(request):
 
 def casos_criticos(request):
 
+
+
+
     #GRAFICO 1
     trace = go.Scatter(
                 x=pacientes_criticos.iloc[:,1:].columns,
@@ -654,18 +675,37 @@ def casos_criticos(request):
                 mode='lines+markers',
                 line_color='red')
 
-    layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Pacientes Criticos Fecha: '+ ultima_fecha_cl+'</b>',
+    layout = go.Layout(template="ggplot2",title_text = '<b>Número de Pacientes Criticos Fecha: '+ ultima_fecha_cl+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig = go.Figure(data = [trace], layout = layout)
 
 
+    data_activos = data_chile_r[data_chile_r['Fecha']=='Casos activos']
+    ultima_fecha = data_activos.columns
+    ultima_fecha= ultima_fecha[-1]
+
+    trace = go.Scatter(
+                x=data_activos.iloc[:,1:].columns,
+                y=data_activos.iloc[0,1:],
+                name="Pacientes Activos",
+                mode='lines+markers',
+                line_color='red')
+
+    layout = go.Layout(template="ggplot2",title_text = '<b>Número de Pacientes Activos Fecha: '+ ultima_fecha+'</b>',
+                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
+    fig2 = go.Figure(data = [trace], layout = layout)
+
+
+
     graph1 = fig.to_html(full_html=False)
+    graph2 = fig2.to_html(full_html=False)
+
 
     #graph2 = fig2.to_html(full_html=False)
 
 
 
-    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 def examenes_pcr(request):
 
