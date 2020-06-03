@@ -32,6 +32,11 @@ from plotly.subplots import make_subplots
 from plotly.graph_objs import *
 from plotly.subplots import make_subplots
 
+
+import warnings
+
+warnings.filterwarnings('ignore')
+
 data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
@@ -143,6 +148,7 @@ for i in fechas_chile:
     activos_por_dia.append(activos)
 
 def menu(request):
+
 
 
     # Adding Location data (Latitude,Longitude)

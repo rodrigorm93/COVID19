@@ -71,16 +71,15 @@ num_cases_cl = data_chile.drop([16],axis=0)
 num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
 num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
 num_rec = data_chile_r.iloc[2,-1].sum()
-num_rec = int(num_rec)
 
 estado_r='Act'+ultima_fecha_cl
 estado_f='Act'+ultima_fecha_cl
 estado_a='Act'+ultima_fecha_cl
 
+#dejar el ulktimo registro de recuperados que fue el 2020-06-02
 if (num_rec==0):
-    num_rec = data_chile_r.iloc[2,len(data_chile_r.columns)-2].sum()
-    fecha = data_chile_r.columns[-2]
-    estado_r='NoAct('+data_chile_r.columns[-2]+')'
+    num_rec = data_chile_r.iloc[2,91].sum()
+    estado_r='NoAct('+data_chile_r.columns[91]+')'
 
 num_cases_cl = int(num_cases_cl)
 num_rec = int(num_rec)
