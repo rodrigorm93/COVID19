@@ -80,7 +80,6 @@ num_cases_cl = data_chile.drop([16],axis=0)
 num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
 num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
 num_rec = data_chile_r.iloc[2,-1].sum()
-num_rec = int(num_rec)
 
 #ver el caso de que no se actualicen los registros
 
@@ -88,9 +87,10 @@ estado_r='Act'+ultima_fecha_cl
 estado_f='Act'+ultima_fecha_cl
 estado_a='Act'+ultima_fecha_cl
 
+#dejar el ulktimo registro de recuperados que fue el 2020-06-02
 if (num_rec==0):
-    num_rec = data_chile_r.iloc[2,len(data_chile_r.columns)-2].sum()
-    estado_r='NoAct('+data_chile_r.columns[-2]+')'
+    num_rec = data_chile_r.iloc[2,91].sum()
+    estado_r='NoAct('+data_chile_r.columns[91]+')'
 
 num_cases_cl = int(num_cases_cl)
 num_rec = int(num_rec)
@@ -206,7 +206,6 @@ def menu(request):
     # Grafico 1:
 
 
-
     num_active = data_chile_r.iloc[4,-1].sum()
 
     datos_chile_rdca = pd.DataFrame({'Fecha':[ultima_fecha_cl],'Fallecidos':[num_death],'Cases Confirmados (Acumulados)': [num_cases_cl],'Recuperados':[num_rec],
@@ -219,7 +218,7 @@ def menu(request):
     active = '#fe9801' 
 
     tm = temp.melt(id_vars="Fecha", value_vars=['Activos', 'Fallecidos','Recuperados'])
-    fig = px.treemap(tm, path=["variable"], values="value",color_discrete_sequence=[active,recovered,death])
+    fig = px.treemap(tm, path=["variable"], values="value",color_discrete_sequence=[recovered,active,death])
 
     fig.layout.update(title_text='Activos vs. Recuperados '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False,font=dict(
             size=15,
