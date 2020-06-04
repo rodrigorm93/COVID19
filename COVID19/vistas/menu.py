@@ -46,15 +46,63 @@ grupo_uci_reg = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 grupo_casos_genero= pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto16/CasosGeneroEtario.csv')
-data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto2/2020-06-01-CasosConfirmados.csv')
+data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
 num_vent = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto20/NumeroVentiladores.csv')
 pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto23/PacientesCriticos.csv')
 data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
 
+casos_diarios_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
+casos_diarios_por_region = casos_diarios_por_region.drop(16, axis=0)
+fecha_casos_region = casos_diarios_por_region.columns[-1]
+fecha_casos_region = casos_diarios_por_region.loc[:, '2020-03-03': fecha_casos_region]
+fecha_casos_region = fecha_casos_region.keys()
+
+
+arica = []
+tarapaca = []
+antofagasta = []
+atacama = []
+coquimbo = []
+valparaiso = []
+metropolitana = []
+o_Higgins = []
+maule = []
+nuble = []
+biobio = []
+araucania = []
+los_Ríos = []
+los_lagos = []
+aysen = []
+magallanes = []
+
+for i in fecha_casos_region:
+    
+    arica.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Arica y Parinacota'][i].sum())
+    tarapaca.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Tarapacá'][i].sum())
+    antofagasta.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Antofagasta'][i].sum())
+    atacama.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Atacama'][i].sum())
+    coquimbo.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Coquimbo'][i].sum())
+    valparaiso.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Valparaíso'][i].sum())
+    metropolitana.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Metropolitana'][i].sum())
+    o_Higgins.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='O’Higgins'][i].sum())
+    maule.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Maule'][i].sum())
+    nuble.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Ñuble'][i].sum())
+    biobio.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Biobío'][i].sum())
+    araucania.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Araucanía'][i].sum())
+    los_Ríos.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Los Ríos'][i].sum())
+    los_lagos.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Los Lagos'][i].sum())
+    aysen.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Aysén'][i].sum())
+    magallanes.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Magallanes'][i].sum()) 
 
 
 
-fecha_comuna='2020-06-01'
+
+data_casos_por_comuna =data_casos_por_comuna.drop(['Tasa'], axis=1)
+
+fecha_comuna = data_casos_por_comuna.columns
+fecha_comuna= fecha_comuna[-1]
+
+
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
 
@@ -204,7 +252,7 @@ def menu(request):
             fill=True).add_to(chile)
 
 
-   
+
 
     m=chile._repr_html_() #updated
 
@@ -294,40 +342,111 @@ def regiones(request):
     #GRAFICO 1
     titulo ='COVID-19: Total de Casos acumulados'
 
-    fig2 = px.bar(datos.sort_values(ultima_fecha_cl), 
+    fig = px.bar(datos.sort_values(ultima_fecha_cl), 
              x=ultima_fecha_cl, y="Region", 
              title=titulo,
               text=ultima_fecha_cl, 
              orientation='h')
-    fig2.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
+    fig.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
 
-    fig2.update_layout(template = 'plotly_white')
-    graph1 = fig2.to_html(full_html=False)
+    fig.update_layout(template = 'plotly_white')
 
+    #GRAFICO 2: ANIMACION
+    gris = '#393e46' 
 
-
-    #GRAFICO 2
-    datos = data_chile[['Region',ultima_fecha_cl]].drop([16],axis=0)
-
-    fig = px.scatter(datos, y=datos.loc[:,ultima_fecha_cl],
-                        x= datos.loc[:,"Region"],
-                        color= "Region", hover_name="Region",
-                        color_continuous_scale=px.colors.sequential.Plasma,
-                        title='COVID-19: Numero Total de casos por Region',
-                        size = np.power(datos[ultima_fecha_cl]+1,0.3)-0.5,
-                        size_max = 30,
-                        width=900,
-                        height =600,
-                        )
-    fig.update_coloraxes(colorscale="hot")
-    fig.update(layout_coloraxis_showscale=False)
-    fig.update_yaxes(title_text="Numero casos")
-    fig.update_xaxes(title_text="Regiones")
-
-    graph2 = fig.to_html(full_html=False)
+    data_total_ar = pd.DataFrame({'Region': ('Arica'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': arica})
+    data_total_ta = pd.DataFrame({'Region': ('Tarapacá'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': tarapaca})
+    data_total_at = pd.DataFrame({'Region': ('Antofagasta'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': antofagasta})
+    data_total_ata = pd.DataFrame({'Region': ('Atacama'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': atacama})
+    data_total_co = pd.DataFrame({'Region': ('Coquimbo'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': coquimbo})
+    data_total_va = pd.DataFrame({'Region': ('Valparaíso'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': valparaiso})
+    data_total_me = pd.DataFrame({'Region': ('Metropolitana'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': metropolitana})
+    data_total_og = pd.DataFrame({'Region': ('O Higgins'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': o_Higgins})
+    data_total_mau = pd.DataFrame({'Region': ('Maule'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': maule})
+    data_total_nu = pd.DataFrame({'Region': ('Ñuble'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': nuble})
+    data_total_bi = pd.DataFrame({'Region': ('Biobío'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': biobio})
+    data_total_ara = pd.DataFrame({'Region': ('Araucanía'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': araucania})
+    data_total_lr = pd.DataFrame({'Region': ('Los Ríos'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': los_Ríos})
+    data_total_ll = pd.DataFrame({'Region': ('Los Lagos'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': los_lagos})
+    data_total_ay = pd.DataFrame({'Region': ('Aysén'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': aysen})
+    data_total_ma = pd.DataFrame({'Region': ('Magallanes'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': magallanes})
 
 
-  
+
+    # Apilar los __DataFrames__ uno encima del otro
+    apilados= pd.concat([data_total_ar, data_total_ta], axis=0)
+    apilados= pd.concat([apilados, data_total_at], axis=0)
+    apilados= pd.concat([apilados, data_total_ata], axis=0)
+    apilados= pd.concat([apilados, data_total_co], axis=0)
+    apilados= pd.concat([apilados, data_total_va], axis=0)
+    apilados= pd.concat([apilados, data_total_me], axis=0)
+    apilados= pd.concat([apilados, data_total_og], axis=0)
+    apilados= pd.concat([apilados, data_total_mau], axis=0)
+    apilados= pd.concat([apilados, data_total_nu], axis=0)
+    apilados= pd.concat([apilados, data_total_bi], axis=0)
+    apilados= pd.concat([apilados, data_total_ara], axis=0)
+    apilados= pd.concat([apilados, data_total_lr], axis=0)
+    apilados= pd.concat([apilados, data_total_ll], axis=0)
+    apilados= pd.concat([apilados, data_total_ay], axis=0)
+    apilados= pd.concat([apilados, data_total_ma], axis=0)
+
+    def location(row):
+        if row['Region']=='Arica':
+                return 'Arica'
+        elif row['Region']=='Tarapacá':
+                return 'Tarapacá'
+            
+        elif row['Region']=='Antofagasta':
+                return 'Antofagasta'
+            
+        elif row['Region']=='Atacama':
+                return 'Atacama'
+        elif row['Region']=='Coquimbo':
+                return 'Coquimbo'
+        elif row['Region']=='Valparaíso':
+                return 'Valparaíso'
+        elif row['Region']=='Metropolitana':
+                return 'Metropolitana'
+        elif row['Region']=='O Higgins':
+                return 'O Higgins'
+        elif row['Region']=='Ñuble':
+                return 'Ñuble'
+        elif row['Region']=='Biobío':
+                return 'Biobío'
+        elif row['Region']=='Araucanía':
+                return 'Araucanía'
+        elif row['Region']=='Los Ríos':
+                return 'Los Ríos'
+        elif row['Region']=='O’Higgins':
+                return 'O’Higgins'
+        elif row['Region']=='Los Lagos':
+                return 'Los Lagos'
+        elif row['Region']=='Aysén':
+                return 'Aysén'
+        elif row['Region']=='Maule':
+                return 'Maule'
+        else:
+            return 'Magallanes'
+            
+
+    temp = apilados.copy()
+    temp['Region'] = temp.apply(location, axis=1)
+    temp['Fecha'] = temp['Fecha'].dt.strftime('%Y-%m-%d')
+    temp = temp.groupby(['Region', 'Fecha'])['Casos'].sum().reset_index()
+    temp = temp.melt(id_vars=['Region', 'Fecha'], value_vars=['Casos'], 
+                    var_name='Casos', value_name='Count')
+
+    fig2 = px.bar(temp, y='Region', x='Count', color='Casos', barmode='group', orientation='h',
+                text='Count', title='Evolución del Número de Casos por Días', animation_frame='Fecha',
+                height=750,color_discrete_sequence= [gris], range_x=[0, int(metropolitana[-1]+1000)])
+    fig2.update_traces(textposition='outside')
+    fig2.update_xaxes(title_text="Numero de Casos (acumulados)")
+    fig2.update_yaxes(title_text="Regiones")
+
+    graph1 = fig.to_html(full_html=False)
+    graph2 = fig2.to_html(full_html=False)
+
+
 
     return render(request,"region.html", {"grafico1":graph1,"estado_r":estado_r,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
@@ -389,19 +508,21 @@ def busqueda_region(request):
         
         data_casos_por_comuna_maule = data_casos_por_comuna[data_casos_por_comuna['Region']==region2]
 
-        data_casos_por_comuna_maule = data_casos_por_comuna_maule.sort_values('Casos Confirmados')
+        data_casos_por_comuna_maule = data_casos_por_comuna_maule.sort_values(fecha_comuna)
 
-        total_maule= data_casos_por_comuna_maule['Casos Confirmados'].sum()
+        total_maule= data_casos_por_comuna_maule[fecha_comuna].sum()
         total_maule = str(total_maule)
 
-        fig = px.bar(x=data_casos_por_comuna_maule['Comuna'], y=data_casos_por_comuna_maule['Casos Confirmados'],
+        fig = px.bar(x=data_casos_por_comuna_maule['Comuna'], y=data_casos_por_comuna_maule[fecha_comuna],
                         title='Numero de casos Totales Confirmados en la Region '+region2+' Fecha: '+fecha,
-                    text=data_casos_por_comuna_maule['Casos Confirmados'],
+                    text=data_casos_por_comuna_maule[fecha_comuna],
                         
             )
+        fig.update_xaxes(title_text="Comunas")
+        fig.update_yaxes(title_text="Número de Casos")
 
 
-            #grafico2 
+        #grafico2 
         data_casos_por_comuna_maule = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Region']==region]
         data_casos_por_comuna_maule = data_casos_por_comuna_maule.reset_index()
         data_casos_por_comuna_maule = data_casos_por_comuna_maule.drop(data_casos_por_comuna_maule.index[len(data_casos_por_comuna_maule)-1])
@@ -415,6 +536,10 @@ def busqueda_region(request):
 
         n_casos_activos =data_casos_por_comuna_maule[fecha].sum()
         n_casos_activos = str(int(n_casos_activos))+' ('+fecha+')'
+
+
+
+        
 
         #tabla
         data = data_casos_por_comuna_maule[['Comuna',fecha]]
@@ -443,8 +568,8 @@ def busqueda_hospitalizacion_region(request):
     fig.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
 
     fig.update_layout(template = 'plotly_white')
-    fig.update_yaxes(title_text="Age Group")
-    fig.update_xaxes(title_text='Number of Hospitalized')
+    fig.update_yaxes(title_text="Regiones")
+    fig.update_xaxes(title_text='Numero de personas Hospitalizadas')
 
 
     #GRAFICO 2
