@@ -266,7 +266,7 @@ def modelo_predictivo(request):
 def modelo_predictivo_fallecidos(request):
     data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
-    seasonal_periods = 15
+    seasonal_periods = 17
 
     fechas_chile_crec = data_crec_por_dia.columns[-1]
     fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]

@@ -16,8 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from COVID19.vistas.menu import menu,regiones,busqueda_region,busqueda_hospitalizacion_region,busqueda_casos_por_grupo,busqueda_fallecidos_por_grupo,busqueda_por_grupo_edad,busqueda_hosp_por_grupo
-from COVID19.vistas.menu import num_ventiladores,casos_criticos,examenes_pcr
+from COVID19.vistas.menu import casos_criticos,examenes_pcr
 from COVID19.vistas.menu2 import total_defunciones_chile,modelo_predictivo,modelo_predictivo_fallecidos
+from COVID19.vistas.ventiladores import pacientes_ventiladores,num_ventiladores
 urlpatterns = [
     path('', menu),
     path('region/', regiones),
@@ -33,5 +34,6 @@ urlpatterns = [
     path('predicciones/', modelo_predictivo),
     path('predicciones_fallecidos/', modelo_predictivo_fallecidos),
     path('examenes_pcr/', examenes_pcr),
+     path('pacientes_vmi/', pacientes_ventiladores),
     
 ]
