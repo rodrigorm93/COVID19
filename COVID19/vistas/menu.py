@@ -30,7 +30,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objs import *
-from plotly.subplots import make_subplots
 
 
 import warnings
@@ -47,7 +46,6 @@ fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCienci
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 grupo_casos_genero= pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto16/CasosGeneroEtario.csv')
 data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
-num_vent = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto20/NumeroVentiladores.csv')
 pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto23/PacientesCriticos.csv')
 data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
 
@@ -150,22 +148,7 @@ num_rec = int(num_rec)
 num_death = int(num_death)
 
 
-   #ventiladores 
-
-dates_vent = num_vent.loc[:, '2020-04-14': ultima_fecha_cl]
-dates_vent = dates_vent.keys()
-
-ventiladores_oc =[]
-ventiladores_dis = []
-ventiladores_total = []
-for i in dates_vent:
-    oc = num_vent[num_vent['Ventiladores']=='ocupados'][i].sum()
-    dis = num_vent[num_vent['Ventiladores']=='disponibles'][i].sum()
-    total = num_vent[num_vent['Ventiladores']=='total'][i].sum()
-
-    ventiladores_oc.append(oc)
-    ventiladores_dis.append(dis)
-    ventiladores_total.append(total)
+   
 
 data_chile_map = data_chile.drop([16,9],axis=0)
 data_chile_map = data_chile_map.reset_index()
@@ -227,11 +210,10 @@ def menu(request):
     for index in data_chile_map.Region :
         data_chile_map.loc[data_chile_map.Region == index,"Lat"] = locations[index][0]
         data_chile_map.loc[data_chile_map.Region == index,"Long"] = locations[index][1]
-        #print(locations[index][0])
         
 
 
-    chile = folium.Map(location=[-30.0000000,-71.0000000], zoom_start=4,max_zoom=6,min_zoom=4,height=500,width="80%")
+    chile = folium.Map(location=[-30.0000000,-71.0000000], zoom_start=1,max_zoom=8,min_zoom=4)
 
 
     for i in range(0,len(data_chile_map[data_chile[ultima_fecha_cl]>0].Region)):
@@ -288,7 +270,7 @@ def menu(request):
                     mode='lines+markers',
                     line_color='red')
 
-    layout = go.Layout(template="ggplot2", title_text = '<b>Numero de Casos por día</b>',
+    layout = go.Layout(template="ggplot2", title_text = '<b>Numero de Casos por Día '+ultima_fecha_cl+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace], layout = layout)
 
@@ -438,7 +420,7 @@ def regiones(request):
 
     fig2 = px.bar(temp, y='Region', x='Count', color='Casos', barmode='group', orientation='h',
                 text='Count', title='Evolución del Número de Casos por Días', animation_frame='Fecha',
-                height=750,color_discrete_sequence= [gris], range_x=[0, int(metropolitana[-1]+1000)])
+                height=700,color_discrete_sequence= [gris], range_x=[0, int(metropolitana[-1]+1000)])
     fig2.update_traces(textposition='outside')
     fig2.update_xaxes(title_text="Numero de Casos (acumulados)")
     fig2.update_yaxes(title_text="Regiones")
@@ -539,8 +521,6 @@ def busqueda_region(request):
 
 
 
-        
-
         #tabla
         data = data_casos_por_comuna_maule[['Comuna',fecha]]
         data = data.rename(columns={fecha:'N° Casos Activos'})
@@ -550,7 +530,7 @@ def busqueda_region(request):
         tabla1 = data.to_html()
 
 
-        return render(request,"por_comuna_casos.html", {"grafico1":graph1,"grafico2":graph2,"tabla1":tabla1,"n_casos":n_casos_region,"num_death":n_casos_region_f,"n_casos_activos":n_casos_activos})
+        return render(request,"por_comuna_casos.html", {"region":region,"grafico1":graph1,"grafico2":graph2,"tabla1":tabla1,"n_casos":n_casos_region,"num_death":n_casos_region_f,"n_casos_activos":n_casos_activos})
 
     else:
         mensaje='ERROR'
@@ -569,7 +549,7 @@ def busqueda_hospitalizacion_region(request):
 
     fig.update_layout(template = 'plotly_white')
     fig.update_yaxes(title_text="Regiones")
-    fig.update_xaxes(title_text='Numero de personas Hospitalizadas')
+    fig.update_xaxes(title_text='Número de personas Hospitalizadas')
 
 
     #GRAFICO 2
@@ -748,51 +728,6 @@ def busqueda_hosp_por_grupo(request):
     return render(request,"hospitalizaciones_grupo_edad.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
-def num_ventiladores(request):
-
-
-    #GRAFICO 1
-    trace = go.Scatter(
-                x=dates_vent,
-                y=ventiladores_dis,
-                name="Ventiladores Disponibles",
-                mode='lines+markers',
-                line_color='green')
-    trace2 = go.Scatter(
-                    x=dates_vent,
-                    y=ventiladores_oc,
-                    name="Ventiladores Ocupados",
-                    mode='lines+markers',
-                    line_color='red')
-
-    layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Ventiladores Fecha: '+ ultima_fecha_cl+'</b>',
-                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig = go.Figure(data = [trace,trace2], layout = layout)
-
-    ventiladiores = num_vent.drop([0],axis=0)
-    #GRAFICO 2
-    fig2 = make_subplots(rows=1, cols=2)
-    colors = ['green','red']
-    trace1 = go.Pie(
-                    labels=ventiladiores['Ventiladores'],
-                    values=ventiladiores[ultima_fecha_cl],
-                    hoverinfo='label+percent', 
-                    textfont_size=12,
-                    marker=dict(colors=colors, 
-                                line=dict(color='#000000', width=2)))
-    layout = go.Layout(title_text = '<b>Porcentaje de ventiladores Fecha: '+ultima_fecha_cl+'</b>',
-                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig2 = go.Figure(data = [trace1], layout = layout)
-
-
-    graph1 = fig.to_html(full_html=False)
-
-    graph2 = fig2.to_html(full_html=False)
-
-
-
-    return render(request,"numero_ventiladores.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
-
 def casos_criticos(request):
 
 
@@ -867,7 +802,7 @@ def examenes_pcr(request):
 
     fig2 = px.pie(exa_pcr, values='Total', names='Region')
     fig2.update_traces(textposition='inside')
-    fig2.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
+    fig2.update_layout(uniformtext_minsize=10, uniformtext_mode='hide')
 
     
     graph1 = fig.to_html(full_html=False)
@@ -875,3 +810,4 @@ def examenes_pcr(request):
     graph2 = fig2.to_html(full_html=False)
     
     return render(request,"num_examenes_pcr.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+

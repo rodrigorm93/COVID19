@@ -153,7 +153,7 @@ def pacientes_ventiladores(request):
 
     fig2 = px.pie(data_vmi, values='Cantidad', names='Tipo')
     fig2.update_traces(textposition='inside')
-    fig2.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
+    fig2.update_layout(uniformtext_minsize=10, uniformtext_mode='hide')
 
     graph1 = fig1.to_html(full_html=False)
 
