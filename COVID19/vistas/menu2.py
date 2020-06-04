@@ -210,7 +210,7 @@ def total_defunciones_chile(request):
 
 
     fig2 = px.bar(x=suma_4meses['Total 4 Meses'], y=suma_4meses['Años'], 
-             title='Total de Fallecidos en los meses de Enero a Mayo',
+             title='Total de Fallecidos en los primeros 5 meses',
               text=suma_4meses['Total 4 Meses'], 
              orientation='h', )
     fig2.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
@@ -220,8 +220,10 @@ def total_defunciones_chile(request):
     fig2.update_yaxes(title_text="Años")
 
     graph2 = fig2.to_html(full_html=False)
+    total_fallecimientos_mes_trans = total_fallecimientos_mes.drop(['Total 4 Meses'], axis=1).T
+    tabla1 = total_fallecimientos_mes_trans.to_html()
 
-    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"grafico2":graph2,"tabla1":tabla1,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 def modelo_predictivo(request):
     
@@ -311,5 +313,6 @@ def modelo_predictivo_fallecidos(request):
     graph1 = fig.to_html(full_html=False)
     
     graph2 = Predict_df_cl_1.to_html()
+   
 
     return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"tabla1":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
