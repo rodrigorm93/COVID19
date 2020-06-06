@@ -8,11 +8,6 @@ from django.shortcuts import render
 import numpy as np
 import pandas as pd
 import seaborn as sb
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
-from sklearn.kernel_ridge import KernelRidge
-from sklearn.model_selection import KFold, cross_val_score
-from sklearn.metrics import mean_squared_error, mean_absolute_error,mean_squared_error
 import plotly.graph_objs as go
 import datetime
 import plotly.express as px
@@ -21,7 +16,6 @@ import warnings
 import folium 
 from folium import plugins
 from math import sqrt
-from sklearn.preprocessing import PolynomialFeatures
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -40,85 +34,12 @@ data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COV
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
-grupo_uci = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto9/HospitalizadosUCIEtario.csv')
-grupo_uci_reg = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto8/UCI.csv')
-fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
-grupo_casos_genero= pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto16/CasosGeneroEtario.csv')
-data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
 pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto23/PacientesCriticos.csv')
-data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
-
-casos_diarios_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
-casos_diarios_por_region = casos_diarios_por_region.drop(16, axis=0)
-fecha_casos_region = casos_diarios_por_region.columns[-1]
-fecha_casos_region = casos_diarios_por_region.loc[:, '2020-03-03': fecha_casos_region]
-fecha_casos_region = fecha_casos_region.keys()
-
-
-arica = []
-tarapaca = []
-antofagasta = []
-atacama = []
-coquimbo = []
-valparaiso = []
-metropolitana = []
-o_Higgins = []
-maule = []
-nuble = []
-biobio = []
-araucania = []
-los_Ríos = []
-los_lagos = []
-aysen = []
-magallanes = []
-
-for i in fecha_casos_region:
-    
-    arica.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Arica y Parinacota'][i].sum())
-    tarapaca.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Tarapacá'][i].sum())
-    antofagasta.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Antofagasta'][i].sum())
-    atacama.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Atacama'][i].sum())
-    coquimbo.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Coquimbo'][i].sum())
-    valparaiso.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Valparaíso'][i].sum())
-    metropolitana.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Metropolitana'][i].sum())
-    o_Higgins.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='O’Higgins'][i].sum())
-    maule.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Maule'][i].sum())
-    nuble.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Ñuble'][i].sum())
-    biobio.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Biobío'][i].sum())
-    araucania.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Araucanía'][i].sum())
-    los_Ríos.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Los Ríos'][i].sum())
-    los_lagos.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Los Lagos'][i].sum())
-    aysen.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Aysén'][i].sum())
-    magallanes.append(casos_diarios_por_region[casos_diarios_por_region['Region']=='Magallanes'][i].sum()) 
-
-
-
-
-data_casos_por_comuna =data_casos_por_comuna.drop(['Tasa'], axis=1)
-
-fecha_comuna = data_casos_por_comuna.columns
-fecha_comuna= fecha_comuna[-1]
 
 
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
-
-fecha_grupo_fallecidos=grupo_fallecidos.columns[-1]
-
-#grupos de edad: numero de casos
-fecha_grupo_edad = grupo_casos_genero.columns[-1]
-death_cl = grupo_fallecidos.loc[:, '2020-04-09': ultima_fecha_cl]
-dates_d = death_cl.keys()
-
-grupo_edad = grupo_casos_genero.iloc[0:17,0]
-data_casos_grupo_edad_mf = pd.DataFrame({'Grupo de edad': grupo_edad, fecha_grupo_edad : 0})
-
-fila = 0
-for grupo in data_casos_grupo_edad_mf['Grupo de edad']:
-    suma_casos_MF = grupo_casos_genero[grupo_casos_genero['Grupo de edad'] == grupo].iloc[:,-1].sum()
-    data_casos_grupo_edad_mf.iloc[fila,1] = suma_casos_MF
-    fila=fila+1
 
 
 
@@ -180,8 +101,6 @@ for i in fechas_chile:
     activos_por_dia.append(activos)
 
 def menu(request):
-
-
 
     # Adding Location data (Latitude,Longitude)
     locations = {
@@ -264,16 +183,26 @@ def menu(request):
   
 
     #Grafico 2
-    trace = go.Scatter(
-                    x=fechas_chile,
-                    y=casos_por_dia_totales,
-                    name="growth",
-                    mode='lines+markers',
-                    line_color='red')
+    #trace = go.Scatter(
+                    #x=fechas_chile,
+                   # y=casos_por_dia_totales,
+                   # name="growth",
+                   # mode='lines+markers',
+                   # line_color='red')
 
-    layout = go.Layout(template="ggplot2", title_text = '<b>Numero de Casos por Día '+ultima_fecha_cl+'</b>',
-                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig2 = go.Figure(data = [trace], layout = layout)
+    #layout = go.Layout(template="ggplot2", title_text = '<b>Numero de Casos por Día '+ultima_fecha_cl+'</b>',
+                    #font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
+    #fig2 = go.Figure(data = [trace], layout = layout)
+
+
+    
+    fig2=go.Figure()
+    fig2.add_trace(go.Scatter(x=fechas_chile, y=casos_por_dia_totales,mode='lines+markers',
+                        name='Número Casos'))
+    #fig2.add_trace(go.Scatter(x=fechas_chile, y=fallecidos_por_dia,mode='lines+markers',
+                        #name='Falllecidos'))
+    fig2.update_layout(title="Numero de Casos por Día",
+                    xaxis_title="Date",yaxis_title="Número casos",legend=dict(x=0,y=1,traceorder="normal"))
 
 
     #Grafico 3
@@ -312,423 +241,6 @@ def menu(request):
     return render(request,"principal.html", {"mapa": m,"fecha_casos_fall":fecha_casos_fall,"estado_r":estado_r,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico3":graph3,"grafico4":graph4,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
-def regiones(request):
-  
-
-    ultima_fecha_cl = data_chile.columns
-    ultima_fecha_cl= ultima_fecha_cl[-1]
-
-    confirmados = data_chile.loc[:, '2020-03-03': ultima_fecha_cl]
-    dates_chile = confirmados.keys()
-    datos = data_chile[['Region',ultima_fecha_cl]].drop([16],axis=0)
-
-    #GRAFICO 1
-    titulo ='COVID-19: Total de Casos acumulados'
-
-    fig = px.bar(datos.sort_values(ultima_fecha_cl), 
-             x=ultima_fecha_cl, y="Region", 
-             title=titulo,
-              text=ultima_fecha_cl, 
-             orientation='h')
-    fig.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
-
-    fig.update_layout(template = 'plotly_white')
-
-    #GRAFICO 2: ANIMACION
-    gris = '#393e46' 
-
-    data_total_ar = pd.DataFrame({'Region': ('Arica'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': arica})
-    data_total_ta = pd.DataFrame({'Region': ('Tarapacá'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': tarapaca})
-    data_total_at = pd.DataFrame({'Region': ('Antofagasta'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': antofagasta})
-    data_total_ata = pd.DataFrame({'Region': ('Atacama'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': atacama})
-    data_total_co = pd.DataFrame({'Region': ('Coquimbo'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': coquimbo})
-    data_total_va = pd.DataFrame({'Region': ('Valparaíso'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': valparaiso})
-    data_total_me = pd.DataFrame({'Region': ('Metropolitana'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': metropolitana})
-    data_total_og = pd.DataFrame({'Region': ('O Higgins'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': o_Higgins})
-    data_total_mau = pd.DataFrame({'Region': ('Maule'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': maule})
-    data_total_nu = pd.DataFrame({'Region': ('Ñuble'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': nuble})
-    data_total_bi = pd.DataFrame({'Region': ('Biobío'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': biobio})
-    data_total_ara = pd.DataFrame({'Region': ('Araucanía'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': araucania})
-    data_total_lr = pd.DataFrame({'Region': ('Los Ríos'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': los_Ríos})
-    data_total_ll = pd.DataFrame({'Region': ('Los Lagos'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': los_lagos})
-    data_total_ay = pd.DataFrame({'Region': ('Aysén'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': aysen})
-    data_total_ma = pd.DataFrame({'Region': ('Magallanes'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': magallanes})
-
-
-
-    # Apilar los __DataFrames__ uno encima del otro
-    apilados= pd.concat([data_total_ar, data_total_ta], axis=0)
-    apilados= pd.concat([apilados, data_total_at], axis=0)
-    apilados= pd.concat([apilados, data_total_ata], axis=0)
-    apilados= pd.concat([apilados, data_total_co], axis=0)
-    apilados= pd.concat([apilados, data_total_va], axis=0)
-    apilados= pd.concat([apilados, data_total_me], axis=0)
-    apilados= pd.concat([apilados, data_total_og], axis=0)
-    apilados= pd.concat([apilados, data_total_mau], axis=0)
-    apilados= pd.concat([apilados, data_total_nu], axis=0)
-    apilados= pd.concat([apilados, data_total_bi], axis=0)
-    apilados= pd.concat([apilados, data_total_ara], axis=0)
-    apilados= pd.concat([apilados, data_total_lr], axis=0)
-    apilados= pd.concat([apilados, data_total_ll], axis=0)
-    apilados= pd.concat([apilados, data_total_ay], axis=0)
-    apilados= pd.concat([apilados, data_total_ma], axis=0)
-
-    def location(row):
-        if row['Region']=='Arica':
-                return 'Arica'
-        elif row['Region']=='Tarapacá':
-                return 'Tarapacá'
-            
-        elif row['Region']=='Antofagasta':
-                return 'Antofagasta'
-            
-        elif row['Region']=='Atacama':
-                return 'Atacama'
-        elif row['Region']=='Coquimbo':
-                return 'Coquimbo'
-        elif row['Region']=='Valparaíso':
-                return 'Valparaíso'
-        elif row['Region']=='Metropolitana':
-                return 'Metropolitana'
-        elif row['Region']=='O Higgins':
-                return 'O Higgins'
-        elif row['Region']=='Ñuble':
-                return 'Ñuble'
-        elif row['Region']=='Biobío':
-                return 'Biobío'
-        elif row['Region']=='Araucanía':
-                return 'Araucanía'
-        elif row['Region']=='Los Ríos':
-                return 'Los Ríos'
-        elif row['Region']=='O’Higgins':
-                return 'O’Higgins'
-        elif row['Region']=='Los Lagos':
-                return 'Los Lagos'
-        elif row['Region']=='Aysén':
-                return 'Aysén'
-        elif row['Region']=='Maule':
-                return 'Maule'
-        else:
-            return 'Magallanes'
-            
-
-    temp = apilados.copy()
-    temp['Region'] = temp.apply(location, axis=1)
-    temp['Fecha'] = temp['Fecha'].dt.strftime('%Y-%m-%d')
-    temp = temp.groupby(['Region', 'Fecha'])['Casos'].sum().reset_index()
-    temp = temp.melt(id_vars=['Region', 'Fecha'], value_vars=['Casos'], 
-                    var_name='Casos', value_name='Count')
-
-    fig2 = px.bar(temp, y='Region', x='Count', color='Casos', barmode='group', orientation='h',
-                text='Count', title='Evolución del Número de Casos por Días', animation_frame='Fecha',
-                height=700,color_discrete_sequence= [gris], range_x=[0, int(metropolitana[-1]+1000)])
-    fig2.update_traces(textposition='outside')
-    fig2.update_xaxes(title_text="Numero de Casos (acumulados)")
-    fig2.update_yaxes(title_text="Regiones")
-
-    graph1 = fig.to_html(full_html=False)
-    graph2 = fig2.to_html(full_html=False)
-
-
-
-    return render(request,"region.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"estado_r":estado_r,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
-
-
-def busqueda_region(request):
-
-    ultima_fecha_cl = data_chile.columns
-    ultima_fecha_cl= ultima_fecha_cl[-1]
-
-    ultima_fecha_region_fallecidos = fallecidos_por_region.columns
-    ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
-
-    fecha =fecha_comuna
-    #ultima_fecha_cl = fecha_comuna
-
-
-    if request.GET['region']:
-
-        region = request.GET['region']
-        print(region)
-
-
-        if(region=='Tarapaca'):
-            region2 = 'Tarapacá'
-        elif(region=='Valparaiso'):
-            region2 = 'Valparaíso'
-        elif(region=='Del Libertador General Bernardo O’Higgins'):
-            region2 = 'O’Higgins'
-        elif(region=='Nuble'):
-            region2 = 'Ñuble'
-        elif(region=='Biobio'):
-            region2 = 'Biobío'
-        elif(region=='La Araucania'):
-            region2 = 'Araucanía'
-        elif(region=='Los Rios'):
-            region2 = 'Los Ríos'
-        elif(region=='Aysen'):
-            region2 = 'Aysén'
-        elif(region=='Magallanes y la Antartica'):
-            region2 = 'Magallanes'
-        else:
-            region2=region
-            
-
-
-
-        n_casos_region = data_chile[data_chile['Region'] ==region2][ultima_fecha_cl].values
-        n_casos_region =  str(int(n_casos_region))+' ('+ultima_fecha_cl+')'
-
-
-
-        
-        n_casos_region_f = fallecidos_por_region[fallecidos_por_region['Region']==region2][ultima_fecha_region_fallecidos]
-        n_casos_region_f = str(int(n_casos_region_f))+' ('+ultima_fecha_region_fallecidos+')'
-
-
-
-
-        
-        data_casos_por_comuna_maule = data_casos_por_comuna[data_casos_por_comuna['Region']==region2]
-
-        data_casos_por_comuna_maule = data_casos_por_comuna_maule.sort_values(fecha_comuna)
-
-        total_maule= data_casos_por_comuna_maule[fecha_comuna].sum()
-        total_maule = str(total_maule)
-
-        fig = px.bar(x=data_casos_por_comuna_maule['Comuna'], y=data_casos_por_comuna_maule[fecha_comuna],
-                        title='Numero de casos Totales Confirmados en la Region '+region2+' Fecha: '+fecha,
-                    text=data_casos_por_comuna_maule[fecha_comuna],
-                        
-            )
-        fig.update_xaxes(title_text="Comunas")
-        fig.update_yaxes(title_text="Número de Casos")
-
-
-        #grafico2 
-        data_casos_por_comuna_maule = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Region']==region]
-        data_casos_por_comuna_maule = data_casos_por_comuna_maule.reset_index()
-        data_casos_por_comuna_maule = data_casos_por_comuna_maule.drop(data_casos_por_comuna_maule.index[len(data_casos_por_comuna_maule)-1])
-
-
-        fig2 = px.bar(data_casos_por_comuna_maule.sort_values(fecha), 
-                    x=fecha, y='Comuna',color_discrete_sequence=['#84DCC6'],height=900,
-                    title='Número de casos Activos en la Región '+region+' fecha: '+fecha, text=fecha, orientation='h')
-        fig2.update_xaxes(title_text="Número de Casos Activos")
-        fig2.update_yaxes(title_text="Comunas")
-
-        n_casos_activos =data_casos_por_comuna_maule[fecha].sum()
-        n_casos_activos = str(int(n_casos_activos))+' ('+fecha+')'
-
-
-
-        #tabla
-        data = data_casos_por_comuna_maule[['Comuna',fecha]]
-        data = data.rename(columns={fecha:'N° Casos Activos'})
-
-        graph1 = fig.to_html(full_html=False)
-        graph2 = fig2.to_html(full_html=False)
-        tabla1 = data.to_html()
-
-
-        return render(request,"por_comuna_casos.html", {"region":region,"grafico1":graph1,"grafico2":graph2,"tabla1":tabla1,"n_casos":n_casos_region,"num_death":n_casos_region_f,"n_casos_activos":n_casos_activos})
-
-    else:
-        mensaje='ERROR'
-        return HttpResponse(mensaje)
-
-
-def busqueda_hospitalizacion_region(request):
-
-
-    #GRAFICO 1
-    fig = px.bar(x=grupo_uci_reg[ultima_fecha_cl], y=grupo_uci_reg['Region'], 
-             title='Numero de personas Hospitalizadas en UCI por Región: '+ultima_fecha_cl,
-             orientation='h',
-             width=800, height=700)
-    fig.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
-
-    fig.update_layout(template = 'plotly_white')
-    fig.update_yaxes(title_text="Regiones")
-    fig.update_xaxes(title_text='Número de personas Hospitalizadas')
-
-
-    #GRAFICO 2
-
-    trace1 = go.Pie(
-                labels=grupo_uci_reg['Region'],
-                values=grupo_uci_reg[ultima_fecha_cl],
-                hoverinfo='label+percent', 
-                textfont_size=12,
-                marker=dict(line=dict(color='#000000', width=2)))
-    layout = go.Layout(title_text = '<b>Porcentaje de personas Hospitalizadas por Región </b>',
-                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig2 = go.Figure(data = [trace1], layout = layout)
-
-    graph1 = fig.to_html(full_html=False)
-    graph2 = fig2.to_html(full_html=False)
-
-
-    return render(request,"hospitalizaciones_region.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
-
-
-def busqueda_casos_por_grupo(request):
-
-    #GRAFICO 1
-
-    titulo ='Casos por grupo de edad Fecha: '+fecha_grupo_edad
-
-    fig = px.bar(data_casos_grupo_edad_mf.sort_values(fecha_grupo_edad),
-                    x='Grupo de edad', y=fecha_grupo_edad,
-                    title=titulo,
-                    text=fecha_grupo_edad 
-                    )
-    fig.update_xaxes(title_text="Grupos de Edad")
-    fig.update_yaxes(title_text="Numero de casos")
-
-   
-   #GRAFICO 2
-
-    trace1 = go.Pie(
-                labels=data_casos_grupo_edad_mf['Grupo de edad'],
-                values=data_casos_grupo_edad_mf[fecha_grupo_edad],
-                hoverinfo='label+percent', 
-                textfont_size=12,
-                marker=dict(#colors=colors, 
-                            line=dict(color='#000000', width=2)))
-    layout = go.Layout(title_text = '<b>Porcentaje de Casos por Grupo de Edad: '+fecha_grupo_edad+'</b>',
-                  font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig2 = go.Figure(data = [trace1], layout = layout)
-
-    graph1 = fig.to_html(full_html=False)
-    graph2 = fig2.to_html(full_html=False)
-
-    return render(request,"casos_grupo.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
-
-
-
-def busqueda_fallecidos_por_grupo(request):
-
-    #GRAFICO 1
-    
-    titulo ='Fallecidos por grupo de edad Fecha: '+fecha_grupo_fallecidos
-
-
-    fig = px.bar(grupo_fallecidos.sort_values(fecha_grupo_fallecidos),
-                    x='Grupo de edad', y=fecha_grupo_fallecidos,
-                    title=titulo,
-                    text=fecha_grupo_fallecidos 
-                    )
-    fig.update_xaxes(title_text="Grupos de Edad")
-    fig.update_yaxes(title_text="Numero de casos")
-
-    graph1 = fig.to_html(full_html=False)
-
-    #Grafico 2
-
-    trace1 = go.Pie(
-                labels=grupo_fallecidos['Grupo de edad'],
-                values=grupo_fallecidos[fecha_grupo_fallecidos],
-                hoverinfo='label+percent', 
-                textfont_size=12,
-                marker=dict(line=dict(color='#000000', width=2)))
-    layout = go.Layout(title_text = '<b>Porcentaje de personas fallecidas : '+fecha_grupo_fallecidos+'</b>',
-                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig2 = go.Figure(data = [trace1], layout = layout)
-
-    graph2 = fig2.to_html(full_html=False)
-
-
-
-    return render(request,"fallecidos_grupo.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
-
-
-
-
-def busqueda_por_grupo_edad(request):
-
-
-    if request.GET['edad']:
-
-        grupo_edad = request.GET['edad']
-
-        fallecidos_por_grupo = []
-
-
-        for i in dates_d :
-            f_j = grupo_fallecidos[grupo_fallecidos['Grupo de edad']==grupo_edad][i].sum()
-            fallecidos_por_grupo.append(f_j)
-
-
-        data_fallecidos = pd.DataFrame({'Tipo':['Edad Seleccionada','Total'],'Fallecidos': [grupo_fallecidos[grupo_fallecidos['Grupo de edad']==grupo_edad][fecha_grupo_fallecidos].sum(),grupo_fallecidos[fecha_grupo_fallecidos].sum()]})
-
-        fig2 = make_subplots(rows=1, cols=2)
-
-        trace1 = go.Pie(
-                        labels=data_fallecidos['Tipo'],
-                        values=data_fallecidos['Fallecidos'],
-                        hoverinfo='label+percent', 
-                        textfont_size=12,
-                        marker=dict(line=dict(color='#000000', width=2)))
-        layout = go.Layout(title_text = '<b>Porcentajes de Fallecidos : '+fecha_grupo_fallecidos+'</b>',
-                        font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-        fig2 = go.Figure(data = [trace1], layout = layout)
-
-
-        trace = go.Scatter(
-                x=grupo_fallecidos.iloc[:,1:].columns,
-                y=fallecidos_por_grupo,
-                name="Pacientes Criticos",
-                mode='lines+markers',
-                line_color='red')
-
-        layout = go.Layout(template="ggplot2",title_text = '<b>Numero Fallecidos '+ grupo_edad +' :'+ ultima_fecha_cl+'</b>',
-                            font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-        fig = go.Figure(data = [trace], layout = layout)
-
-        graph1 = fig.to_html(full_html=False)
-        graph2 = fig2.to_html(full_html=False)
-
-
-        return render(request,"grupo_edad_f.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
-
-    else:
-        mensaje='ERROR'
-        return HttpResponse(mensaje)
-
-def busqueda_hosp_por_grupo(request):
-
-    #GRAFICO 1
-    titulo ='Numero de personas Hopitalizadas Fecha: '+ultima_fecha_cl
-
-    fig = px.bar(x=grupo_uci['Grupo de edad'], y=grupo_uci[ultima_fecha_cl],
-                title=titulo,
-            text=grupo_uci[ultima_fecha_cl]
-                
-    )
-    fig.update_xaxes(title_text="Grupo Edad")
-    fig.update_yaxes(title_text="Numero de Casos")
-
-    #Grafico 2
-
-    colors = ['gold', 'darkorange', 'crimson','mediumturquoise', 'sandybrown', 'grey',  'lightgreen','navy','deeppink','purple']
-    
-    
- 
-    fig2 = px.pie(grupo_uci, values=ultima_fecha_cl, names='Grupo de edad')
-    fig2.update_traces(textposition='inside')
-    fig2.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
-
-
-    graph1 = fig.to_html(full_html=False)
-
-    graph2 = fig2.to_html(full_html=False)
-
-
-
-    return render(request,"hospitalizaciones_grupo_edad.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
-
-
 def casos_criticos(request):
 
 
@@ -763,52 +275,17 @@ def casos_criticos(request):
     fig2 = go.Figure(data = [trace], layout = layout)
 
 
+    fig3=px.bar(x=data_activos.iloc[:,1:].columns,y=data_activos.iloc[0,1:])
+    fig3.update_layout(title="Distribucion del número de Casos Activos",
+                    xaxis_title="Fecha",yaxis_title="Numero de Casos",)
 
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
+    graph3 = fig3.to_html(full_html=False)
 
 
     #graph2 = fig2.to_html(full_html=False)
 
 
 
-    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
-
-def examenes_pcr(request):
-
-    exa_pcr = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
-    exa_pcr = exa_pcr.fillna(0)
-
-    fecha = exa_pcr.columns
-    fecha =fecha[-1]
-
-    colum = exa_pcr.drop(['Codigo region','Poblacion','Region'],axis=1)
-    list_col = colum.columns
-    exa_pcr['Total'] = exa_pcr[list_col].sum(axis=1)
-    exa_pcr= exa_pcr.drop(['Codigo region','Poblacion'],axis=1)
-
-    #Grafico 1
-    titulo ='Total de Examenes PCR realizados Fecha: '+fecha
-
-    fig = px.bar(exa_pcr.sort_values('Total'),
-                x='Region', y='Total',
-                title=titulo,
-                text= 'Total'
-                
-    )
-    fig.update_xaxes(title_text="Regiones")
-    fig.update_yaxes(title_text="Numero de casos")
-
-    #Grafico 2
-
-    fig2 = px.pie(exa_pcr, values='Total', names='Region')
-    fig2.update_traces(textposition='inside')
-    fig2.update_layout(uniformtext_minsize=10, uniformtext_mode='hide')
-
-    
-    graph1 = fig.to_html(full_html=False)
-
-    graph2 = fig2.to_html(full_html=False)
-    
-    return render(request,"num_examenes_pcr.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
-
+    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"grafico3":graph3,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})

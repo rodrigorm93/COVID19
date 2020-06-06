@@ -46,6 +46,11 @@ data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-C
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 
 
+seasonal_periods_casos = 7
+seasonal_periods_fallecidos = 5
+
+
+
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
 
@@ -228,13 +233,13 @@ def total_defunciones_chile(request):
 
 def modelo_predictivo(request):
     
-    seasonal_periods = 2
+   
     
     days_chile2 = np.array([i for i in range(len(dates_chile))])
 
     datewise = pd.DataFrame({'Days Since': list(days_chile2), 'Confirmed':casos_chile})
 
-    es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=seasonal_periods,trend='add', seasonal='mul').fit()
+    es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=seasonal_periods_casos,trend='add', seasonal='mul').fit()
 
     days_in_future_cl = 20
     future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
@@ -269,7 +274,6 @@ def modelo_predictivo(request):
 def modelo_predictivo_fallecidos(request):
     data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
-    seasonal_periods = 12
 
     fechas_chile_crec = data_crec_por_dia.columns[-1]
     fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
@@ -286,7 +290,7 @@ def modelo_predictivo_fallecidos(request):
     data_ch_fallecidos = pd.DataFrame({'Días': list(days_fallecidos_chile), 'Fallecidos':casos_f})
         
 
-    es=ExponentialSmoothing(np.asarray(data_ch_fallecidos['Fallecidos']),seasonal_periods=seasonal_periods,trend='add', seasonal='mul').fit()
+    es=ExponentialSmoothing(np.asarray(data_ch_fallecidos['Fallecidos']),seasonal_periods=seasonal_periods_fallecidos,trend='add', seasonal='mul').fit()
 
 
     days_in_future_cl = 20

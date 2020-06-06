@@ -124,31 +124,49 @@
 
     <!-- Content Column -->
 
-      <div class="col-lg-6_2 mb-4">
-        <div class="card shadow mb-4">
-          <!-- Card Header - Dropdown -->
-          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Número de Pacientes Activos</h6>
-          </div>
-          <!-- Card Body -->
-          <div class="card-body">
-                <span>Número de pacientes activos según fecha de diagnóstico, reportados diariamente por el Ministerio de Salud desde el 03-03-2020. </span>
-            {{grafico2|safe}}
-          </div>
-        </div>
-      </div>
+<!-- Content Column -->
+<div class="col-lg-6_3 mb-4">
+
+  <!-- Project Card Example -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Casos por Dia</h6>
+    </div>
+    <div class="card-body">
+      <span>Número de pacientes activos según fecha de diagnóstico, reportados diariamente por el Ministerio de Salud desde el 03-03-2020. </span>
+      {{grafico2|safe}}
+    </div>
+  </div>
+
+
+</div>
+
+<div class="col-xl-4_3 mb-4">
+
+  <!-- Illustrations -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Activos-Recuperados-Fallecidos</h6>
+    </div>
+    <div class="card-body">
+      {{grafico3|safe}}
+   
+    </div>
+  </div>
+
+
+</div>
+
+
+
+
+
   
 
 
     </div>
 
-    <div class="col-lg-5 mb-4">
 
-      <!-- Illustrations -->
-  
-
-
-    </div>
   </div>
 
 </div>

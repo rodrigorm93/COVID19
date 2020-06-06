@@ -141,20 +141,34 @@
   <div class="row">
 
     <!-- Content Column -->
-    <div class="col-lg-6 mb-4">
-          
-      {{grafico2|safe}}
+    <div class="col-lg-6_2 mb-4">
 
       <!-- Project Card Example -->
-  
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Evolucion de Casos Activos</h6>
+        </div>
+        <div class="card-body">
+          {{tabla1|safe}}
+      
+        </div>
+      </div>
+
 
     </div>
 
-    <div class="col-lg-5 mb-4">
+    <div class="col-xl-4 mb-4">
 
       <!-- Illustrations -->
-      {{tabla1|safe}}
-
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Numero de Casos Activos</h6>
+        </div>
+        <div class="card-body">
+          {{grafico2|safe}}
+       
+        </div>
+      </div>
 
 
     </div>
