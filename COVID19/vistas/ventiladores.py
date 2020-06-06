@@ -48,6 +48,7 @@ num_cases_cl = int(num_cases_cl)
 num_rec = int(num_rec)
 num_death = int(num_death)
 
+fecha_casos_fall='('+data_chile.columns[-1]+')'
 
 
 
@@ -129,7 +130,7 @@ def num_ventiladores(request):
 
 
 
-    return render(request,"numero_ventiladores.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"numero_ventiladores.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 
@@ -161,4 +162,4 @@ def pacientes_ventiladores(request):
 
 
 
-    return render(request,"pacientes_vmi.html", {"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"pacientes_vmi.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})

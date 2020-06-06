@@ -85,6 +85,7 @@ num_cases_cl = int(num_cases_cl)
 num_rec = int(num_rec)
 num_death = int(num_death)
 
+fecha_casos_fall='('+data_chile.columns[-1]+')'
 
 
 año_2010 =[]
@@ -223,11 +224,11 @@ def total_defunciones_chile(request):
     total_fallecimientos_mes_trans = total_fallecimientos_mes.drop(['Total 4 Meses'], axis=1).T
     tabla1 = total_fallecimientos_mes_trans.to_html()
 
-    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"grafico2":graph2,"tabla1":tabla1,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"tabla1":tabla1,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 def modelo_predictivo(request):
     
-    seasonal_periods = 6
+    seasonal_periods = 2
     
     days_chile2 = np.array([i for i in range(len(dates_chile))])
 
@@ -262,13 +263,13 @@ def modelo_predictivo(request):
     
     graph2 = Predict_df_cl_1.to_html()
 
-    return render(request,"predicciones.html", {"grafico1":graph1,"tabla1":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"predicciones.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 def modelo_predictivo_fallecidos(request):
     data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
-    seasonal_periods = 17
+    seasonal_periods = 12
 
     fechas_chile_crec = data_crec_por_dia.columns[-1]
     fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
@@ -315,4 +316,4 @@ def modelo_predictivo_fallecidos(request):
     graph2 = Predict_df_cl_1.to_html()
    
 
-    return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"tabla1":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
