@@ -86,8 +86,8 @@ locations = {
         "Coquimbo" : [-29.9533195,-71.3394699],
         "Valparaiso" : [-33.0359993,-71.629631],
         "Metropolitana" : [-33.4726900,-70.6472400],
-        "Del Libertador General Bernardo O’Higgins" : [-34.371944,-71.124528],
-        "Maule" : [-35.5000000,-71.5000000],
+        "Del Libertador General Bernardo O’Higgins" : [-34.371944,-71.124528],#
+        "Maule" : [-35.426667,-71.671667],#
         #"Ñuble" : [1,1],
         "Biobio" : [-37.0000000,-72.5000000],
         "Araucania" : [-38.7396507,-72.5984192],
@@ -149,7 +149,7 @@ def mapa_comunas_busqueda(request):
                                        
                                    ))
     fig.update_layout(mapbox_style="carto-positron",
-                  mapbox_zoom=zoom,height=700,mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
+                  mapbox_zoom=zoom,height=700,mapbox_center = {"lat": lat, "lon": lon})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
  
