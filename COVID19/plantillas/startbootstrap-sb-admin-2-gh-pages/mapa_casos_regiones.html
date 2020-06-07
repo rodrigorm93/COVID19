@@ -79,8 +79,6 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
-          <span>Casos totales diarios confirmados por laboratorio en cada una de las regiones de Chile, 
-            según residencia, y concatena la información reportada por el Ministerio de Salud del país.</span>
           {{grafico1|safe}}
         </div>
       </div>
@@ -91,56 +89,21 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Busqueda por Regiones</h6>
+          <h6 class="m-0 font-weight-bold text-primary"></h6>
           <div class="dropdown no-arrow">
   
           </div>
         </div>
         <!-- Card Body -->
         <div class="card-body">
-          <form action='/buscar_region/' method="GET">
-
-            <select name="region" id="region">
-              <option value="Arica y Parinacota">Arica y Parinacota</option>
-              <option value="Tarapaca">Tarapacá</option>
-              <option value="Antofagasta">Antofagasta</option>
-              <option value="Atacama">Atacama</option>
-              <option value="Coquimbo">Coquimbo</option>
-              <option value="Valparaiso">Valparaíso</option>
-              <option value="Metropolitana">Metropolitana</option>
-              <option value="Del Libertador General Bernardo O’Higgins">O’Higgins</option>
-              <option value="Maule">Maule</option>
-              <option value="Nuble">Ñuble</option>
-              <option value="Biobio">Biobío</option>
-              <option value="La Araucania">Araucanía</option>
-              <option value="Los Rios">Los Ríos</option>
-              <option value="Los Lagos">Los Lagos</option>
-              <option value="Aysen">Aysén</option>
-              <option value="Magallanes y la Antartica">Magallanes y la Antartica</option>
-  
-          </select>
-
-          <button type="submit" class="boton_personalizado">Buscar</button>
-
-          </form>
+            {{grafico2|safe}}
     
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Content Row -->
-  <div class="row">
 
-
-    <div class="col-lg-5 mb-4">
-
-      <!-- Illustrations -->
-  
-
-
-    </div>
-  </div>
 
 </div>
 <!-- /.container-fluid -->

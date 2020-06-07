@@ -136,17 +136,6 @@ def regiones(request):
     dates_chile = confirmados.keys()
     datos = data_chile[['Region',ultima_fecha_cl]].drop([16],axis=0)
 
-    #GRAFICO 1
-    titulo ='COVID-19: Total de Casos acumulados'
-
-    fig = px.bar(datos.sort_values(ultima_fecha_cl), 
-             x=ultima_fecha_cl, y="Region", 
-             title=titulo,
-              text=ultima_fecha_cl, 
-             orientation='h')
-    fig.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
-
-    fig.update_layout(template = 'plotly_white')
 
     #GRAFICO 2: ANIMACION
     gris = '#393e46' 
@@ -240,12 +229,12 @@ def regiones(request):
     fig2.update_xaxes(title_text="Numero de Casos (acumulados)")
     fig2.update_yaxes(title_text="Regiones")
 
-    graph1 = fig.to_html(full_html=False)
-    graph2 = fig2.to_html(full_html=False)
+    graph1 = fig2.to_html(full_html=False)
 
 
 
-    return render(request,"region.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"estado_r":estado_r,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+
+    return render(request,"region.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 

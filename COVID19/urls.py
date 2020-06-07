@@ -20,6 +20,8 @@ from COVID19.vistas.predicciones import total_defunciones_chile,modelo_predictiv
 from COVID19.vistas.ventiladores import pacientes_ventiladores,num_ventiladores
 from COVID19.vistas.grupo_edad import busqueda_casos_por_grupo,busqueda_fallecidos_por_grupo,busqueda_por_grupo_edad,busqueda_hosp_por_grupo
 from COVID19.vistas.regiones import regiones,busqueda_region,examenes_pcr,busqueda_hospitalizacion_region
+from COVID19.vistas.mapa_comunas import mapa_comunas,mapa_comunas_busqueda
+from COVID19.vistas.mapa_regiones import mapa_region
 urlpatterns = [
     path('', menu),
     path('region/', regiones),
@@ -35,6 +37,10 @@ urlpatterns = [
     path('predicciones/', modelo_predictivo),
     path('predicciones_fallecidos/', modelo_predictivo_fallecidos),
     path('examenes_pcr/', examenes_pcr),
-     path('pacientes_vmi/', pacientes_ventiladores),
+    path('pacientes_vmi/', pacientes_ventiladores),
+    path('mapa_comunas/', mapa_comunas),
+    path('mapa_comunas_busqueda/', mapa_comunas_busqueda),
+    path('mapa_regiones/', mapa_region),
+
     
 ]

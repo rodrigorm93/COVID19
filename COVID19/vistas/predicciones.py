@@ -47,7 +47,7 @@ grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Dat
 
 
 seasonal_periods_casos = 7
-seasonal_periods_fallecidos = 5
+seasonal_periods_fallecidos = 2
 
 
 

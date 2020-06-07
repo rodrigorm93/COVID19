@@ -79,8 +79,6 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
-          <span>Casos totales diarios confirmados por laboratorio en cada una de las regiones de Chile, 
-            según residencia, y concatena la información reportada por el Ministerio de Salud del país.</span>
           {{grafico1|safe}}
         </div>
       </div>
@@ -98,9 +96,10 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
-          <form action='/buscar_region/' method="GET">
+          <form action='/mapa_comunas_busqueda/' method="GET">
 
             <select name="region" id="region">
+              <option value="Chile">Todas las comunas</option>
               <option value="Arica y Parinacota">Arica y Parinacota</option>
               <option value="Tarapaca">Tarapacá</option>
               <option value="Antofagasta">Antofagasta</option>
@@ -110,7 +109,7 @@
               <option value="Metropolitana">Metropolitana</option>
               <option value="Del Libertador General Bernardo O’Higgins">O’Higgins</option>
               <option value="Maule">Maule</option>
-              <option value="Nuble">Ñuble</option>
+             <!-- <option value="Nuble">Ñuble</option> -->
               <option value="Biobio">Biobío</option>
               <option value="La Araucania">Araucanía</option>
               <option value="Los Rios">Los Ríos</option>
@@ -129,18 +128,7 @@
     </div>
   </div>
 
-  <!-- Content Row -->
-  <div class="row">
 
-
-    <div class="col-lg-5 mb-4">
-
-      <!-- Illustrations -->
-  
-
-
-    </div>
-  </div>
 
 </div>
 <!-- /.container-fluid -->
