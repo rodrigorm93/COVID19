@@ -72,7 +72,7 @@ fecha_casos_fall='('+data_chile.columns[-1]+')'
 #********************************************************************
 
 
-data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/rodrigorm93/Datos-Chile/master/Casos-Comunas/COVID19.csv')
+data_comunas = pd.read_csv('https://raw.githubusercontent.com/rodrigorm93/Datos-Chile/master/Casos-Comunas/COVID19.csv')
 
 resp_comunas = requests.get('https://raw.githubusercontent.com/rgcl/geojson-cl/master/comunas.json')
 geo_comunas = json.loads(resp_comunas.content)
@@ -100,21 +100,19 @@ locations = {
 
 
 def mapa_comunas(request):
-
-
-    #fig = go.Figure(go.Choroplethmapbox(geojson=geo_comunas, locations=data_casos_por_comuna.Comuna, z=data_casos_por_comuna.Casos,
-                                    #colorscale="Viridis", zmin=0, zmax=data_casos_por_comuna['Casos'].max(),
-                                    #featureidkey="properties.NOM_COM",
-                                   # marker_opacity=0.2, marker_line_width=0))
-    #fig.update_layout(mapbox_style="carto-positron",
-                    #mapbox_zoom=4,height=700, mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
-    #fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-
-
-    fig = px.choropleth_mapbox(data_casos_por_comuna, geojson=geo_comunas, color="Casos",
-                           locations="Comuna", featureidkey="properties.NOM_COM",
-                           center={"lat": -30.0000000, "lon": -71.0000000},hover_data=["Region","Comuna"],
-                           mapbox_style="carto-positron", zoom=4,height=700)
+    fig = go.Figure(go.Choroplethmapbox(geojson=geo_comunas, locations=data_comunas.Comuna, z=data_comunas.Casos,
+                                    colorscale="Viridis", zmin=0, zmax=1000,
+                                    featureidkey="properties.NOM_COM",
+                                    colorbar = dict(thickness=20, ticklen=3),
+                                    marker_opacity=0.2, marker_line_width=0, text=data_comunas['Region'],
+                                    hovertemplate = '<b>Región</b>: <b>%{text}</b>'+
+                                            '<br><b>Comuna </b>: %{properties.NOM_COM}<br>'+
+                                            '<br><b>Casos </b>: %{z}<br>',
+                                    
+                                       
+                                   ))
+    fig.update_layout(mapbox_style="carto-positron",
+                  mapbox_zoom=3,height=700,mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
  
@@ -136,23 +134,22 @@ def mapa_comunas_busqueda(request):
 
     if(region == 'Chile'):
         zoom = 3
-    
-     
-    #fig = go.Figure(go.Choroplethmapbox(geojson=geo_comunas, locations=data_casos_por_comuna.Comuna, z=data_casos_por_comuna.Casos,
-                                   # colorscale="Viridis", zmin=0, zmax=data_casos_por_comuna['Casos'].max(),
-                                   # featureidkey="properties.NOM_COM",
-                                  #  marker_opacity=0.2, marker_line_width=0))
-   # fig.update_layout(mapbox_style="carto-positron",
-                   # mapbox_zoom=6,height=700, mapbox_center = {"lat": lat, "lon": lon})
-   # fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-
-  
+   
 
 
-    fig = px.choropleth_mapbox(data_casos_por_comuna, geojson=geo_comunas, color="Casos",
-                           locations="Comuna", featureidkey="properties.NOM_COM",
-                           center={"lat": lat, "lon": lon},hover_data=["Region","Comuna"],
-                           mapbox_style="carto-positron", zoom=zoom,height=700)
+    fig = go.Figure(go.Choroplethmapbox(geojson=geo_comunas, locations=data_comunas.Comuna, z=data_comunas.Casos,
+                                    colorscale="Viridis", zmin=0, zmax=1000,
+                                    featureidkey="properties.NOM_COM",
+                                    colorbar = dict(thickness=20, ticklen=3),
+                                    marker_opacity=0.2, marker_line_width=0, text=data_comunas['Region'],
+                                    hovertemplate = '<b>Región</b>: <b>%{text}</b>'+
+                                            '<br><b>Comuna </b>: %{properties.NOM_COM}<br>'+
+                                            '<br><b>Casos </b>: %{z}<br>',
+                                    
+                                       
+                                   ))
+    fig.update_layout(mapbox_style="carto-positron",
+                  mapbox_zoom=zoom,height=700,mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
  
