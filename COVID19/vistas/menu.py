@@ -36,6 +36,7 @@ data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-C
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto23/PacientesCriticos.csv')
+fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 
 
 ultima_fecha_cl = data_chile.columns
@@ -44,31 +45,45 @@ ultima_fecha_cl= ultima_fecha_cl[-1]
 
 
 
+#***************************MENU**************************************
 #Lenar con 0 filas nulas
 data_chile_r = data_chile_r.fillna(0)
 
+ultima_fecha_cl = data_chile.columns
+ultima_fecha_cl= ultima_fecha_cl[-1]
+
+ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
+
+
+ultima_fecha_region_fallecidos = fallecidos_por_region.columns
+ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
 
 num_cases_cl = data_chile.drop([16],axis=0)
 num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
+
+
+
 num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
-num_rec = data_chile_r.iloc[2,-1].sum()
 
 #ver el caso de que no se actualicen los registros
 
-estado_r='Act'+ultima_fecha_cl
-estado_f='Act'+ultima_fecha_cl
-estado_a='Act'+ultima_fecha_cl
 
+casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 #dejar el ulktimo registro de recuperados que fue el 2020-06-02
-if (num_rec==0):
-    num_rec = data_chile_r.iloc[2,91].sum()
-    estado_r='NoAct('+data_chile_r.columns[91]+')'
 
-num_cases_cl = int(num_cases_cl)
-num_rec = int(num_rec)
-num_death = int(num_death)
+
+n_c = int(num_cases_cl)
+n_d = int(num_death)
+n_ca = int(casos_act)
+
+num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
+num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
+casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
 
 fecha_casos_fall='('+data_chile.columns[-1]+')'
+
+#********************************************************************
 
    
 
@@ -107,8 +122,10 @@ def menu(request):
 
     num_active = data_chile_r.iloc[4,-1].sum()
 
-    datos_chile_rdca = pd.DataFrame({'Fecha':[ultima_fecha_cl],'Fallecidos':[num_death],'Cases Confirmados (Acumulados)': [num_cases_cl],'Recuperados':[num_rec],
-                                    'Activos': [num_active] })
+
+
+    datos_chile_rdca = pd.DataFrame({'Fecha':[ultima_fecha_cl],'Fallecidos':[n_d],'Cases Confirmados (Acumulados)': [n_c],
+                                    'Activos': [n_ca] })
     temp = datos_chile_rdca
 
     confirmed = '#393e46' 
@@ -116,10 +133,10 @@ def menu(request):
     recovered = '#21bf73' 
     active = '#fe9801' 
 
-    tm = temp.melt(id_vars="Fecha", value_vars=['Activos', 'Fallecidos','Recuperados'])
-    fig = px.treemap(tm, path=["variable"], values="value",color_discrete_sequence=[recovered,active,death])
+    tm = temp.melt(id_vars="Fecha", value_vars=['Activos', 'Fallecidos'])
+    fig = px.treemap(tm, path=["variable"], values="value",color_discrete_sequence=[active,death])
 
-    fig.layout.update(title_text='Activos vs. Recuperados '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False,font=dict(
+    fig.layout.update(title_text='Activos vs. Fallecidos '+fechas_chile[-1],xaxis_showgrid=False, yaxis_showgrid=False,font=dict(
             size=15,
             color="Black"    
         ))
@@ -157,7 +174,7 @@ def menu(request):
 
 
 
-    return render(request,"principal.html", {"fecha_casos_fall":fecha_casos_fall,"estado_r":estado_r,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico4":graph4,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"principal.html", {"fecha_casos_fall":fecha_casos_fall,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico4":graph4,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 
 def casos_criticos(request):
@@ -207,4 +224,4 @@ def casos_criticos(request):
 
 
 
-    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"grafico3":graph3,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"grafico3":graph3,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})

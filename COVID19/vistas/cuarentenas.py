@@ -41,11 +41,16 @@ data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-C
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 
+#***************************MENU**************************************
 #Lenar con 0 filas nulas
 data_chile_r = data_chile_r.fillna(0)
 
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
+
+ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
+
 
 ultima_fecha_region_fallecidos = fallecidos_por_region.columns
 ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
@@ -64,17 +69,14 @@ estado_r='Act'+ultima_fecha_cl
 estado_f='Act'+ultima_fecha_cl
 estado_a='Act'+ultima_fecha_cl
 
+casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 #dejar el ulktimo registro de recuperados que fue el 2020-06-02
-if (num_rec==0):
-    num_rec = data_chile_r.iloc[2,91].sum()
-    estado_r='NoAct('+data_chile_r.columns[91]+')'
+
 
 
 num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
 num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
-
-num_rec = int(num_rec)
-
+casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
 
 
 fecha_casos_fall='('+data_chile.columns[-1]+')'
@@ -106,7 +108,7 @@ def cuarentenas_activas(request):
     tabla= data_c.to_html()
 
     
-    return render(request,"mapa_cuarentenas.html", {"grafico1":graph1,"tabla":tabla,"fecha_casos_fall":fecha_casos_fall,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"mapa_cuarentenas.html", {"grafico1":graph1,"tabla":tabla,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 
 

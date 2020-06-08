@@ -49,6 +49,10 @@ data_chile_r = data_chile_r.fillna(0)
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
 
+ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
+
+
 ultima_fecha_region_fallecidos = fallecidos_por_region.columns
 ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
 
@@ -66,17 +70,14 @@ estado_r='Act'+ultima_fecha_cl
 estado_f='Act'+ultima_fecha_cl
 estado_a='Act'+ultima_fecha_cl
 
+casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 #dejar el ulktimo registro de recuperados que fue el 2020-06-02
-if (num_rec==0):
-    num_rec = data_chile_r.iloc[2,91].sum()
-    estado_r='NoAct('+data_chile_r.columns[91]+')'
+
 
 
 num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
 num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
-
-num_rec = int(num_rec)
-
+casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
 
 
 fecha_casos_fall='('+data_chile.columns[-1]+')'
@@ -150,7 +151,7 @@ def mapa_comunas(request):
     fecha_act = '('+data_casos_por_comuna.columns[-2]+')'
 
     
-    return render(request,"mapa_casos_comunas.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos_fall":fecha_act,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"mapa_casos_comunas.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos_fall":fecha_act,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 def mapa_comunas_busqueda(request):
 
@@ -261,4 +262,4 @@ def mapa_comunas_busqueda(request):
 
 
     
-    return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"fecha_act":fecha_act,"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"fecha_act":fecha_act,"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})

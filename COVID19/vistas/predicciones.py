@@ -44,10 +44,11 @@ total_fallecimientos_mes = pd.read_csv('https://raw.githubusercontent.com/rodrig
 data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
+fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 
 
 seasonal_periods_casos = 7
-seasonal_periods_fallecidos = 2
+seasonal_periods_fallecidos = 40
 
 
 
@@ -66,31 +67,48 @@ for i in dates_chile:
 
 
 
+#***************************MENU**************************************
 #Lenar con 0 filas nulas
 data_chile_r = data_chile_r.fillna(0)
 
-#ver el caso de que no se actualicen los registros
+ultima_fecha_cl = data_chile.columns
+ultima_fecha_cl= ultima_fecha_cl[-1]
 
+ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
+
+
+ultima_fecha_region_fallecidos = fallecidos_por_region.columns
+ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
 
 num_cases_cl = data_chile.drop([16],axis=0)
 num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
+
+
+
 num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
 num_rec = data_chile_r.iloc[2,-1].sum()
+
+#ver el caso de que no se actualicen los registros
 
 estado_r='Act'+ultima_fecha_cl
 estado_f='Act'+ultima_fecha_cl
 estado_a='Act'+ultima_fecha_cl
 
+casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 #dejar el ulktimo registro de recuperados que fue el 2020-06-02
-if (num_rec==0):
-    num_rec = data_chile_r.iloc[2,91].sum()
-    estado_r='NoAct('+data_chile_r.columns[91]+')'
 
-num_cases_cl = int(num_cases_cl)
-num_rec = int(num_rec)
-num_death = int(num_death)
+
+
+num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
+num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
+casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
+
 
 fecha_casos_fall='('+data_chile.columns[-1]+')'
+
+#********************************************************************
+
 
 
 año_2010 =[]
@@ -229,7 +247,7 @@ def total_defunciones_chile(request):
     total_fallecimientos_mes_trans = total_fallecimientos_mes.drop(['Total 4 Meses'], axis=1).T
     tabla1 = total_fallecimientos_mes_trans.to_html()
 
-    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"tabla1":tabla1,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"tabla1":tabla1,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 def modelo_predictivo(request):
     
@@ -268,7 +286,7 @@ def modelo_predictivo(request):
     
     graph2 = Predict_df_cl_1.to_html()
 
-    return render(request,"predicciones.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"predicciones.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 
 def modelo_predictivo_fallecidos(request):
@@ -320,4 +338,4 @@ def modelo_predictivo_fallecidos(request):
     graph2 = Predict_df_cl_1.to_html()
    
 
-    return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
