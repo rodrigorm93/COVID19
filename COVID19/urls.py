@@ -22,6 +22,7 @@ from COVID19.vistas.grupo_edad import busqueda_casos_por_grupo,busqueda_fallecid
 from COVID19.vistas.regiones import regiones,busqueda_region,examenes_pcr,busqueda_hospitalizacion_region
 from COVID19.vistas.mapa_comunas import mapa_comunas,mapa_comunas_busqueda
 from COVID19.vistas.mapa_regiones import mapa_region
+from COVID19.vistas.cuarentenas import cuarentenas_activas
 urlpatterns = [
     path('', mapa_comunas),
     path('region/', regiones),
@@ -42,6 +43,7 @@ urlpatterns = [
     path('mapa_comunas_busqueda/', mapa_comunas_busqueda),
     path('mapa_regiones/', mapa_region),
     path('menu/', menu),
+    path('cuarentenas_mapa/', cuarentenas_activas),
 
     
 ]

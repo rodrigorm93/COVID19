@@ -39,6 +39,7 @@ data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-C
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
+data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
 
 
 #***************************MENU**************************************
@@ -128,7 +129,8 @@ def mapa_comunas(request):
                                     marker_opacity=0.2, marker_line_width=0, text=data_comunas['Region'],
                                     hovertemplate = '<b>Región</b>: <b>%{text}</b>'+
                                             '<br><b>Comuna </b>: %{properties.NOM_COM}<br>'+
-                                            '<br><b>Casos </b>: %{z}<br>',
+                                            '<b>Casos </b>: %{z}<br>'+
+                                            '<b>Fecha: </b>:'+data_casos_por_comuna.columns[-2]
                                     
                                        
                                    ))
@@ -145,10 +147,10 @@ def mapa_comunas(request):
  
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
-
+    fecha_act = '('+data_casos_por_comuna.columns[-2]+')'
 
     
-    return render(request,"mapa_casos_comunas.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos_fall":fecha_casos_fall,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"mapa_casos_comunas.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos_fall":fecha_act,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 def mapa_comunas_busqueda(request):
 
@@ -238,7 +240,8 @@ def mapa_comunas_busqueda(request):
                                     marker_opacity=0.2, marker_line_width=0, text=data_comunas['Region'],
                                     hovertemplate = '<b>Región</b>: <b>%{text}</b>'+
                                             '<br><b>Comuna </b>: %{properties.NOM_COM}<br>'+
-                                            '<br><b>Casos </b>: %{z}<br>',
+                                            '<b>Casos </b>: %{z}<br>'+
+                                            '<b>Fecha: </b>:'+data_casos_por_comuna.columns[-2]
                                     
                                        
                                    ))
@@ -253,6 +256,8 @@ def mapa_comunas_busqueda(request):
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
 
+    fecha_act = '('+data_casos_por_comuna.columns[-2]+')'
+
 
     
-    return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"fecha_act":fecha_act,"grafico1":graph1,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})

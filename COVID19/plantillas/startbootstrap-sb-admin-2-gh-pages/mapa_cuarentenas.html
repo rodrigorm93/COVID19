@@ -15,8 +15,8 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Numero de Casos Acumulados {{region}}</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos}} </div>
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Numero de Casos Acumulados</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -27,7 +27,22 @@
     </div>
 
     <!-- Earnings (Monthly) Card Example -->
- 
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Numero de Recuperados Acumulados</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_rec}} {{estado_r}}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-calendar fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
 
     <!-- Pending Requests Card Example -->
@@ -36,7 +51,7 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Numero de Fallecidos  {{region}}</div>
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Numero de Fallecidos</div>
               <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_death}} </div>
             </div>
             <div class="col-auto">
@@ -57,13 +72,27 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Total de Casos Acumulados {{fecha_act}}</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Mapa Cuarentenas Activas</h6>
           <div class="dropdown no-arrow">
           
           </div>
         </div>
         <!-- Card Body -->
         <div class="card-body">
+          <span>Las zonas de cuarentena se establecen como una medida sanitaria en una extensión territorial definida que implica que las personas deben permanecer en 
+            sus domicilios habituales hasta que la autoridad disponga lo contrario.
+
+            <p>Los criterios para la definir la cuarentena son:
+            
+            Velocidad de Propagación de la Enfermedad,
+            Densidad de casos por km2,
+            Perfil etáreo de la población del territorio (adultos mayores y personas con enfermedades crónicas),
+            Vulnerabilidad Social
+          </p>
+
+          Frecuencia de Actualización: Dos veces a la semana: días martes para cambios en áreas, días jueves para cambio de estado de las cuarentenas
+          </span>
+        </br>
           {{grafico1|safe}}
         </div>
       </div>
@@ -74,43 +103,16 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Busqueda por Regiones</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Tabla Cuarentenas Activas</h6>
           <div class="dropdown no-arrow">
-  
+            
           </div>
         </div>
         <!-- Card Body -->
+        
         <div class="card-body">
-          <form action='/mapa_comunas_busqueda/' method="GET">
-
-            <select name="region" id="region">
-              <option value="Chile">Todas las comunas</option>
-              <option value="Arica y Parinacota">Arica y Parinacota</option>
-              <option value="Tarapaca">Tarapacá</option>
-              <option value="Antofagasta">Antofagasta</option>
-              <option value="Atacama">Atacama</option>
-              <option value="Coquimbo">Coquimbo</option>
-              <option value="Valparaiso">Valparaíso</option>
-              <option value="Metropolitana">Metropolitana</option>
-              <option value="Del Libertador General Bernardo O’Higgins">O’Higgins</option>
-              <option value="Maule">Maule</option>
-             <!-- <option value="Nuble">Ñuble</option> -->
-              <option value="Biobio">Biobío</option>
-              <option value="La Araucania">Araucanía</option>
-              <option value="Los Rios">Los Ríos</option>
-              <option value="Los Lagos">Los Lagos</option>
-              <option value="Aysen">Aysén</option>
-              <option value="Magallanes y la Antartica">Magallanes y la Antartica</option>
-  
-          </select>
-
-          <button type="submit" class="boton_personalizado">Buscar</button>
-
-          </form>
-
-          {{grafico2|safe}}
-
-    
+          {{tabla|safe}}
+      
         </div>
       </div>
     </div>
