@@ -102,65 +102,8 @@ for i in fechas_chile:
 
 def menu(request):
 
-    # Adding Location data (Latitude,Longitude)
-    locations = {
-        "Arica y Parinacota" : [-18.4745998,-70.2979202],
-        "Tarapacá" : [-20.2132607,-70.1502686],
-        "Antofagasta" : [-23.6523609,-70.395401],
-        "Atacama" : [-27.3667908,-70.331398],
-        "Coquimbo" : [-29.9533195,-71.3394699],
-        "Valparaíso" : [-33.0359993,-71.629631],
-        "Metropolitana" : [-33.4726900,-70.6472400],
-        "O’Higgins" : [-48.4862300,-72.9105900],
-        "Maule" : [-35.5000000,-71.5000000],
-        #"Ñuble" : [1,1],
-        "Biobío" : [-37.0000000,-72.5000000],
-        "Araucanía" : [-38.7396507,-72.5984192],
-        "Los Ríos" : [-40.293129,-73.0816727],
-        "Los Lagos" : [-41.7500000,-73.0000000],
-        "Aysén" : [-45.4030304,-72.6918411],
-        "Magallanes" : [-53.1548309,-70.911293]
-            
-    
-    }
-
-    data_chile_map["Lat"] = ""
-    data_chile_map["Long"] = ""
-
-    for index in data_chile_map.Region :
-        data_chile_map.loc[data_chile_map.Region == index,"Lat"] = locations[index][0]
-        data_chile_map.loc[data_chile_map.Region == index,"Long"] = locations[index][1]
-        
-
-
-    chile = folium.Map(location=[-30.0000000,-71.0000000], zoom_start=1,max_zoom=8,min_zoom=4)
-
-
-    for i in range(0,len(data_chile_map[data_chile[ultima_fecha_cl]>0].Region)):
-        folium.Circle(
-            location=[data_chile_map.loc[i,"Lat"],data_chile_map.loc[i,"Long"]],
-            
-        
-        tooltip = "<h5 style='text-align:center;font-weight: bold'>"+data_chile_map.iloc[i].Region+"</h5>"+
-                        "<hr style='margin:10px;'>"+
-                        "<ul style='color: #444;list-style-type:circle;align-item:left;padding-left:20px;padding-right:20px'>"+
-            "<li>Confirmed: "+str(data_chile_map.iloc[i,total-1])+"</li>"+
-            "</ul>",
-        
-            radius=(int(np.log2(data_chile_map.iloc[i,total-1]+1)))*14000,
-
-            color='#ff6600',
-            fill_color='#ff8533',
-            fill=True).add_to(chile)
-
-
-
-
-    m=chile._repr_html_() #updated
-
 
     # Grafico 1:
-
 
     num_active = data_chile_r.iloc[4,-1].sum()
 
@@ -181,20 +124,6 @@ def menu(request):
             color="Black"    
         ))
   
-
-    #Grafico 2
-    #trace = go.Scatter(
-                    #x=fechas_chile,
-                   # y=casos_por_dia_totales,
-                   # name="growth",
-                   # mode='lines+markers',
-                   # line_color='red')
-
-    #layout = go.Layout(template="ggplot2", title_text = '<b>Numero de Casos por Día '+ultima_fecha_cl+'</b>',
-                    #font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    #fig2 = go.Figure(data = [trace], layout = layout)
-
-
     
     fig2=go.Figure()
     fig2.add_trace(go.Scatter(x=fechas_chile, y=casos_por_dia_totales,mode='lines+markers',
@@ -207,21 +136,8 @@ def menu(request):
 
     #Grafico 3
 
-    data_rfa = pd.DataFrame({'Fecha': pd.to_datetime(fechas_chile),'Activos':activos_por_dia, 
-                                'Fallecidos': fallecidos_por_dia,'Recuperados':recuperados_por_dia})
 
-    rest_grouped = data_rfa.groupby('Fecha')['Recuperados', 'Fallecidos', 'Activos'].sum().reset_index()
-
-    temp = rest_grouped.melt(id_vars="Fecha", value_vars=['Recuperados', 'Fallecidos', 'Activos'],
-                    var_name='Casos', value_name='count')
-
-
-    fig5 = px.area(temp, x="Fecha", y="count", color='Casos',
-                title='Casos - Chile: Area Plot', color_discrete_sequence = ['green', 'red', 'orange'])
-
-    graph = fig.to_html(full_html=False)
-    graph2 = fig2.to_html(full_html=False)
-    graph3 = fig5.to_html(full_html=False)
+    
     ultima_fecha = ultima_fecha_cl
 
     #Grafico4
@@ -232,13 +148,16 @@ def menu(request):
     fig4.update_traces(textposition='inside')
     fig4.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
 
+
+    graph = fig.to_html(full_html=False)
+    graph2 = fig2.to_html(full_html=False)
     graph4 = fig4.to_html(full_html=False)
 
 
 
 
 
-    return render(request,"principal.html", {"mapa": m,"fecha_casos_fall":fecha_casos_fall,"estado_r":estado_r,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico3":graph3,"grafico4":graph4,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"principal.html", {"fecha_casos_fall":fecha_casos_fall,"estado_r":estado_r,"fecha_act":ultima_fecha, "grafico1":graph,"grafico2":graph2,"grafico4":graph4,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
 
 
 def casos_criticos(request):

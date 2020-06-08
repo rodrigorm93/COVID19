@@ -23,7 +23,7 @@ from COVID19.vistas.regiones import regiones,busqueda_region,examenes_pcr,busque
 from COVID19.vistas.mapa_comunas import mapa_comunas,mapa_comunas_busqueda
 from COVID19.vistas.mapa_regiones import mapa_region
 urlpatterns = [
-    path('', menu),
+    path('', mapa_comunas),
     path('region/', regiones),
     path('buscar_region/', busqueda_region),
     path('Hospitalizacion/', busqueda_hospitalizacion_region),
@@ -41,6 +41,7 @@ urlpatterns = [
     path('mapa_comunas/', mapa_comunas),
     path('mapa_comunas_busqueda/', mapa_comunas_busqueda),
     path('mapa_regiones/', mapa_region),
+    path('menu/', menu),
 
     
 ]

@@ -16,7 +16,7 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Numero de Casos Acumulados</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos}} {{fecha_casos_fall}}</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -52,7 +52,7 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Numero de Fallecidos</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_death}} {{fecha_casos_fall}}</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_death}} </div>
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -72,7 +72,7 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Casos Acumulados</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Total de Casos Acumulados</h6>
           <div class="dropdown no-arrow">
           
           </div>
@@ -95,6 +95,7 @@
           </div>
         </div>
         <!-- Card Body -->
+        
         <div class="card-body">
           <form action='/mapa_comunas_busqueda/' method="GET">
 
@@ -119,10 +120,11 @@
   
           </select>
 
+      
           <button type="submit" class="boton_personalizado">Buscar</button>
 
           </form>
-    
+          {{grafico2|safe}}
         </div>
       </div>
     </div>
