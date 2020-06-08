@@ -108,12 +108,12 @@ locations = {
         "Del Libertador General Bernardo O’Higgins" : [-34.371944,-71.124528],#
         "Maule" : [-35.426667,-71.671667],#
         #"Ñuble" : [1,1],
-        "Biobio" : [-37.0000000,-72.5000000],
-        "Araucania" : [-38.7396507,-72.5984192],
+        "Biobio" : [-36.772778,-73.063056],
+        "La Araucania" : [-38.7396507,-72.5984192],
         "Los Rios" : [-40.293129,-73.0816727],
         "Los Lagos" : [-41.7500000,-73.0000000],
         "Aysen" : [-45.4030304,-72.6918411],
-        "Magallanes" : [-53.1548309,-70.911293]
+        "Magallanes y la Antartica" : [-53.1625,-70.9225]
         
         }
 
@@ -180,6 +180,7 @@ def mapa_comunas_busqueda(request):
         region2 = 'Magallanes'
     else:
         region2=region
+
             
      
     lat = locations[region][0]
