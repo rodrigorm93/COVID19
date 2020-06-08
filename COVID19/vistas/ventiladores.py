@@ -19,7 +19,8 @@ num_vent = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 
 
-
+ultima_fecha_cl_vt = num_vent.columns
+ultima_fecha_cl_vt= ultima_fecha_cl_vt[-1]
 
 
 #***************************MENU**************************************
@@ -103,6 +104,8 @@ data_vmi = pd.DataFrame({'Tipo':['Pacientes VMI','Pacientes no VM','Pacientes VM
 def num_ventiladores(request):
 
 
+   
+
     #GRAFICO 1
     trace = go.Scatter(
                 x=dates_vent,
@@ -141,9 +144,13 @@ def num_ventiladores(request):
 
     graph2 = fig2.to_html(full_html=False)
 
+    num_vent_total = num_vent[num_vent['Ventiladores']=='total'][ultima_fecha_cl_vt].sum()
+    num_vent_total = str(int(num_vent_total))+' ('+ultima_fecha_cl_vt+')'
 
 
-    return render(request,"numero_ventiladores.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+
+
+    return render(request,"numero_ventiladores.html", {"num_vent":num_vent_total,"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 
 

@@ -418,16 +418,23 @@ def examenes_pcr(request):
 def busqueda_hospitalizacion_region(request):
 
 
-    #GRAFICO 1
-    fig = px.bar(x=grupo_uci_reg[ultima_fecha_cl], y=grupo_uci_reg['Region'], 
-             title='Numero de personas Hospitalizadas en UCI por Región: '+ultima_fecha_cl,
-             orientation='h',
-             width=800, height=700)
-    fig.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
 
-    fig.update_layout(template = 'plotly_white')
+
+    titulo = 'Numero de personas Hospitalizadas en UCI por Región '+ultima_fecha_cl
+    fig = px.bar(grupo_uci_reg.sort_values(ultima_fecha_cl), 
+             x=ultima_fecha_cl, y="Region", 
+             title=titulo,
+              text=ultima_fecha_cl, 
+             orientation='h',height=700)
+    fig.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
     fig.update_yaxes(title_text="Regiones")
     fig.update_xaxes(title_text='Número de personas Hospitalizadas')
+
+    fig.update_layout(template = 'plotly_white')
+
+    total_pac_uci = grupo_uci_reg[ultima_fecha_cl].sum()
+
+    total_pac_uci = str(int(total_pac_uci))+' ('+ultima_fecha_cl_r+')'
 
 
     #GRAFICO 2
@@ -442,6 +449,8 @@ def busqueda_hospitalizacion_region(request):
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 
+
+   
 
     #GRAFICO 3
 
@@ -478,4 +487,4 @@ def busqueda_hospitalizacion_region(request):
     graph4 = fig4.to_html(full_html=False)
 
 
-    return render(request,"hospitalizaciones_region.html", {"grafico1":graph1,"grafico3":graph3,"grafico4":graph4,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"hospitalizaciones_region.html", {"total_pac_uci":total_pac_uci,"grafico1":graph1,"grafico3":graph3,"grafico4":graph4,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})

@@ -48,7 +48,7 @@ fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCienci
 
 
 seasonal_periods_casos = 7
-seasonal_periods_fallecidos = 40
+seasonal_periods_fallecidos = 33
 
 
 
@@ -291,10 +291,12 @@ def modelo_predictivo(request):
 
 def modelo_predictivo_fallecidos(request):
     data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
+    col_el = data_crec_por_dia.columns[1:20]
+    data_crec_por_dia = data_crec_por_dia.drop(col_el,axis=1)
 
 
-    fechas_chile_crec = data_crec_por_dia.columns[-1]
-    fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
+    fechas_chile_crec = data_crec_por_dia.columns[-1]#2020-03-03
+    fechas_chile = data_crec_por_dia.loc[:, '2020-03-22': fechas_chile_crec]
     fechas_chile = fechas_chile.keys()
     fallecidos_por_dia =[]
     for i in fechas_chile:
@@ -304,17 +306,17 @@ def modelo_predictivo_fallecidos(request):
     days_fallecidos_chile = np.array([i for i in range(len(fechas_chile))])
 
     data_ch_fallecidos = pd.DataFrame({'Días': list(days_fallecidos_chile), 'Fallecidos': [int(x) for x in fallecidos_por_dia]})
-    casos_f = data_ch_fallecidos['Fallecidos']+1
+    casos_f = data_ch_fallecidos['Fallecidos']
     data_ch_fallecidos = pd.DataFrame({'Días': list(days_fallecidos_chile), 'Fallecidos':casos_f})
         
 
     es=ExponentialSmoothing(np.asarray(data_ch_fallecidos['Fallecidos']),seasonal_periods=seasonal_periods_fallecidos,trend='add', seasonal='mul').fit()
 
 
-    days_in_future_cl = 20
+    days_in_future_cl = 8
     future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
     adjusted_dates_cl = future_forcast_cl[:-days_in_future_cl]
-    start_cl = '03/03/2020'
+    start_cl = '03/22/2020'#03/03/2020
     start_date_cl = datetime.datetime.strptime(start_cl, '%m/%d/%Y')
     future_forcast_dates_cl = []
     for i in range(len(future_forcast_cl)):
@@ -322,7 +324,7 @@ def modelo_predictivo_fallecidos(request):
             
     Predict_df_cl_1= pd.DataFrame()
     Predict_df_cl_1["Fecha"] = list(future_forcast_dates_cl[-days_in_future_cl:])
-    Predict_df_cl_1["N° Fallecidos"] =np.round(list(es.forecast(20)))
+    Predict_df_cl_1["N° Fallecidos"] =np.round(list(es.forecast(days_in_future_cl)))
         
     fig=go.Figure()
     fig.add_trace(go.Scatter(x=np.array(future_forcast_dates_cl), y=data_ch_fallecidos["Fallecidos"],
@@ -330,7 +332,7 @@ def modelo_predictivo_fallecidos(request):
     fig.add_trace(go.Scatter(x=Predict_df_cl_1['Fecha'], y=Predict_df_cl_1["N° Fallecidos"],
                             mode='lines+markers',name="Predicción de Fallecidos",))
 
-    fig.update_layout(title="Proyección de Fallecidos en 20 días",
+    fig.update_layout(title="Proyección de Fallecidos en 8 días",
                         xaxis_title="Fecha",yaxis_title="Número de Fallecidos",legend=dict(x=0,y=1,traceorder="normal"))
 
     graph1 = fig.to_html(full_html=False)

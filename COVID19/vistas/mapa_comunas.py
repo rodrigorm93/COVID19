@@ -202,6 +202,8 @@ def mapa_comunas_busqueda(request):
 
         num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
         num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
+        casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
+
 
       
     else:
@@ -232,6 +234,8 @@ def mapa_comunas_busqueda(request):
 
         num_death =n_casos_region_f
 
+        casos_act =n_casos_activos
+
    
 
 
@@ -259,7 +263,8 @@ def mapa_comunas_busqueda(request):
     graph2 = fig2.to_html(full_html=False)
 
     fecha_act = '('+data_casos_por_comuna.columns[-2]+')'
-
+    
+    
 
     
     return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"fecha_act":fecha_act,"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})

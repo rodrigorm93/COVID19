@@ -221,7 +221,7 @@ def busqueda_fallecidos_por_grupo(request):
 
 
 
-    return render(request,"fallecidos_grupo.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"fallecidos_grupo.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 
 def busqueda_por_grupo_edad(request):
@@ -269,7 +269,7 @@ def busqueda_por_grupo_edad(request):
         graph2 = fig2.to_html(full_html=False)
 
 
-        return render(request,"grupo_edad_f.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+        return render(request,"grupo_edad_f.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
     else:
         mensaje='ERROR'
@@ -305,4 +305,4 @@ def busqueda_hosp_por_grupo(request):
 
 
 
-    return render(request,"hospitalizaciones_grupo_edad.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"estado_r":estado_r,"n_casos":num_cases_cl,"num_rec":num_rec, "num_death":num_death})
+    return render(request,"hospitalizaciones_grupo_edad.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})

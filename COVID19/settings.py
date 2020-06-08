@@ -28,11 +28,41 @@ TEMPLATES_DIR = os.path.join(BASE_DIR,'COVID19/plantillas/startbootstrap-sb-admi
 SECRET_KEY = 'd%tr5zum!bn%h9^jed8^jo*t4ydvjwxvi*#z^qs^c4fyt-b58t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+#AGREGADO PARA DEBUG
+#https://stackoverflow.com/questions/43403717/django-500-error-when-debug-false-but-only-on-some-pages
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
 
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+     'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
 
+#####
 # Application definition
 
 INSTALLED_APPS = [

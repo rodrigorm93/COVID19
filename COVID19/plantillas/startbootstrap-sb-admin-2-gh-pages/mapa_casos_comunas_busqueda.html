@@ -32,7 +32,7 @@
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Numero de Casos Activos Acumulados</div>
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Numero de Casos Activos {{region}}</div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_rec}}</div>
               </div>
               <div class="col-auto">
@@ -72,13 +72,15 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Total de Casos Acumulados {{fecha_act}}</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Total de Casos Acumulados para todas las Comunas {{fecha_act}}</h6>
           <div class="dropdown no-arrow">
           
           </div>
         </div>
         <!-- Card Body -->
         <div class="card-body">
+          <span>Fuente: Informes epidemiológicos publicados periódicamente por el Ministerio de Salud de Chile <a href="https://www.minsal.cl/nuevo-coronavirus-2019-ncov/informe-epidemiologico-covid-19/">Informe epidemiologico</a></span>
+          <p>Frecuencia de actualización: Los casos por comunas son actualizados Cada 2 a 3 días.</p>
           {{grafico1|safe}}
         </div>
       </div>
@@ -89,7 +91,7 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Busqueda por Regiones</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Enfoque por Regió</h6>
           <div class="dropdown no-arrow">
   
           </div>
@@ -122,6 +124,8 @@
           <button type="submit" class="boton_personalizado">Buscar</button>
 
           </form>
+          <span>Casos Activos: Da cuenta del número de casos confirmados activos notificados en cada una de las comunas de Chile</span>
+          <p>Frecuencia de actualización: Los casos por comunas son actualizados Cada 2 a 3 días.</p>
 
           {{grafico2|safe}}
 
