@@ -127,11 +127,11 @@ def mapa_comunas(request):
                                     colorscale="Viridis", zmin=0, zmax=1000,
                                     featureidkey="properties.NOM_COM",
                                     colorbar = dict(thickness=20, ticklen=3),
-                                    marker_opacity=0.2, marker_line_width=0, text=data_comunas['Region'],
-                                    hovertemplate = '<b>Región</b>: <b>%{text}</b>'+
+                                    marker_opacity=0.2, marker_line_width=0, text=data_comunas['Poblacion'],
+                                    hovertemplate = '<b>Región</b>: <b>'+data_comunas['Region']+'</b>'+
                                             '<br><b>Comuna </b>: %{properties.NOM_COM}<br>'+
-                                            '<b>Casos </b>: %{z}<br>'+
-                                            '<b>Fecha: </b>:'+data_casos_por_comuna.columns[-2]
+                                            '<b>Población: </b>:%{text}<br>'+
+                                            '<b>Casos </b>: %{z}<br>'
                                     
                                        
                                    ))
@@ -243,11 +243,11 @@ def mapa_comunas_busqueda(request):
                                     colorscale="Viridis", zmin=0, zmax=1000,
                                     featureidkey="properties.NOM_COM",
                                     colorbar = dict(thickness=20, ticklen=3),
-                                    marker_opacity=0.2, marker_line_width=0, text=data_comunas['Region'],
-                                    hovertemplate = '<b>Región</b>: <b>%{text}</b>'+
+                                    marker_opacity=0.2, marker_line_width=0, text=data_comunas['Poblacion'],
+                                    hovertemplate = '<b>Región</b>: <b>'+data_comunas['Region']+'</b>'+
                                             '<br><b>Comuna </b>: %{properties.NOM_COM}<br>'+
-                                            '<b>Casos </b>: %{z}<br>'+
-                                            '<b>Fecha: </b>:'+data_casos_por_comuna.columns[-2]
+                                            '<b>Población: </b>:%{text}<br>'+
+                                            '<b>Casos </b>: %{z}<br>'
                                     
                                        
                                    ))
