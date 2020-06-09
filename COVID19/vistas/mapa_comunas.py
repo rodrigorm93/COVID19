@@ -217,7 +217,7 @@ def mapa_comunas_busqueda(request):
         n_casos_activos = str(int(n_casos_activos))+' ('+fecha+')'
 
         fig2 = px.bar(data_casos_por_comuna_maule.sort_values(fecha), 
-                    x=fecha, y='Comuna',color_discrete_sequence=['#84DCC6'],height=700,
+                    x=fecha, y='Comuna',color_discrete_sequence=['#84DCC6'],height=1000,
                     title='Número de casos Activos Reg: '+region+' fecha: '+fecha, text=fecha, orientation='h')
         fig2.update_xaxes(title_text="Número de Casos Activos")
         fig2.update_yaxes(title_text="Comunas")
