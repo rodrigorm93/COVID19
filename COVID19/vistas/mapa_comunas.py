@@ -297,7 +297,7 @@ def grafico_Update_Dropdown(region):
         ])
 
     # Set title
-    fig.update_layout(title_text=region)
+    fig.update_layout(title_text='Region: '+region)
     return fig
 
 
