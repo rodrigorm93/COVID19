@@ -136,7 +136,7 @@ def mapa_comunas(request):
                                        
                                    ))
     fig.update_layout(mapbox_style="carto-positron",
-                  mapbox_zoom=3,height=730,mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
+                  mapbox_zoom=3,height=800,mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
     fig2 = px.bar(data_activos_region.sort_values('Casos Activos'), 
@@ -234,7 +234,6 @@ def mapa_comunas_busqueda(request):
 
         num_death =n_casos_region_f
 
-        casos_act =n_casos_activos
 
    
 
@@ -252,7 +251,7 @@ def mapa_comunas_busqueda(request):
                                        
                                    ))
     fig.update_layout(mapbox_style="carto-positron",
-                  mapbox_zoom=zoom,height=730,mapbox_center = {"lat": lat, "lon": lon})
+                  mapbox_zoom=zoom,height=800,mapbox_center = {"lat": lat, "lon": lon})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
 
@@ -267,4 +266,4 @@ def mapa_comunas_busqueda(request):
     
 
     
-    return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"fecha_act":fecha_act,"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"fecha_act":fecha_act,"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":n_casos_activos, "num_death":num_death})
