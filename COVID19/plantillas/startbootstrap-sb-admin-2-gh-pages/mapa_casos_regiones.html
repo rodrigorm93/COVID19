@@ -96,13 +96,32 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
-            {{grafico2|safe}}
+
+          <form action='/num_casos_reg/' method="GET">
+            <input id="caso" name="caso" type="submit" value="Casos Acumulados" class="boton_personalizado">
+            
+          <input id="caso" name="caso" type="submit" value="Casos Activos" class="boton_personalizado">
+          
+          <input id="caso" name="caso" type="submit" value="fallecidos" class="boton_personalizado">
+          </form>
+
+
+          {% block content2 %} 
+
+          {% endblock %}
+
+        
+
     
         </div>
+
+
       </div>
     </div>
   </div>
 
+
+  
 
 
 </div>
@@ -116,5 +135,8 @@
 <!-- End of Footer -->
 
 </div>
+
+
+
 
     {% endblock %}

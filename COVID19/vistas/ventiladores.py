@@ -147,10 +147,17 @@ def num_ventiladores(request):
     num_vent_total = num_vent[num_vent['Ventiladores']=='total'][ultima_fecha_cl_vt].sum()
     num_vent_total = str(int(num_vent_total))+' ('+ultima_fecha_cl_vt+')'
 
+    num_vent_total_oc = num_vent[num_vent['Ventiladores']=='ocupados'][ultima_fecha_cl_vt].sum()
+    num_vent_total_oc = str(int(num_vent_total_oc))+' ('+ultima_fecha_cl_vt+')'
+
+    num_vent_total_disp = num_vent[num_vent['Ventiladores']=='disponibles'][ultima_fecha_cl_vt].sum()
+    num_vent_total_disp = str(int(num_vent_total_disp))+' ('+ultima_fecha_cl_vt+')'
 
 
 
-    return render(request,"numero_ventiladores.html", {"num_vent":num_vent_total,"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+
+
+    return render(request,"numero_ventiladores.html", {"num_vent":num_vent_total_oc,"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_vent_total,"num_rec":num_vent_total_disp})
 
 
 

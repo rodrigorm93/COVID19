@@ -38,6 +38,7 @@ data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COV
 data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
+data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
 
 
 #***************************MENU**************************************
@@ -88,6 +89,20 @@ data_region = data_region.rename(columns={ultima_fecha_cl:'Casos'})
 resp = requests.get('https://raw.githubusercontent.com/rodrigorm93/Datos-Chile/master/geo-json/regiones.json')
 geo_region = json.loads(resp.content)
 
+
+
+fecha = data_casos_por_comuna_activos.columns
+fecha= fecha[-1]
+data_activos_region = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Comuna']=='Total']
+data_activos_region = data_activos_region.reset_index()
+data_activos_region = data_activos_region[['Region',fecha]]
+data_activos_region = data_activos_region.rename(columns={fecha:'Casos Activos'})
+
+
+data_f = fallecidos_por_region[['Region',ultima_fecha_cl]]
+data_f = data_f.rename(columns={ultima_fecha_cl:'Fallecidos'})
+
+
 def mapa_region(request):
 
     datos = data_chile[['Region',ultima_fecha_cl]].drop([16],axis=0)
@@ -117,7 +132,62 @@ def mapa_region(request):
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
 
+    
+
 
     
-    return render(request,"mapa_casos_regiones.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_casos_regiones.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+
+
+
+def num_casos_reg(request):
+
+    caso = request.GET['caso']
+    datos = data_chile[['Region',ultima_fecha_cl]].drop([16],axis=0)
+
+    if(caso=='Casos Acumulados'):
+        titulo ='Total de Casos acumulados por Region '+ultima_fecha_cl
+
+        fig2 = px.bar(datos.sort_values(ultima_fecha_cl), 
+             x=ultima_fecha_cl, y="Region", 
+             title=titulo,
+              text=ultima_fecha_cl, 
+             orientation='h',height=700)
+        fig2.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
+
+        fig2.update_layout(template = 'plotly_white')
+
+    elif(caso=='Casos Activos'):
+        fig2 = px.bar(data_activos_region.sort_values('Casos Activos'), 
+                    x='Casos Activos', y='Region',color_discrete_sequence=['#84DCC6'],height=700,
+                    title='Total de casos Activos por Región '+fecha, text='Casos Activos', orientation='h')
+        fig2.update_xaxes(title_text="Número de Casos Activos")
+        fig2.update_yaxes(title_text="Comunas")
+
+    else:
+
+        fig2 = px.bar(data_f.sort_values('Fallecidos'), 
+                    x='Fallecidos', y='Region',color_discrete_sequence=['#ff2e63'],height=700,
+                    title='Total de Fallecidos por Región '+ultima_fecha_cl, text='Fallecidos', orientation='h')
+        fig2.update_xaxes(title_text="Número de Fallecidos")
+        fig2.update_yaxes(title_text="Región")
+
+
+
+    fig = go.Figure(go.Choroplethmapbox(geojson=geo_region, locations=data_region.Region, z=data_region.Casos,
+                                    colorscale="Viridis", zmin=0, zmax=6000,
+                                    featureidkey="properties.NOM_REG",
+                                    marker_opacity=0.2, marker_line_width=0))
+    fig.update_layout(mapbox_style="carto-positron",
+                  mapbox_zoom=3,height=700,mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
+
+    
+
+    graph1 = fig.to_html(full_html=False)
+    graph2 = fig2.to_html(full_html=False)
+
+    return render(request,"num_casos_region.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+
 

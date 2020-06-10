@@ -91,7 +91,7 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Enfoque por Región</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Casos Activos por comunas</h6>
           <div class="dropdown no-arrow">
   
           </div>
@@ -101,7 +101,7 @@
         <div class="card-body">
           <form action='/mapa_comunas_busqueda/' method="GET">
 
-            <select name="region" id="region">
+            Regiones: <select name="region" id="region">
               <option value="Chile">Todas las comunas</option>
               <option value="Arica y Parinacota">Arica y Parinacota</option>
               <option value="Tarapaca">Tarapacá</option>
@@ -126,7 +126,10 @@
           <button type="submit" class="boton_personalizado">Buscar</button>
 
           </form>
+        </br>
+          <p>
           <span>Casos Activos: Da cuenta del número de casos confirmados activos notificados en cada una de las comunas de Chile</span>
+        </p>
           <p>Frecuencia de actualización: Los casos por comunas son actualizados Cada 2 a 3 días.</p>
           {{grafico2|safe}}
         </div>

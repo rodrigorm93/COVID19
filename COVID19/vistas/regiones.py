@@ -39,6 +39,12 @@ data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCienci
 data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
 grupo_uci_reg = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto8/UCI.csv')
 tipo_cama = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto24/CamasHospital_Diario.csv')
+casos_diarios_por_regionT = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo_T.csv')
+
+fallecidos_reg = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo_T.csv')
+
+comb = pd.merge(casos_diarios_por_regionT,fallecidos_reg, how='outer', on=['Region', 'Region'])
+comb= comb.fillna(0)
 
 
 casos_diarios_por_region = casos_diarios_por_region.drop(16, axis=0)
@@ -148,24 +154,41 @@ def regiones(request):
 
     #GRAFICO 2: ANIMACION
     gris = '#393e46' 
+    rojo = '#ff2e63' 
 
-    data_total_ar = pd.DataFrame({'Region': ('Arica'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': arica})
-    data_total_ta = pd.DataFrame({'Region': ('Tarapacá'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': tarapaca})
-    data_total_at = pd.DataFrame({'Region': ('Antofagasta'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': antofagasta})
-    data_total_ata = pd.DataFrame({'Region': ('Atacama'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': atacama})
-    data_total_co = pd.DataFrame({'Region': ('Coquimbo'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': coquimbo})
-    data_total_va = pd.DataFrame({'Region': ('Valparaíso'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': valparaiso})
-    data_total_me = pd.DataFrame({'Region': ('Metropolitana'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': metropolitana})
-    data_total_og = pd.DataFrame({'Region': ('O Higgins'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': o_Higgins})
-    data_total_mau = pd.DataFrame({'Region': ('Maule'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': maule})
-    data_total_nu = pd.DataFrame({'Region': ('Ñuble'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': nuble})
-    data_total_bi = pd.DataFrame({'Region': ('Biobío'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': biobio})
-    data_total_ara = pd.DataFrame({'Region': ('Araucanía'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': araucania})
-    data_total_lr = pd.DataFrame({'Region': ('Los Ríos'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': los_Ríos})
-    data_total_ll = pd.DataFrame({'Region': ('Los Lagos'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': los_lagos})
-    data_total_ay = pd.DataFrame({'Region': ('Aysén'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': aysen})
-    data_total_ma = pd.DataFrame({'Region': ('Magallanes'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': magallanes})
+    data_total_ar = pd.DataFrame({'Region': ('Arica'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': arica,
+                              'Fallecidos':comb['Arica y Parinacota_y'].values })
 
+    data_total_ta = pd.DataFrame({'Region': ('Tarapacá'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': tarapaca,
+                                'Fallecidos':comb['Tarapacá_y'].values})
+    data_total_at = pd.DataFrame({'Region': ('Antofagasta'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': antofagasta,
+                                'Fallecidos':comb['Antofagasta_y'].values})
+    data_total_ata = pd.DataFrame({'Region': ('Atacama'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': atacama,
+                                'Fallecidos':comb['Atacama_y'].values})
+    data_total_co = pd.DataFrame({'Region': ('Coquimbo'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': coquimbo,
+                                'Fallecidos':comb['Coquimbo_y'].values})
+    data_total_va = pd.DataFrame({'Region': ('Valparaíso'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': valparaiso,
+                                'Fallecidos':comb['Valparaíso_y'].values})
+    data_total_me = pd.DataFrame({'Region': ('Metropolitana'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': metropolitana,
+                                'Fallecidos':comb['Metropolitana_y'].values})
+    data_total_og = pd.DataFrame({'Region': ('O Higgins'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': o_Higgins,
+                                'Fallecidos':comb['O’Higgins_y'].values})
+    data_total_mau = pd.DataFrame({'Region': ('Maule'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': maule,
+                                'Fallecidos':comb['Maule_y'].values})
+    data_total_nu = pd.DataFrame({'Region': ('Ñuble'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': nuble,
+                                'Fallecidos':comb['Ñuble_y'].values})
+    data_total_bi = pd.DataFrame({'Region': ('Biobío'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': biobio,
+                                'Fallecidos':comb['Biobío_y'].values})
+    data_total_ara = pd.DataFrame({'Region': ('Araucanía'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': araucania,
+                                'Fallecidos':comb['Araucanía_y'].values})
+    data_total_lr = pd.DataFrame({'Region': ('Los Ríos'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': los_Ríos,
+                                'Fallecidos':comb['Los Ríos_y'].values})
+    data_total_ll = pd.DataFrame({'Region': ('Los Lagos'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': los_lagos,
+                                'Fallecidos':comb['Los Lagos_y'].values})
+    data_total_ay = pd.DataFrame({'Region': ('Aysén'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': aysen,
+                                'Fallecidos':comb['Aysén_y'].values})
+    data_total_ma = pd.DataFrame({'Region': ('Magallanes'),'Fecha': pd.to_datetime(fecha_casos_region),'Casos': magallanes,
+                                'Fallecidos':comb['Magallanes_y'].values})
 
 
     # Apilar los __DataFrames__ uno encima del otro
@@ -227,20 +250,18 @@ def regiones(request):
     temp = apilados.copy()
     temp['Region'] = temp.apply(location, axis=1)
     temp['Fecha'] = temp['Fecha'].dt.strftime('%Y-%m-%d')
-    temp = temp.groupby(['Region', 'Fecha'])['Casos'].sum().reset_index()
-    temp = temp.melt(id_vars=['Region', 'Fecha'], value_vars=['Casos'], 
+    temp = temp.groupby(['Region', 'Fecha'])['Casos','Fallecidos'].sum().reset_index()
+    temp = temp.melt(id_vars=['Region', 'Fecha'], value_vars=['Casos','Fallecidos'], 
                     var_name='Casos', value_name='Count')
 
-    fig2 = px.bar(temp, y='Region', x='Count', color='Casos', barmode='group', orientation='h',
-                text='Count', title='Evolución del Número de Casos por Días', animation_frame='Fecha',
-                height=700,color_discrete_sequence= [gris], range_x=[0, int(metropolitana[-1]+1000)])
-    fig2.update_traces(textposition='outside')
-    fig2.update_xaxes(title_text="Numero de Casos (acumulados)")
-    fig2.update_yaxes(title_text="Regiones")
+    fig = px.bar(temp, y='Region', x='Count', color='Casos', barmode='group', orientation='h',
+                text='Count', title='Evolución del Número de Casos por Región', animation_frame='Fecha',
+                height=900,color_discrete_sequence= [gris,rojo], range_x=[0, int(metropolitana[-1]+1000)])
+    fig.update_traces(textposition='outside')
+    fig.update_xaxes(title_text="Número de Casos (acumulados)")
+    fig.update_yaxes(title_text="Regiones")
 
-    graph1 = fig2.to_html(full_html=False)
-
-
+    graph1 = fig.to_html(full_html=False)
 
 
     return render(request,"region.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})

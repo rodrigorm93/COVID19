@@ -15,7 +15,7 @@ img{
     width: 100vw;
     height: 100vh;
     z-index: 9999;
-    transition: all 1.5s;
+    transition: all 0.5s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -27,14 +27,14 @@ img{
     border-radius: 50%;
     width: 2.5em;
     height: 2.5em;
-    animation: loader 1.5s infinite ease-in-out;
+    animation: loader 0.5s infinite ease-in-out;
 }
 
 .loader{
     color: #4685FA;
     font-size: 13px;
     position: relative;
-    animation-delay: -0.16s;
+    animation-delay: -0.8s;
 }
 
 .loader:before,
@@ -45,7 +45,7 @@ img{
 }
 .loader:before{
     left: -3.5em;
-    animation-delay: -0.32s;
+    animation-delay: -0.22s;
 }
 .loader:after{
     left: 3.5em;
