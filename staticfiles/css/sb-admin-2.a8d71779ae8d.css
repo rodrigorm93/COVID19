@@ -1278,6 +1278,12 @@ pre code {
     max-width: 100%;
   }
 
+
+  .col-xl-4_4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
   .col-xl-4_2 {
     max-width: 10%;
     align-items: center;

@@ -417,7 +417,7 @@ def mapa_comunas_busqueda(request):
 
         num_death =n_casos_region_f
 
-        fig3 = grafico_Update_Dropdown(region)
+        fig3 = grafico_Update_Dropdown(region2)
         graph3 = fig3.to_html(full_html=False)
 
 
