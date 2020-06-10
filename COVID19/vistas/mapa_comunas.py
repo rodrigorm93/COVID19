@@ -41,6 +41,11 @@ data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/M
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
 
+grupo_uci_reg = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto8/UCI.csv')
+fallecidos_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
+casos_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto13/CasosNuevosCumulativo.csv')
+
+
 
 #***************************MENU**************************************
 #Lenar con 0 filas nulas
@@ -119,6 +124,184 @@ locations = {
         }
 
 
+#FUNCIONES
+
+def grafico_Update_Dropdown(region):
+
+    fecha_cd =casos_por_dia.columns
+    fecha_cd= fecha_cd[1:]
+
+    fecha_fd =fallecidos_por_dia.columns
+    fecha_fd= fecha_fd[1:]
+
+    fecha_uci=grupo_uci_reg.columns
+    fecha_uci= fecha_uci[3:]
+
+    # Initialize figure
+    fig = go.Figure()
+    
+    # Add Traces
+    casos_diarios_df = pd.DataFrame({"fecha": fecha_cd, "casos": casos_por_dia[casos_por_dia['Region']==region].iloc[0,1:].values})
+    fallecidos_diarios_df = pd.DataFrame({"fecha": fecha_fd, "casos": fallecidos_por_dia[fallecidos_por_dia['Region']==region].iloc[0,1:].values})
+
+    UCI_diarios_df = pd.DataFrame({"fecha": fecha_uci, "casos": grupo_uci_reg[grupo_uci_reg['Region']==region].iloc[0,3:].values})
+
+
+    max_f = pd.to_numeric(fallecidos_diarios_df.casos).idxmax()
+
+    x_m = fallecidos_diarios_df['fecha'].loc[max_f]
+
+
+    max_c = pd.to_numeric(casos_diarios_df.casos).idxmax()
+
+    x_c = casos_diarios_df['fecha'].loc[max_c]
+
+    max_uci = pd.to_numeric(UCI_diarios_df.casos).idxmax()
+
+    x_uci = UCI_diarios_df['fecha'].loc[max_uci]
+
+
+    #Casos por dia
+    fig.add_trace(
+        go.Scatter(x=casos_diarios_df.fecha,
+                   y=casos_diarios_df.casos,
+                   name='Casos Diarios',
+                   line=dict(color="#33CFA5")))
+
+    fig.add_trace(
+        go.Scatter(x=casos_diarios_df.fecha,
+                   y=[casos_diarios_df.casos.mean()] * len(casos_diarios_df.fecha),
+                   name='Promedio',
+                   visible=False,
+                    line=dict(color="#2ED456", dash="dash")))
+
+    #Fallecidos por dia
+    fig.add_trace(
+        go.Scatter(x=fallecidos_diarios_df.fecha,
+                   y=fallecidos_diarios_df.casos,
+                   name='Fallecidos Diarios',
+                   visible=False,
+                  line=dict(color="#F11013")))
+
+
+    fig.add_trace(
+        go.Scatter(x=fallecidos_diarios_df.fecha,
+                   y=[fallecidos_diarios_df.casos.mean()] * len(fallecidos_diarios_df.fecha),
+                   name="Promedio",
+                   visible=False,
+                   line=dict(color="#10CBF1", dash="dash")))
+
+
+    #UCI
+
+    fig.add_trace(
+        go.Scatter(x=UCI_diarios_df.fecha,
+                   y=UCI_diarios_df.casos,
+                   name='hosp. en UCI',
+                   visible=False,
+                  line=dict(color="#1466F4")))
+
+    fig.add_trace(
+        go.Scatter(x=UCI_diarios_df.fecha,
+                   y=[UCI_diarios_df.casos.mean()] * len(UCI_diarios_df.fecha),
+                   name="Promedio",
+                   visible=False,
+                   line=dict(color="#C42ABD", dash="dash")))
+
+
+    #maximo y promedio casos diarios
+
+    fall_annotations = [dict(x="2020-03-30",
+                             y=fallecidos_diarios_df.casos.mean(),
+                             xref="x", yref="y",
+                             text="Promedio Fallecidos:<br> %.3f" % fallecidos_diarios_df.casos.mean(),
+                             ax=0, ay=-40),
+                        dict(x=x_m,
+                             y=pd.to_numeric(fallecidos_diarios_df.casos).max(),
+                             xref="x", yref="y",
+                             text="Maximo Fallecidos:<br> %.3f" % pd.to_numeric(fallecidos_diarios_df.casos).max(),
+                             ax=0, ay=-40)]
+
+    casos_annotations = [dict(x="2020-03-10",
+                             y=casos_diarios_df.casos.mean(),
+                             xref="x", yref="y",
+                             text="Promedio Casos:<br> %.3f" % casos_diarios_df.casos.mean(),
+                             ax=0, ay=-40),
+                        dict(x=x_c,
+                             y=pd.to_numeric(casos_diarios_df.casos).max(),
+                             xref="x", yref="y",
+                             text="Maximo Fallecidos:<br> %.3f" % pd.to_numeric(casos_diarios_df.casos).max(),
+                             ax=0, ay=-40)]
+
+    uci_annotations = [dict(x="2020-04-10",
+                             y=UCI_diarios_df.casos.mean(),
+                             xref="x", yref="y",
+                             text="Promedio Casos:<br> %.3f" % UCI_diarios_df.casos.mean(),
+                             ax=0, ay=-40),
+                        dict(x=x_uci,
+                             y=pd.to_numeric(UCI_diarios_df.casos).max(),
+                             xref="x", yref="y",
+                             text="Maximo UCI:<br> %.3f" % pd.to_numeric(UCI_diarios_df.casos).max(),
+                             ax=0, ay=-40)]
+
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                active=0,
+                buttons=list([
+                    dict(label="Casos Diarios",
+                         method="update",
+                         args=[{"visible": [True, False, False, False,False,False]},
+                               {"title": region+' Casos Diarios',
+                                "annotations": []}]),
+
+                    dict(label="Casos Promedios",
+                         method="update",
+                         args=[{"visible": [True, True, False, False,False,False]},
+                               {"title": region+' Casos Promedios',
+                                "annotations": casos_annotations}]),
+
+                    dict(label="Fallecidos Diarios",
+                         method="update",
+                         args=[{"visible": [False, False, True, False,False]},
+                               {"title": region+" Fallecidos Diarios",
+                                "annotations": []}]),
+
+                         dict(label="Fallecidos Promedio",
+                         method="update",
+                         args=[{"visible": [False, False, True, True,False,False]},
+                               {"title": region+" Fallecidos Promedios",
+                                "annotations": fall_annotations}]),
+
+                     dict(label="Fallecidos vs Casos",
+                         method="update",
+                         args=[{"visible": [True, False, True, False,False,False]},
+                               {"title": region+" Fallecidos vs Casos",
+                                "annotations": []}]),
+
+                     dict(label="Pacientes en UCI",
+                         method="update",
+                         args=[{"visible": [False, False, False, False,True,False]},
+                               {"title": region+" Pacientes en UCI",
+                                "annotations": []}]),
+
+                    dict(label="UCI Promedio.",
+                         method="update",
+                         args=[{"visible": [False, False, False, False,True,True]},
+                               {"title": region+" Pacientes en UCI Promedio",
+                                "annotations": uci_annotations}]),
+
+                ]),
+            )
+        ])
+
+    # Set title
+    fig.update_layout(title_text=region)
+    return fig
+
+
+
 def mapa_comunas(request):
 
 
@@ -136,11 +319,11 @@ def mapa_comunas(request):
                                        
                                    ))
     fig.update_layout(mapbox_style="carto-positron",
-                  mapbox_zoom=3,height=800,mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
+                  mapbox_zoom=3,height=600,mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
     fig2 = px.bar(data_activos_region.sort_values('Casos Activos'), 
-                    x='Casos Activos', y='Region',color_discrete_sequence=['#84DCC6'],height=700,
+                    x='Casos Activos', y='Region',color_discrete_sequence=['#84DCC6'],height=600,
                     title='Número de casos Activos por Región '+fecha, text='Casos Activos', orientation='h')
     fig2.update_xaxes(title_text="Número de Casos Activos")
     fig2.update_yaxes(title_text="Comunas")
@@ -194,7 +377,7 @@ def mapa_comunas_busqueda(request):
                     x='Casos Activos', y='Region',color_discrete_sequence=['#84DCC6'],height=700,
                     title='Número de casos Activos por Región '+fecha, text='Casos Activos', orientation='h')
         fig2.update_xaxes(title_text="Número de Casos Activos")
-        fig2.update_yaxes(title_text="Comunas")
+        fig2.update_yaxes(title_text="Regiones")
 
         num_cases_cl = data_chile.drop([16],axis=0)
         num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
@@ -217,7 +400,7 @@ def mapa_comunas_busqueda(request):
         n_casos_activos = str(int(n_casos_activos))+' ('+fecha+')'
 
         fig2 = px.bar(data_casos_por_comuna_maule.sort_values(fecha), 
-                    x=fecha, y='Comuna',color_discrete_sequence=['#84DCC6'],height=1000,
+                    x=fecha, y='Comuna',color_discrete_sequence=['#84DCC6'],height=600,
                     title='Número de casos Activos Reg: '+region+' fecha: '+fecha, text=fecha, orientation='h')
         fig2.update_xaxes(title_text="Número de Casos Activos")
         fig2.update_yaxes(title_text="Comunas")
@@ -233,6 +416,11 @@ def mapa_comunas_busqueda(request):
         n_casos_region_f = str(int(n_casos_region_f))+' ('+ultima_fecha_region_fallecidos+')'
 
         num_death =n_casos_region_f
+
+        fig3 = grafico_Update_Dropdown(region)
+        graph3 = fig3.to_html(full_html=False)
+
+
 
 
    
@@ -251,11 +439,17 @@ def mapa_comunas_busqueda(request):
                                        
                                    ))
     fig.update_layout(mapbox_style="carto-positron",
-                  mapbox_zoom=zoom,height=800,mapbox_center = {"lat": lat, "lon": lon})
+                  mapbox_zoom=zoom,height=600,mapbox_center = {"lat": lat, "lon": lon})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
 
-  
+
+
+
+
+
+
+
 
  
     graph1 = fig.to_html(full_html=False)
@@ -266,4 +460,4 @@ def mapa_comunas_busqueda(request):
     
 
     
-    return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"fecha_act":fecha_act,"grafico1":graph1,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":n_casos_activos, "num_death":num_death})
+    return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"fecha_act":fecha_act,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":n_casos_activos, "num_death":num_death})
