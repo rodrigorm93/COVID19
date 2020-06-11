@@ -68,7 +68,7 @@
   <div class="row">
 
     <!-- Area Chart -->
-    <div class="col-xl-8-3 col-lg-7-3">
+    <div class="col-xl-8-34 col-lg-7-3">
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -85,7 +85,7 @@
     </div>
 
     <!-- Pie Chart -->
-    <div class="col-xl-4 col-lg-5">
+    <div class="col-xl-4_34 col-lg-5">
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -97,21 +97,7 @@
         <!-- Card Body -->
         <div class="card-body">
 
-          <form action='/num_casos_reg/' method="GET">
-            <input id="caso" name="caso" type="submit" value="Casos Acumulados" class="boton_personalizado">
-            
-          <input id="caso" name="caso" type="submit" value="Casos Activos" class="boton_personalizado">
-          
-          <input id="caso" name="caso" type="submit" value="fallecidos" class="boton_personalizado">
-          </form>
-
-
-          {% block content2 %} 
-
-          {% endblock %}
-
-        
-
+          {{grafico2|safe}}
     
         </div>
 

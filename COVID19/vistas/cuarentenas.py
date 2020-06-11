@@ -27,6 +27,7 @@ from plotly.graph_objs import *
 import requests
 import json
 import plotly.express as px
+import plotly.figure_factory as ff
 
 import warnings
 
@@ -105,7 +106,16 @@ def cuarentenas_activas(request):
 
     data_c =cuarentenas[['Nombre','Alcance','Fecha de Inicio','Fecha de Término']]
 
-    tabla= data_c.to_html()
+    fig2 = ff.create_table(data_c,height_constant=20)
+
+
+    fig2.layout.margin.update({'t':30, 'b':5})
+    fig2.layout.update({'title': 'Tabla de Cuarentenas'})
+  
+
+    #tabla= data_c.to_html()
+
+    tabla = fig2.to_html(full_html=False)
 
     
     return render(request,"mapa_cuarentenas.html", {"grafico1":graph1,"tabla":tabla,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
