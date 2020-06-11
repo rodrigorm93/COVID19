@@ -124,6 +124,131 @@ data_suma_casos_m['Sexo'].iloc[0] = 'M'
 
 union = pd.concat([data_suma_casos_m, data_suma_casos_f])
 
+
+
+
+
+#FUNCIONES:
+
+def grupos_hosp():   
+    
+    fig = go.Figure()
+
+    fecha_uci = grupo_uci.columns
+    fecha_uci= fecha_uci[-1]
+    fecha_uci_evo = grupo_uci.columns[1:]
+
+    m_39 = grupo_uci[grupo_uci['Grupo de edad']=='<=39'].iloc[0,1:]
+    m_40_49 = grupo_uci[grupo_uci['Grupo de edad']=='40-49'].iloc[0,1:]
+    m_50_59 = grupo_uci[grupo_uci['Grupo de edad']=='50-59'].iloc[0,1:]
+    m_60_69 = grupo_uci[grupo_uci['Grupo de edad']=='60-69'].iloc[0,1:]
+    m_70 = grupo_uci[grupo_uci['Grupo de edad']=='>=70'].iloc[0,1:]
+
+
+    fig.add_trace(go.Bar(x=grupo_uci['Grupo de edad'], y=grupo_uci[fecha_uci],
+                            name="Pacientes UCI",marker_color='lightsalmon')
+                     )
+    fig.update_xaxes(title_text="Grupo Edad")
+    fig.update_yaxes(title_text="Numero de Casos")
+
+        #Casos por dia
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_39,
+                       name='<=39',
+                       visible=False,
+                       line=dict(color="#33CFA5")))
+
+    fig.update_xaxes(title_text="Fecha")
+    fig.update_yaxes(title_text="Número de Casos")
+
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_40_49,
+                       name='40-49',
+                       visible=False,
+                       line=dict(color="#2A75C4")))
+
+    fig.update_xaxes(title_text="Fecha")
+    fig.update_yaxes(title_text="Número de Casos")
+
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_50_59,
+                       name='50-59',
+                       visible=False,
+                       line=dict(color="#2AC44B")))
+
+    fig.update_xaxes(title_text="Fecha")
+    fig.update_yaxes(title_text="Número de Casos")
+
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_60_69,
+                       name='60-69',
+                       visible=False,
+                       line=dict(color="#9A2AC4")))
+
+    fig.update_xaxes(title_text="Fecha")
+    fig.update_yaxes(title_text="Número de Casos")
+
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_70,
+                       name='>=70',
+                       visible=False,
+                       line=dict(color="#2AAFC4")))
+
+    fig.update_xaxes(title_text="Fecha")
+    fig.update_yaxes(title_text="Número de Casos")
+
+
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                active=0,
+                buttons=list([
+                    dict(label="Total Casos",
+                         method="update",
+                         args=[{"visible": [True, False, False, False,False,False]},
+                               {"title": "Total Casos",
+                                "annotations": []}]),
+                    dict(label="<=39",
+                         method="update",
+                         args=[{"visible": [False, True, False, False,False,False]},
+                               {"title": "Evolución de Casos <=39",
+                                "annotations": []}]),
+                    dict(label="40-49",
+                         method="update",
+                         args=[{"visible": [False, False, True, False,False,False]},
+                               {"title": "Evolución de Casos 40-49",
+                                "annotations": []}]),
+                    dict(label="50-59",
+                         method="update",
+                         args=[{"visible": [False, False, False, True,False,False]},
+                               {"title": "Evolución de Casos 50-59",
+                                "annotations": []}]),
+                    dict(label="60-69",
+                         method="update",
+                         args=[{"visible": [False, False, False, False,True,False]},
+                               {"title": "Evolución de Casos 60-69",
+                                "annotations": []}]),
+                    dict(label=">=70",
+                         method="update",
+                         args=[{"visible": [False, False, False, False,False,True]},
+                               {"title": "Evolución de Casos >=70",
+                                "annotations": []}]),
+                      dict(label="Comparacion",
+                         method="update",
+                         args=[{"visible": [False, True, True, True,True,True]},
+                               {"title": "Evolución de Casos Comparacion",
+                                "annotations": []}]),
+                ]),
+            )
+        ])
+
+    # Set title
+    fig.update_layout(title_text="Total Casos")
+
+    return fig
+
+
 def busqueda_casos_por_grupo(request):
 
     #GRAFICO 1
@@ -278,15 +403,7 @@ def busqueda_por_grupo_edad(request):
 def busqueda_hosp_por_grupo(request):
 
     #GRAFICO 1
-    titulo ='Numero de personas Hopitalizadas Fecha: '+ultima_fecha_cl
-
-    fig = px.bar(x=grupo_uci['Grupo de edad'], y=grupo_uci[ultima_fecha_cl],
-                title=titulo,
-            text=grupo_uci[ultima_fecha_cl]
-                
-    )
-    fig.update_xaxes(title_text="Grupo Edad")
-    fig.update_yaxes(title_text="Numero de Casos")
+    fig = grupos_hosp()
 
     #Grafico 2
 
@@ -303,6 +420,8 @@ def busqueda_hosp_por_grupo(request):
 
     graph2 = fig2.to_html(full_html=False)
 
+    fecha_uci = grupo_uci.columns
+    fecha_uci= fecha_uci[-1]
 
 
-    return render(request,"hospitalizaciones_grupo_edad.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"hospitalizaciones_grupo_edad.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"fecha_uci":fecha_uci,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
