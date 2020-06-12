@@ -75,7 +75,7 @@ fecha_casos_fall='('+data_chile.columns[-1]+')'
 
 cuarentenas = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto29/Cuarentenas-Activas.csv')
 
-resp = requests.get('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/input/Cuarentenas/Cuarentenas-Geo.geojson')
+resp = requests.get('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto29/Cuarentenas-Geo.geojson')
 geo_region = json.loads(resp.content)
 
 

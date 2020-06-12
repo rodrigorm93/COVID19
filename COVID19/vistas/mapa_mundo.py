@@ -125,6 +125,9 @@ muertes_mundo = deaths_data[ultima_fecha_cl].sum()
 
 recuperados_mundo = recoveries_df[ultima_fecha_cl].sum()
 
+casos_mundo = int(casos_mundo)
+
+
 def mapa_mundo(request):
 
     fig = go.Figure(go.Choroplethmapbox(geojson=geo_mundo, locations=data_cdr.Country, z=data_cdr.Casos,
