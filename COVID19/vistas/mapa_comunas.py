@@ -29,6 +29,7 @@ grupo_uci_reg = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-
 fallecidos_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 casos_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto13/CasosNuevosCumulativo.csv')
 
+data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
 
 #***************************MENU**************************************
@@ -85,6 +86,8 @@ data_comunas = pd.read_csv('https://raw.githubusercontent.com/rodrigorm93/Datos-
 
 resp_comunas = requests.get('https://raw.githubusercontent.com/rgcl/geojson-cl/master/comunas.json')
 geo_comunas = json.loads(resp_comunas.content)
+
+
 
 locations = {
         "Chile" : [ -30.0000000,-71.0000000],
@@ -285,6 +288,88 @@ def grafico_Update_Dropdown(region):
     return fig
 
 
+def grafico_Update_Dropdown_chile():
+
+    fecha_casos_totales =data_crec_por_dia.columns
+    fecha_casos_totales= fecha_casos_totales[1:]
+
+    # Initialize figure
+    fig = go.Figure()
+    
+    # Add Traces
+    casos_totales_df = pd.DataFrame({"fecha": fecha_casos_totales, 
+                                     "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos totales'].iloc[0,1:].values})
+ 
+    
+    fallecidos_totales_df = pd.DataFrame({"fecha": fecha_casos_totales, 
+                                          "fallecidos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'].iloc[0,1:].values})
+
+    casos_totales_act_df = pd.DataFrame({"fecha": fecha_casos_totales, 
+                                         "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'].iloc[0,1:].values})
+
+
+    #Casos por dia
+    fig.add_trace(
+        go.Scatter(x=casos_totales_df.fecha,
+                   y=casos_totales_df.casos,
+                   name='Casos Acumulados',
+                   line=dict(color="#33CFA5")))
+
+    #Fallecidos por dia
+    fig.add_trace(
+        go.Scatter(x=fallecidos_totales_df.fecha,
+                   y=fallecidos_totales_df.fallecidos,
+                   name='Fallecidos Acumulados',
+                   visible=False,
+                  line=dict(color="#F11013")))
+
+    #UCI
+
+    fig.add_trace(
+        go.Scatter(x=casos_totales_act_df.fecha,
+                   y=casos_totales_act_df.casos,
+                   name='Casos Activos',
+                   visible=False,
+                  line=dict(color="#1466F4")))
+
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                active=0,
+                buttons=list([
+                    dict(label="Casos Totales",
+                         method="update",
+                         args=[{"visible": [True, False, False]},
+                               {"title":'Chile: Casos Totales',
+                                "annotations": []}]),
+
+                    dict(label="Fallecidos Acumulados",
+                         method="update",
+                         args=[{"visible": [False, True, False]},
+                               {"title": 'Chile: Fallecidos Totales',
+                                "annotations": []}]),
+
+                    dict(label="Casos Activos",
+                         method="update",
+                         args=[{"visible": [False, False, True, False,False]},
+                               {"title": 'Chile: Casos Activos Totales',
+                                "annotations": []}]),
+                    dict(label="Combinacion",
+                         method="update",
+                         args=[{"visible": [True, True, True]},
+                               {"title": 'Chile: Casos Combinados',
+                                "annotations": []}]),
+
+                ]),
+            )
+        ])
+
+    # Set title
+    fig.update_layout(title_text='Chile')
+    return fig
+
+
 
 def mapa_comunas(request):
 
@@ -317,8 +402,11 @@ def mapa_comunas(request):
     graph2 = fig2.to_html(full_html=False)
     fecha_act = '('+data_casos_por_comuna.columns[-2]+')'
 
+    fig3 = grafico_Update_Dropdown_chile()
+    graph3 = fig3.to_html(full_html=False)
+
     
-    return render(request,"mapa_casos_comunas.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos_fall":fecha_act,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_casos_comunas.html", {"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"fecha_casos_fall":fecha_act,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 def mapa_comunas_busqueda(request):
 
@@ -356,7 +444,7 @@ def mapa_comunas_busqueda(request):
 
     if(region == 'Chile'):
         zoom = 3
-
+       
         fig2 = px.bar(data_activos_region.sort_values('Casos Activos'), 
                     x='Casos Activos', y='Region',color_discrete_sequence=['#84DCC6'],height=700,
                     title='Número de casos Activos por Región '+fecha, text='Casos Activos', orientation='h')
@@ -370,6 +458,14 @@ def mapa_comunas_busqueda(request):
         num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
         num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
         casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
+
+
+        n_casos_activos = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
+
+        fig3 = grafico_Update_Dropdown_chile()
+        graph3 = fig3.to_html(full_html=False)
+
+
 
 
       
