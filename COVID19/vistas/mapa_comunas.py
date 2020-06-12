@@ -63,11 +63,18 @@ estado_a='Act'+ultima_fecha_cl
 casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 #dejar el ulktimo registro de recuperados que fue el 2020-06-02
 
+#recuperados
+num_recuFIS = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
+
+num_recuFIS = str(int(num_recuFIS))+' ('+ultima_fecha_cl_r+')'
 
 
 num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
 num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
 casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
+
+
+
 
 
 fecha_casos_fall='('+data_chile.columns[-1]+')'
@@ -332,6 +339,11 @@ def grafico_Update_Dropdown_chile():
                    visible=False,
                   line=dict(color="#1466F4")))
 
+    high_annotations = [dict(x="2020-06-02",
+                         y=21400,
+                         xref="x", yref="y",
+                         text="Nueva forma contar los casos",
+                         ax=0, ay=-40)]
 
     fig.update_layout(
         updatemenus=[
@@ -354,7 +366,7 @@ def grafico_Update_Dropdown_chile():
                          method="update",
                          args=[{"visible": [False, False, True, False,False]},
                                {"title": 'Chile: Casos Activos Totales',
-                                "annotations": []}]),
+                                "annotations": high_annotations}]),
                     dict(label="Combinacion",
                          method="update",
                          args=[{"visible": [True, True, True]},
@@ -405,8 +417,8 @@ def mapa_comunas(request):
     fig3 = grafico_Update_Dropdown_chile()
     graph3 = fig3.to_html(full_html=False)
 
-    
-    return render(request,"mapa_casos_comunas.html", {"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"fecha_casos_fall":fecha_act,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+        
+    return render(request,"mapa_casos_comunas.html", {"num_recuFIS":num_recuFIS,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"fecha_casos_fall":fecha_act,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 def mapa_comunas_busqueda(request):
 

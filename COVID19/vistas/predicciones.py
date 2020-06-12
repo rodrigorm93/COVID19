@@ -52,6 +52,9 @@ for i in dates_chile:
     casos_chile.append(data_chile[i].iloc[16])
 
 
+#funcion 
+
+
 
 #***************************MENU**************************************
 #Lenar con 0 filas nulas
@@ -207,7 +210,7 @@ def total_defunciones_chile(request):
                     line_color='red')
 
 
-    layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Fallecidos entre 2010- '+str(now)+' </b>',
+    layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Defunciones  entre 2010- '+str(now)+' </b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig = go.Figure(data = [trace,trace2,trace3,trace4,trace5,trace6,trace7,trace8,trace9,trace10,trace11], layout = layout)
 
@@ -217,17 +220,63 @@ def total_defunciones_chile(request):
     col_list= ['January','February','March','April','May']
     suma_4meses['Total 4 Meses'] = suma_4meses[col_list].sum(axis=1)
 
+    fig2 = go.Figure()
+
+    fig2.add_trace(go.Scatter(
+        x=registros_meses,
+        y=año_2017,
+        name="2017",
+        yaxis="y",
+    ))
+
+    # Add traces
+    fig2.add_trace(go.Scatter(
+        x=registros_meses,
+        y=año_2018,
+        name="2018",
+        yaxis="y",
+    ))
+
+    fig2.add_trace(go.Scatter(
+        x=registros_meses,
+        y=año_2019,
+        name="2019",
+        yaxis="y",
+    ))
+    fig2.add_trace(go.Scatter(
+        x=registros_meses,
+        y=año_2020,
+        name="2020",
+        yaxis="y",
+    ))
 
 
-    fig2 = px.bar(x=suma_4meses['Total 4 Meses'], y=suma_4meses['Años'], 
-             title='Total de Fallecidos en los primeros 5 meses',
-              text=suma_4meses['Total 4 Meses'], 
-             orientation='h', )
-    fig2.update_traces(marker_color='#008000', opacity=0.8, textposition='inside')
 
-    fig2.update_layout(template = 'plotly_white')
-    fig2.update_xaxes(title_text="Número de Fallecidos")
-    fig2.update_yaxes(title_text="Años")
+
+    # style all the traces
+    fig2.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.5},
+        marker={"size": 8},
+        mode="lines+markers",
+        showlegend=False
+    )
+
+
+
+
+    # Update layout
+    fig2.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        legend=dict(traceorder="reversed"),
+        height=600,
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+    )
 
     
     total_fallecimientos_mes_trans = total_fallecimientos_mes.drop(['Total 4 Meses'], axis=1).T
@@ -239,10 +288,24 @@ def total_defunciones_chile(request):
     tabla1.layout.margin.update({'t':30, 'b':5})
     tabla1.layout.update({'title': 'Tabla de Fallecidos 2010-2020'})
 
+
+    #GRAFICO 3
+    suma_4meses = total_fallecimientos_mes
+    col_list= ['January','February','March','April','May']
+    suma_4meses['Total 4 Meses'] = suma_4meses[col_list].sum(axis=1)
+    data_ord = suma_4meses.sort_values('Total 4 Meses').reset_index()
+    data_ord = data_ord.drop(['index'], axis=1)
+    #total 4 primero meses
+    fig3 = px.bar(data_ord, x='Años', y='Total 4 Meses',
+             hover_data=['Total 4 Meses'], color='Total 4 Meses',
+             labels={'pop':'population of Canada'}, height=400)
+
     graph2 = fig2.to_html(full_html=False)
+    graph3= fig3.to_html(full_html=False)
+
     tabla1 = tabla1.to_html(full_html=False)
 
-    return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"tabla1":tabla1,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"numero_defunciones_chile.html", {"grafico3":graph3,"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"tabla1":tabla1,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 def modelo_predictivo(request):
     
