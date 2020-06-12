@@ -238,6 +238,149 @@ def grupos_hosp():
     return fig
 
 
+def grupos_fallecidos():   
+    
+    fig = go.Figure()
+
+    fecha_ul = grupo_fallecidos.columns[-1]
+    fecha_uci_evo = grupo_fallecidos.columns[1:]
+
+    m_39 = grupo_fallecidos[grupo_fallecidos['Grupo de edad']=='<=39'].iloc[0,1:]
+    m_40_49 = grupo_fallecidos[grupo_fallecidos['Grupo de edad']=='40-49'].iloc[0,1:]
+    m_50_59 = grupo_fallecidos[grupo_fallecidos['Grupo de edad']=='50-59'].iloc[0,1:]
+    m_60_69 = grupo_fallecidos[grupo_fallecidos['Grupo de edad']=='60-69'].iloc[0,1:]
+    m_70 = grupo_fallecidos[grupo_fallecidos['Grupo de edad']=='70-79'].iloc[0,1:]
+    m_80_89 = grupo_fallecidos[grupo_fallecidos['Grupo de edad']=='80-89'].iloc[0,1:]
+    m_90 = grupo_fallecidos[grupo_fallecidos['Grupo de edad']=='>=90'].iloc[0,1:]
+
+
+
+    titulo ='Fallecidos por grupo de edad Fecha: '+fecha_ul
+
+
+    fig = px.bar(grupo_fallecidos.sort_values(fecha_ul),
+                    x='Grupo de edad', y=fecha_ul,
+                    title=titulo,
+                    text=fecha_ul 
+                    )
+      
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_39,
+                       name='<=39',
+                       visible=False,
+                       line=dict(color="#33CFA5")))
+
+
+
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_40_49,
+                       name='40-49',
+                       visible=False,
+                       line=dict(color="#2A75C4")))
+
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_50_59,
+                       name='50-59',
+                       visible=False,
+                       line=dict(color="#2AC44B")))
+
+
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_60_69,
+                       name='60-69',
+                       visible=False,
+                       line=dict(color="#9A2AC4")))
+
+ 
+
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_70,
+                       name='70-79',
+                       visible=False,
+                       line=dict(color="#2AAFC4")))
+
+    
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_80_89,
+                       name='80-89',
+                       visible=False,
+                       line=dict(color="#4C1C40")))
+
+ 
+    
+    fig.add_trace(go.Scatter(x=fecha_uci_evo,
+                       y=m_90,
+                       name='>=90',
+                       visible=False,
+                       line=dict(color="#CF676B")))
+
+ 
+
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                active=0,
+                buttons=list([
+                    dict(label="Total Fallecidos",
+                         method="update",
+                         args=[{"visible": [True, False, False, False,False,False,False,False]},
+                               {"title": "Total Casos",
+                                "annotations": []}]),
+                    dict(label="<=39",
+                         method="update",
+                         args=[{"visible": [False, True, False, False,False,False,False,False]},
+                               {"title": "Evolución de Casos <=39",
+                                "annotations": []}]),
+                    dict(label="40-49",
+                         method="update",
+                         args=[{"visible": [False, False, True, False,False,False,False,False]},
+                               {"title": "Evolución de Casos 40-49",
+                                "annotations": []}]),
+                    dict(label="50-59",
+                         method="update",
+                         args=[{"visible": [False, False, False, True,False,False,False,False]},
+                               {"title": "Evolución de Casos 50-59",
+                                "annotations": []}]),
+                    dict(label="60-69",
+                         method="update",
+                         args=[{"visible": [False, False, False, False,True,False,False,False]},
+                               {"title": "Evolución de Casos 60-69",
+                                "annotations": []}]),
+                    dict(label="70-79",
+                         method="update",
+                         args=[{"visible": [False, False, False, False,False,True,False,False]},
+                               {"title": "Evolución de Casos >=70",
+                                "annotations": []}]),
+                    dict(label="80-89",
+                         method="update",
+                         args=[{"visible": [False, False, False, False,False,False,True,False]},
+                               {"title": "Evolución de Casos 80-89",
+                                "annotations": []}]),
+                    dict(label=">=90",
+                         method="update",
+                         args=[{"visible": [False, False, False, False,False,False,False,True]},
+                               {"title": "Evolución de Casos >=90",
+                                "annotations": []}]),
+                    
+                      dict(label="Comparacion",
+                         method="update",
+                         args=[{"visible": [False, True, True, True,True,True,True,True]},
+                               {"title": "Comparacion",
+                                "annotations": []}]),
+                    
+                    
+                    
+                ]),
+            )
+        ])
+
+    # Set title
+    fig.update_layout(title_text="Total Fallecidos")
+
+    return fig
+
+
 def busqueda_casos_por_grupo(request):
 
     #GRAFICO 1
@@ -251,6 +394,8 @@ def busqueda_casos_por_grupo(request):
                     )
     fig.update_xaxes(title_text="Grupos de Edad")
     fig.update_yaxes(title_text="Numero de casos")
+
+   
 
    
    #GRAFICO 2
@@ -304,18 +449,9 @@ def busqueda_casos_por_grupo(request):
 
 def busqueda_fallecidos_por_grupo(request):
 
-    #GRAFICO 1
-    
-    titulo ='Fallecidos por grupo de edad Fecha: '+fecha_grupo_fallecidos
+ 
 
-
-    fig = px.bar(grupo_fallecidos.sort_values(fecha_grupo_fallecidos),
-                    x='Grupo de edad', y=fecha_grupo_fallecidos,
-                    title=titulo,
-                    text=fecha_grupo_fallecidos 
-                    )
-    fig.update_xaxes(title_text="Grupos de Edad")
-    fig.update_yaxes(title_text="Numero de casos")
+    fig = grupos_fallecidos()
 
     graph1 = fig.to_html(full_html=False)
 

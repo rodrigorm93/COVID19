@@ -79,22 +79,6 @@
         <div class="card-body">
           <span>Número de personas fallecidas con COVID-19, agrupadas por rangos etarios 
             (<=39; 40-49; 50-59; 60-69; 70-79; 80-89; y >=90) reportados diariamente por el Ministerio de Salud, desde el 09-04-2020.</span>
-            <form action='/buscar_grupo_edad/' method="GET">
-
-                <select name="edad" id="edad">
-                  <option value="<=39">menor igual 39</option>
-                  <option value="49-49">40-49</option>
-                  <option value="50-59">50-59</option>
-                  <option value="60-69">60-69</option>
-                  <option value="80-89">80-89</option>
-                  <option value="70-79">70-79</option>
-                  <option value=">=90">mayor igual 90</option>
-      
-              </select>
-    
-              <button type="submit" class="boton_personalizado">Buscar</button>
-    
-              </form>
               
           {{grafico1|safe}}
         </div>
