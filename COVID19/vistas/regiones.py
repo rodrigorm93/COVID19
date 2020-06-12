@@ -5,26 +5,16 @@ from django.template import loader
 from django.shortcuts import render
 
 
+
 import numpy as np
 import pandas as pd
-import seaborn as sb
 import plotly.graph_objs as go
-import datetime
 import plotly.express as px
-import folium
-import warnings
-import folium 
-from folium import plugins
-from math import sqrt
+import requests
+import json
 
-import matplotlib.pyplot as plt
-import seaborn as sns
 
-import plotly.express as px
-import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from plotly.graph_objs import *
-
 
 import warnings
 

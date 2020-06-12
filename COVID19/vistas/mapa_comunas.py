@@ -4,26 +4,10 @@ from django.template import loader
 
 from django.shortcuts import render
 
-
 import numpy as np
 import pandas as pd
-import seaborn as sb
 import plotly.graph_objs as go
-import datetime
 import plotly.express as px
-import folium
-import warnings
-import folium 
-from folium import plugins
-from math import sqrt
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from plotly.graph_objs import *
 import requests
 import json
 
@@ -441,13 +425,6 @@ def mapa_comunas_busqueda(request):
     fig.update_layout(mapbox_style="carto-positron",
                   mapbox_zoom=zoom,height=600,mapbox_center = {"lat": lat, "lon": lon})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-
-
-
-
-
-
-
 
 
 

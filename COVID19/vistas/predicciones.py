@@ -7,35 +7,21 @@ import os
 
 import numpy as np
 import pandas as pd
-import seaborn as sb
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
-from sklearn.kernel_ridge import KernelRidge
-from sklearn.model_selection import KFold, cross_val_score
-from sklearn.metrics import mean_squared_error, mean_absolute_error,mean_squared_error
 import plotly.graph_objs as go
-import datetime
 import plotly.express as px
-import folium
-import warnings
-import folium 
-from folium import plugins
-from math import sqrt
-from sklearn.preprocessing import PolynomialFeatures
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from plotly.subplots import make_subplots
+import requests
+import json
 
 from datetime import date
-
-from joblib import dump, load
-
+import datetime
 from statsmodels.tsa.api import Holt,SimpleExpSmoothing,ExponentialSmoothing
+import plotly.figure_factory as ff
+
+import warnings
+
+warnings.filterwarnings('ignore')
+
+
 
 now = date.today()
 
@@ -47,7 +33,7 @@ grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Dat
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 
 
-seasonal_periods_casos = 6
+seasonal_periods_casos = 3
 seasonal_periods_fallecidos = 33
 
 
@@ -243,9 +229,18 @@ def total_defunciones_chile(request):
     fig2.update_xaxes(title_text="Número de Fallecidos")
     fig2.update_yaxes(title_text="Años")
 
-    graph2 = fig2.to_html(full_html=False)
+    
     total_fallecimientos_mes_trans = total_fallecimientos_mes.drop(['Total 4 Meses'], axis=1).T
-    tabla1 = total_fallecimientos_mes_trans.to_html()
+    #tabla1 = total_fallecimientos_mes_trans.to_html()
+
+    tabla1 = ff.create_table(total_fallecimientos_mes_trans,height_constant=20)
+
+
+    tabla1.layout.margin.update({'t':30, 'b':5})
+    tabla1.layout.update({'title': 'Tabla de Fallecidos 2010-2020'})
+
+    graph2 = fig2.to_html(full_html=False)
+    tabla1 = tabla1.to_html(full_html=False)
 
     return render(request,"numero_defunciones_chile.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"tabla1":tabla1,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 

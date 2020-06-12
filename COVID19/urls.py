@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from COVID19.vistas.menu import menu,casos_criticos
+from COVID19.vistas.menu import casos_criticos,menu
 from COVID19.vistas.predicciones import total_defunciones_chile,modelo_predictivo,modelo_predictivo_fallecidos
 from COVID19.vistas.ventiladores import pacientes_ventiladores,num_ventiladores
 from COVID19.vistas.grupo_edad import busqueda_casos_por_grupo,busqueda_fallecidos_por_grupo,busqueda_por_grupo_edad,busqueda_hosp_por_grupo
@@ -23,6 +23,8 @@ from COVID19.vistas.regiones import regiones,busqueda_region,examenes_pcr,busque
 from COVID19.vistas.mapa_comunas import mapa_comunas,mapa_comunas_busqueda
 from COVID19.vistas.mapa_regiones import mapa_region
 from COVID19.vistas.cuarentenas import cuarentenas_activas
+from COVID19.vistas.mapa_mundo import mapa_mundo
+
 urlpatterns = [
     path('', mapa_comunas),
     path('region/', regiones),
@@ -34,6 +36,7 @@ urlpatterns = [
     path('grupo_hosp/', busqueda_hosp_por_grupo),
     path('ventiladores/', num_ventiladores),
     path('n_casos_criticos/', casos_criticos),
+    path('menu/', menu),
     path('defunciones_chile/', total_defunciones_chile),
     path('predicciones/', modelo_predictivo),
     path('predicciones_fallecidos/', modelo_predictivo_fallecidos),
@@ -41,10 +44,9 @@ urlpatterns = [
     path('pacientes_vmi/', pacientes_ventiladores),
     path('mapa_comunas/', mapa_comunas),
     path('mapa_comunas_busqueda/', mapa_comunas_busqueda),
-    path('menu/', menu),
     path('cuarentenas_mapa/', cuarentenas_activas),
     path('mapa_regiones/', mapa_region),
-
+    path('casos_mapa_mundo/', mapa_mundo),
 
     
 

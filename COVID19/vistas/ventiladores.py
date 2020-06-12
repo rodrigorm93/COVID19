@@ -6,11 +6,18 @@ from django.template import loader
 from django.shortcuts import render
 
 
+
 import numpy as np
 import pandas as pd
-import plotly.express as px
-from plotly.subplots import make_subplots
 import plotly.graph_objs as go
+import plotly.express as px
+import requests
+import json
+from plotly.subplots import make_subplots
+
+import warnings
+
+warnings.filterwarnings('ignore')
 
 data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')

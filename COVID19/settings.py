@@ -33,34 +33,6 @@ DEBUG = False
 ALLOWED_HOSTS = ['*']
 #AGREGADO PARA DEBUG
 #https://stackoverflow.com/questions/43403717/django-500-error-when-debug-false-but-only-on-some-pages
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-     'console':{
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
-}
 
 #####
 # Application definition
