@@ -227,6 +227,7 @@ def total_defunciones_chile(request):
         y=año_2017,
         name="2017",
         yaxis="y",
+        text=año_2017
     ))
 
     # Add traces
@@ -235,6 +236,7 @@ def total_defunciones_chile(request):
         y=año_2018,
         name="2018",
         yaxis="y",
+        text=año_2018
     ))
 
     fig2.add_trace(go.Scatter(
@@ -242,12 +244,14 @@ def total_defunciones_chile(request):
         y=año_2019,
         name="2019",
         yaxis="y",
+         text=año_2019
     ))
     fig2.add_trace(go.Scatter(
         x=registros_meses,
         y=año_2020,
         name="2020",
         yaxis="y",
+        text=año_2020
     ))
 
 
