@@ -10,12 +10,6 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
-import requests
-import json
-
-import warnings
-
-warnings.filterwarnings('ignore')
 
 from plotly.subplots import make_subplots
 
@@ -73,23 +67,9 @@ fecha_casos_fall='('+data_chile.columns[-1]+')'
 
 cuarentenas = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto29/Cuarentenas-Activas.csv')
 
-resp = requests.get('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto29/Cuarentenas-Geo.geojson')
-geo_region = json.loads(resp.content)
 
 
 def cuarentenas_activas(request):
-
-    fig = px.choropleth_mapbox(cuarentenas, geojson=geo_region, color="Alcance",
-                           locations="Nombre", featureidkey="properties.Nombre",
-                           center={"lat": -30.0000000, "lon": -71.0000000},
-                           mapbox_style="carto-positron", zoom=3,hover_data=["Fecha de Inicio","Fecha de Término"],
-                           height=730
-            )
-    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-
-
-    graph1 = fig.to_html(full_html=False)
-
 
     data_c =cuarentenas[['Nombre','Alcance','Fecha de Inicio','Fecha de Término']]
 
@@ -123,7 +103,7 @@ def cuarentenas_activas(request):
     tabla = fig2.to_html(full_html=False)
 
     
-    return render(request,"mapa_cuarentenas.html", {"grafico1":graph1,"tabla":tabla,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_cuarentenas.html", {"tabla":tabla,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 
 

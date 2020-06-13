@@ -14,17 +14,14 @@ import json
 from plotly.subplots import make_subplots
 
 
-import warnings
-
-warnings.filterwarnings('ignore')
 
 data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
-pacientes_criticos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto23/PacientesCriticos.csv')
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
+casos_diarios_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 
 
 ultima_fecha_cl = data_chile.columns
@@ -113,52 +110,3 @@ def menu(request):
 
     return render(request,"principal.html", {"fecha_casos_fall":fecha_casos_fall,"fecha_act":ultima_fecha,"grafico2":graph2,"grafico4":graph4,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
-
-
-def casos_criticos(request):
-
-
-
-    #GRAFICO 1
-    trace = go.Scatter(
-                x=pacientes_criticos.iloc[:,1:].columns,
-                y=pacientes_criticos.iloc[0,1:],
-                name="Pacientes Criticos",
-                mode='lines+markers',
-                line_color='red')
-
-    layout = go.Layout(template="ggplot2",title_text = '<b>Número de Pacientes Criticos Fecha: '+ ultima_fecha_cl+'</b>',
-                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig = go.Figure(data = [trace], layout = layout)
-
-
-    data_activos = data_chile_r[data_chile_r['Fecha']=='Casos activos']
-    ultima_fecha = data_activos.columns
-    ultima_fecha= ultima_fecha[-1]
-
-    trace = go.Scatter(
-                x=data_activos.iloc[:,1:].columns,
-                y=data_activos.iloc[0,1:],
-                name="Pacientes Activos",
-                mode='lines+markers',
-                line_color='red')
-
-    layout = go.Layout(template="ggplot2",title_text = '<b>Número de Pacientes Activos Fecha: '+ ultima_fecha+'</b>',
-                    font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
-    fig2 = go.Figure(data = [trace], layout = layout)
-
-
-    fig3=px.bar(x=data_activos.iloc[:,1:].columns,y=data_activos.iloc[0,1:])
-    fig3.update_layout(title="Distribucion del número de Casos Activos",
-                    xaxis_title="Fecha",yaxis_title="Numero de Casos",)
-
-    graph1 = fig.to_html(full_html=False)
-    graph2 = fig2.to_html(full_html=False)
-    graph3 = fig3.to_html(full_html=False)
-
-
-    #graph2 = fig2.to_html(full_html=False)
-
-
-
-    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"grafico3":graph3,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
