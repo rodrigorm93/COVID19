@@ -17,9 +17,7 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-
-import plotly.figure_factory as ff
-
+from plotly.subplots import make_subplots
 
 
 #***************************MENU**************************************
@@ -92,16 +90,35 @@ def cuarentenas_activas(request):
 
     graph1 = fig.to_html(full_html=False)
 
+
     data_c =cuarentenas[['Nombre','Alcance','Fecha de Inicio','Fecha de Término']]
 
-    fig2 = ff.create_table(data_c,height_constant=20)
 
+    fig2 = make_subplots(
+        rows=1, cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.03,
+        specs=[[{"type": "table"}]])
 
-    fig2.layout.margin.update({'t':30, 'b':5})
-    fig2.layout.update({'title': 'Tabla de Cuarentenas'})
-  
+    fig2.add_trace(
+        go.Table(
+            header=dict(
+                values=data_c.columns,
+                font=dict(size=10),
+                align="left"
+            ),
+            cells=dict(
+                values=[data_c[k].tolist() for k in data_c.columns],
+                align = "left")
+        ),
+        row=1, col=1
+    )
+    fig2.update_layout(
+        height=800,
+        showlegend=False,
+        title_text="Tabla de Cuarentenas Chile",
+    )
 
-    #tabla= data_c.to_html()
 
     tabla = fig2.to_html(full_html=False)
 
