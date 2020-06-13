@@ -9,8 +9,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
-import requests
-import json
+
 from plotly.subplots import make_subplots
 
 
@@ -19,7 +18,6 @@ data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COV
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
-grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 casos_diarios_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 
@@ -73,24 +71,104 @@ fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
 fechas_chile = fechas_chile.keys()
 
 
+
+def grafico_Update_Dropdown_chile(data_crec_por_dia):
+    
+    data_crec_por_dia = data_crec_por_dia.fillna(0)
+
+
+    fecha_casos_totales =data_crec_por_dia.columns
+    fecha_casos_totales= fecha_casos_totales[1:]
+
+    # Initialize figure
+    fig = go.Figure()
+    
+    # Add Traces
+    casos_totales_df = pd.DataFrame({"fecha": fecha_casos_totales, 
+                                     "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos nuevos con sintomas'].iloc[0,1:].values})
+ 
+    
+    fallecidos_totales_df = pd.DataFrame({"fecha": fecha_casos_totales, 
+                                          "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos nuevos sin sintomas'].iloc[0,1:].values})
+    
+    casos_nuevos_totales_df = pd.DataFrame({"fecha": fecha_casos_totales, 
+                                          "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos nuevos totales'].iloc[0,1:].values})
+
+    
+    #Casos por dia
+    fig.add_trace(
+        go.Scatter(x=casos_nuevos_totales_df.fecha,
+                   y=casos_nuevos_totales_df.casos,
+                   name='Casos Totales',
+                   mode='lines+markers',
+                   line=dict(color="#2EECEA")))
+
+    #Casos por dia
+    fig.add_trace(
+        go.Scatter(x=casos_totales_df.fecha,
+                   y=casos_totales_df.casos,
+                   name='Casos con sintomas',
+                   mode='lines+markers',
+                   visible=False,
+                   line=dict(color="#33CFA5")))
+
+    #activos
+
+    fig.add_trace(
+        go.Scatter(x=fallecidos_totales_df.fecha,
+                   y=fallecidos_totales_df.casos,
+                   name='Casos sin sintomas',
+                   mode='lines+markers',
+                   visible=False,
+                  line=dict(color="#1466F4")))
+    
+
+
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                active=0,
+                buttons=list([
+                    
+                    dict(label="Casos Totales",
+                         method="update",
+                         args=[{"visible": [True, False,False]},
+                               {"title": 'Casos Diarios: Totales',
+                                "annotations": []}]),
+                    
+                    dict(label="con sintomas",
+                         method="update",
+                         args=[{"visible": [False, True,False]},
+                               {"title":'Casos Diarios: con sintomas',
+                                "annotations": []}]),
+
+                    dict(label="sin sintomas",
+                         method="update",
+                         args=[{"visible": [False, False,True]},
+                               {"title": 'Casos Diarios: sin sintomas',
+                                "annotations": []}]),
+                    
+                    
+
+                
+
+                ]),
+            )
+        ])
+
+    # Set title
+    fig.update_layout(title_text='Casos Diarios')
+    return fig
+
+
+
 def menu(request):
 
     # Grafico 1:
 
+    fig1 =  grafico_Update_Dropdown_chile(data_crec_por_dia)
 
-    casos_por_dia_totales = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos nuevos totales'].iloc[0,1:]
-    
-    fig2=go.Figure()
-    fig2.add_trace(go.Scatter(x=fechas_chile, y=casos_por_dia_totales,mode='lines+markers',
-                        name='Número Casos'))
-    #fig2.add_trace(go.Scatter(x=fechas_chile, y=fallecidos_por_dia,mode='lines+markers',
-                        #name='Falllecidos'))
-    fig2.update_layout(title="Numero de Casos por Día",
-                    xaxis_title="Date",yaxis_title="Número casos",legend=dict(x=0,y=1,traceorder="normal"))
-
-
-    
-    ultima_fecha = ultima_fecha_cl
 
     #Grafico4
     data_sintomas = data_chile_r[data_chile_r['Fecha']=='Casos nuevos con sintomas'].iloc[0,1:].sum()
@@ -101,12 +179,10 @@ def menu(request):
     fig4.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
 
 
-    graph2 = fig2.to_html(full_html=False)
+    graph2 = fig1.to_html(full_html=False)
     graph4 = fig4.to_html(full_html=False)
 
 
 
-
-
-    return render(request,"principal.html", {"fecha_casos_fall":fecha_casos_fall,"fecha_act":ultima_fecha,"grafico2":graph2,"grafico4":graph4,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"principal.html", {"fecha_casos_fall":fecha_casos_fall,"fecha_act":ultima_fecha_cl,"grafico2":graph2,"grafico4":graph4,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
