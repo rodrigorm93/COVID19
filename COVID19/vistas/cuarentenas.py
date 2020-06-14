@@ -10,7 +10,8 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
-
+import requests
+import json
 from plotly.subplots import make_subplots
 
 
@@ -65,11 +66,47 @@ fecha_casos_fall='('+data_chile.columns[-1]+')'
 #********************************************************************
 
 
+data_comunas = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto29/Cuarentenas-Activas.csv')
 cuarentenas = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto29/Cuarentenas-Activas.csv')
 
+data_comunas = data_comunas.rename(columns={'Nombre':'Comuna'})
+
+data_comunas.loc[data_comunas['Comuna'] == 'Independencia Extensión a Total', "Comuna"] = 'Independencia'
+data_comunas.loc[data_comunas['Comuna'] == 'Santiago Extensión a Total', "Comuna"] = 'Santiago'
+data_comunas.loc[data_comunas['Comuna'] == 'La Pintana Extensión a Total', "Comuna"] = 'La Pintana'
+data_comunas.loc[data_comunas['Comuna'] == 'San Ramón Extensión a Total', "Comuna"] = 'San Ramón'
+data_comunas.loc[data_comunas['Comuna'] == 'Las Condes Re-ingreso Total', "Comuna"] = 'Las Condes'
+data_comunas.loc[data_comunas['Comuna'] == 'Lo Barnechea Re-ingreso total', "Comuna"] = 'Lo Barnechea'
+data_comunas.loc[data_comunas['Comuna'] == 'Vitacura Re-ingreso Total', "Comuna"] = 'Vitacura'
+data_comunas.loc[data_comunas['Comuna'] == 'Ñuñoa Re-ingreso Total', "Comuna"] = 'Ñuñoa'
+data_comunas.loc[data_comunas['Comuna'] == 'Puente Alto Extensión a Total', "Comuna"] = 'Puente Alto'
+data_comunas.loc[data_comunas['Comuna'] == 'Quilicura Extensión a Total', "Comuna"] = 'Quilicura'
+data_comunas.loc[data_comunas['Comuna'] == 'San Bernardo Extensión a Total', "Comuna"] = 'San Bernardo'
+data_comunas.loc[data_comunas['Comuna'] == 'Providencia Re-ingreso total', "Comuna"] = 'Providencia'
+data_comunas.loc[data_comunas['Comuna'] == 'Melipilla (Área Urbana)', "Comuna"] = 'Melipilla'
+data_comunas.loc[data_comunas['Comuna'] == 'Curacaví (Área Urbana)', "Comuna"] = 'Curacaví'
+data_comunas.loc[data_comunas['Comuna'] == 'San José de Maipo (Área Urbana)', "Comuna"] = 'San José de Maipo'
+data_comunas.loc[data_comunas['Comuna'] == 'TilTil (Área Urbana)', "Comuna"] = 'Tiltil'
+data_comunas.loc[data_comunas['Comuna'] == 'Pozo Almonte (Radio Urbano)', "Comuna"] = 'Pozo Almonte'
+data_comunas.loc[data_comunas['Comuna'] == 'Peñalolen', "Comuna"] = 'Peñalolén'
+
+resp = requests.get('https://raw.githubusercontent.com/rgcl/geojson-cl/master/comunas.json')
+geo_region = json.loads(resp.content)
 
 
 def cuarentenas_activas(request):
+
+
+    fig = px.choropleth_mapbox(data_comunas, geojson=geo_region, color="Alcance",
+                           locations="Comuna", featureidkey="properties.NOM_COM",
+                           center={"lat": -30.0000000, "lon": -71.0000000},
+                           mapbox_style="carto-positron", zoom=3,hover_data=["Fecha de Inicio","Fecha de Término"],height=730
+                )
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
+
+
+
 
     data_c =cuarentenas[['Nombre','Alcance','Fecha de Inicio','Fecha de Término']]
 
@@ -101,9 +138,11 @@ def cuarentenas_activas(request):
 
 
     tabla = fig2.to_html(full_html=False)
+    mapa = fig.to_html(full_html=False)
+
 
     
-    return render(request,"mapa_cuarentenas.html", {"tabla":tabla,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_cuarentenas.html", {"tabla":tabla,"mapa":mapa,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 
 

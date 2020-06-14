@@ -224,7 +224,7 @@ def grafico_Update_Dropdown(region):
                         dict(x=x_c,
                              y=pd.to_numeric(casos_diarios_df.casos).max(),
                              xref="x", yref="y",
-                             text="Maximo Fallecidos:<br> %.3f" % pd.to_numeric(casos_diarios_df.casos).max(),
+                             text="Maximo Casos:<br> %.3f" % pd.to_numeric(casos_diarios_df.casos).max(),
                              ax=0, ay=-40)]
 
     uci_annotations = [dict(x="2020-04-10",
