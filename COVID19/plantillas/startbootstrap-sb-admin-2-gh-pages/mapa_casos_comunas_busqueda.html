@@ -16,7 +16,7 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Número de Casos Acumulados {{region}}</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos}} </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos}} {{fecha_c}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -33,7 +33,7 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Número de Casos Activos {{region}}</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_rec}}</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_rec}} {{fecha_act}}</div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -53,7 +53,7 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Número de Fallecidos  {{region}}</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_death}} </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_death}} {{fecha_c}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -73,7 +73,7 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Total de Casos Acumulados para todas las Comunas {{fecha_act}}</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Total de Casos Acumulados para todas las Comunas {{fecha_comuna}}</h6>
           <div class="dropdown no-arrow">
           
           </div>
@@ -85,7 +85,6 @@
           <form action='/mapa_comunas_busqueda/' method="GET">
 
             Regiones: <select name="region" id="region">
-              <option value="Chile">Todas</option>
               <option value="Arica y Parinacota">Arica y Parinacota</option>
               <option value="Tarapaca">Tarapacá</option>
               <option value="Antofagasta">Antofagasta</option>
@@ -122,7 +121,7 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Casos Activos</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Casos Activos {{fecha_comuna}}</h6>
           <div class="dropdown no-arrow">
   
           </div>

@@ -25,6 +25,22 @@ data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-C
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
+data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
+
+
+def int_format(value, decimal_points=3, seperator=u','):
+       value = str(value)
+       if len(value) <= decimal_points:
+           return value
+       # say here we have value = '12345' and the default params above
+       parts = []
+       while value:
+           parts.append(value[-decimal_points:])
+           value = value[:-decimal_points]
+       # now we should have parts = ['345', '12']
+       parts.reverse()
+       # and the return value should be u'12.345'
+       return seperator.join(parts)
 
 
 #***************************MENU**************************************
@@ -47,22 +63,19 @@ num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
 
 
 num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
-num_rec = data_chile_r.iloc[2,-1].sum()
 
 #ver el caso de que no se actualicen los registros
 
-estado_r='Act'+ultima_fecha_cl
-estado_f='Act'+ultima_fecha_cl
-estado_a='Act'+ultima_fecha_cl
 
 casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 #dejar el ulktimo registro de recuperados que fue el 2020-06-02
+num_recuFIS = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
 
 
-
-num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
-num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
-casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
+num_recuFIS = int_format(int(num_recuFIS))
+num_cases_cl = int_format(int(num_cases_cl))
+num_death = int_format(int(num_death))
+casos_act = int_format(int(casos_act))
 
 
 fecha_casos_fall='('+data_chile.columns[-1]+')'
@@ -178,5 +191,5 @@ def mapa_region(request):
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
     
-    return render(request,"mapa_casos_regiones.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_casos_regiones.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos":fecha_casos_fall,"num_recuFIS":num_recuFIS,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 

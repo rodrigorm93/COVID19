@@ -118,14 +118,33 @@ data_mundo_mapa_death = pd.DataFrame({'Country': paises,'Fallecidos':d2[ultima_f
 data_cd = pd.merge(data_mundo_mapa, data_mundo_mapa_death, on='Country')
 data_cdr =  pd.merge(data_cd, data_mundo_mapa_rec, on='Country')
 
+def int_format(value, decimal_points=3, seperator=u','):
+       value = str(value)
+       if len(value) <= decimal_points:
+           return value
+       # say here we have value = '12345' and the default params above
+       parts = []
+       while value:
+           parts.append(value[-decimal_points:])
+           value = value[:-decimal_points]
+       # now we should have parts = ['345', '12']
+       parts.reverse()
+       # and the return value should be u'12.345'
+       return seperator.join(parts)
+
 
 casos_mundo = data_confirmed[ultima_fecha_cl].sum()
+casos_mundo = int_format(int(casos_mundo))
+
 
 muertes_mundo = deaths_data[ultima_fecha_cl].sum()
+muertes_mundo = int_format(int(muertes_mundo))
+
 
 recuperados_mundo = recoveries_df[ultima_fecha_cl].sum()
+recuperados_mundo = int_format(int(recuperados_mundo))
 
-casos_mundo = int(casos_mundo)
+fecha_casos = ' ('+ultima_fecha_cl+')'
 
 
 def mapa_mundo(request):
@@ -156,4 +175,4 @@ def mapa_mundo(request):
 
 
 
-    return render(request,"mapa_mundo.html", {"fecha_act":ultima_fecha_cl,"grafico1":graph1,"casos_mundo":casos_mundo,"muertes_mundo":muertes_mundo,"recuperados_mundo":recuperados_mundo})
+    return render(request,"mapa_mundo.html", {"fecha_act":ultima_fecha_cl,"fecha_casos":fecha_casos,"grafico1":graph1,"casos_mundo":casos_mundo,"muertes_mundo":muertes_mundo,"recuperados_mundo":recuperados_mundo})

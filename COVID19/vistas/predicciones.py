@@ -15,7 +15,9 @@ import json
 from datetime import date
 import datetime
 from statsmodels.tsa.api import Holt,SimpleExpSmoothing,ExponentialSmoothing
-import plotly.figure_factory as ff
+#import plotly.figure_factory as ff
+from plotly.subplots import make_subplots
+
 
 import warnings
 
@@ -33,7 +35,7 @@ grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Dat
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 
 
-seasonal_periods_casos = 3
+seasonal_periods_casos = 4
 seasonal_periods_fallecidos = 33
 
 
@@ -254,9 +256,6 @@ def total_defunciones_chile(request):
         text=año_2020
     ))
 
-
-
-
     # style all the traces
     fig2.update_traces(
         hoverinfo="name+x+text",
@@ -339,67 +338,42 @@ def modelo_predictivo(request):
     fig.add_trace(go.Scatter(x=np.array(future_forcast_dates_cl), y=datewise["Confirmed"],
                         mode='lines+markers',name="Casos Reales"))
     fig.add_trace(go.Scatter(x=Predict_df_cl_1['Fecha'], y=Predict_df_cl_1["N° Casos"],
-                        mode='lines+markers',name="Predicción de Casos",))
+                        mode='lines+markers',name="Predicción",))
 
     fig.update_layout(title="Proyección de casos en 20 días",
                     xaxis_title="Fecha",yaxis_title="Número de Casos",legend=dict(x=0,y=1,traceorder="normal"))
 
     graph1 = fig.to_html(full_html=False)
+
+
+    fig2 = make_subplots(
+        rows=1, cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.03,
+        specs=[[{"type": "table"}]])
+
+    fig2.add_trace(
+        go.Table(
+            header=dict(
+                values=Predict_df_cl_1.columns,
+                font=dict(size=15),
+                align="left"
+            ),
+            cells=dict(
+                values=[Predict_df_cl_1[k].tolist() for k in Predict_df_cl_1.columns],
+                align = "left",font=dict(size=13))
+        ),
+        row=1, col=1
+    )
+    fig2.update_layout(
+        showlegend=False,
+        title_text="Tabla de Proyecciones a 20 días",
+    )
+
+
+
     
-    graph2 = Predict_df_cl_1.to_html()
+    graph2 = fig2.to_html(full_html=False)
 
     return render(request,"predicciones.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
-
-def modelo_predictivo_fallecidos(request):
-    data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
-    col_el = data_crec_por_dia.columns[1:20]
-    data_crec_por_dia = data_crec_por_dia.drop(col_el,axis=1)
-
-
-    fechas_chile_crec = data_crec_por_dia.columns[-1]#2020-03-03
-    fechas_chile = data_crec_por_dia.loc[:, '2020-03-22': fechas_chile_crec]
-    fechas_chile = fechas_chile.keys()
-    fallecidos_por_dia =[]
-    for i in fechas_chile:
-        f = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][i].sum()
-        fallecidos_por_dia.append(f)
-    
-    days_fallecidos_chile = np.array([i for i in range(len(fechas_chile))])
-
-    data_ch_fallecidos = pd.DataFrame({'Días': list(days_fallecidos_chile), 'Fallecidos': [int(x) for x in fallecidos_por_dia]})
-    casos_f = data_ch_fallecidos['Fallecidos']
-    data_ch_fallecidos = pd.DataFrame({'Días': list(days_fallecidos_chile), 'Fallecidos':casos_f})
-        
-
-    es=ExponentialSmoothing(np.asarray(data_ch_fallecidos['Fallecidos']),seasonal_periods=seasonal_periods_fallecidos,trend='add', seasonal='mul').fit()
-
-
-    days_in_future_cl = 8
-    future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
-    adjusted_dates_cl = future_forcast_cl[:-days_in_future_cl]
-    start_cl = '03/22/2020'#03/03/2020
-    start_date_cl = datetime.datetime.strptime(start_cl, '%m/%d/%Y')
-    future_forcast_dates_cl = []
-    for i in range(len(future_forcast_cl)):
-        future_forcast_dates_cl.append((start_date_cl + datetime.timedelta(days=i)).strftime('%m/%d/%Y'))
-            
-    Predict_df_cl_1= pd.DataFrame()
-    Predict_df_cl_1["Fecha"] = list(future_forcast_dates_cl[-days_in_future_cl:])
-    Predict_df_cl_1["N° Fallecidos"] =np.round(list(es.forecast(days_in_future_cl)))
-        
-    fig=go.Figure()
-    fig.add_trace(go.Scatter(x=np.array(future_forcast_dates_cl), y=data_ch_fallecidos["Fallecidos"],
-                            mode='lines+markers',name="Fallecidos Reales"))
-    fig.add_trace(go.Scatter(x=Predict_df_cl_1['Fecha'], y=Predict_df_cl_1["N° Fallecidos"],
-                            mode='lines+markers',name="Predicción de Fallecidos",))
-
-    fig.update_layout(title="Proyección de Fallecidos en 8 días",
-                        xaxis_title="Fecha",yaxis_title="Número de Fallecidos",legend=dict(x=0,y=1,traceorder="normal"))
-
-    graph1 = fig.to_html(full_html=False)
-    
-    graph2 = Predict_df_cl_1.to_html()
-   
-
-    return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})

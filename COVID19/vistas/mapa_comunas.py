@@ -32,6 +32,22 @@ casos_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
 
+
+def int_format(value, decimal_points=3, seperator=u','):
+       value = str(value)
+       if len(value) <= decimal_points:
+           return value
+       # say here we have value = '12345' and the default params above
+       parts = []
+       while value:
+           parts.append(value[-decimal_points:])
+           value = value[:-decimal_points]
+       # now we should have parts = ['345', '12']
+       parts.reverse()
+       # and the return value should be u'12.345'
+       return seperator.join(parts)
+
+
 #***************************MENU**************************************
 #Lenar con 0 filas nulas
 data_chile_r = data_chile_r.fillna(0)
@@ -47,37 +63,26 @@ ultima_fecha_region_fallecidos = fallecidos_por_region.columns
 ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
 
 num_cases_cl = data_chile.drop([16],axis=0)
-num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
+num_cases_cl_data = num_cases_cl[ultima_fecha_cl].sum()
 
 
 
-num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
-num_rec = data_chile_r.iloc[2,-1].sum()
+num_death_data =  grupo_fallecidos[ultima_fecha_cl].sum()
 
-#ver el caso de que no se actualicen los registros
-
-estado_r='Act'+ultima_fecha_cl
-estado_f='Act'+ultima_fecha_cl
-estado_a='Act'+ultima_fecha_cl
-
-casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
+casos_act_data = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 #dejar el ulktimo registro de recuperados que fue el 2020-06-02
 
 #recuperados
-num_recuFIS = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
+num_recuFIS_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
 
-num_recuFIS = str(int(num_recuFIS))+' ('+ultima_fecha_cl_r+')'
+num_recuFIS = int_format(int(num_recuFIS_data))
+num_cases_cl = int_format(int(num_cases_cl_data))
+num_death = int_format(int(num_death_data))
+casos_act = int_format(int(casos_act_data))
 
-
-num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
-num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
-casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
-
-
+fecha_casos = ' ('+ultima_fecha_cl+')'
 
 
-
-fecha_casos_fall='('+data_chile.columns[-1]+')'
 
 #********************************************************************
 
@@ -297,6 +302,7 @@ def grafico_Update_Dropdown(region):
 
 def grafico_Update_Dropdown_chile():
 
+   
     fecha_casos_totales =data_crec_por_dia.columns
     fecha_casos_totales= fecha_casos_totales[1:]
 
@@ -386,7 +392,6 @@ def grafico_Update_Dropdown_chile():
 def mapa_comunas(request):
 
 
-
     fig = go.Figure(go.Choroplethmapbox(geojson=geo_comunas, locations=data_comunas.Comuna, z=data_comunas.Casos,
                                     colorscale="Viridis", zmin=0, zmax=1000,
                                     featureidkey="properties.NOM_COM",
@@ -412,13 +417,15 @@ def mapa_comunas(request):
  
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
-    fecha_act = '('+data_casos_por_comuna.columns[-2]+')'
+
+
+
 
     fig3 = grafico_Update_Dropdown_chile()
     graph3 = fig3.to_html(full_html=False)
 
         
-    return render(request,"mapa_casos_comunas.html", {"num_recuFIS":num_recuFIS,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"fecha_casos_fall":fecha_act,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_casos_comunas.html", {"fecha_comuna":fecha,"num_recuFIS":num_recuFIS,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"fecha_casos":fecha_casos,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 def mapa_comunas_busqueda(request):
 
@@ -454,95 +461,66 @@ def mapa_comunas_busqueda(request):
     lat = locations[region][0]
     lon = locations[region][1]
 
-    if(region == 'Chile'):
-        zoom = 3
-       
-        fig2 = px.bar(data_activos_region.sort_values('Casos Activos'), 
-                    x='Casos Activos', y='Region',color_discrete_sequence=['#84DCC6'],height=700,
-                    title='Número de casos Activos por Región '+fecha, text='Casos Activos', orientation='h')
-        fig2.update_xaxes(title_text="Número de Casos Activos")
-        fig2.update_yaxes(title_text="Regiones")
-
-        num_cases_cl = data_chile.drop([16],axis=0)
-        num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
-        num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
-
-        num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
-        num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
-        casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 
 
-        n_casos_activos = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
-
-        fig3 = grafico_Update_Dropdown_chile()
-        graph3 = fig3.to_html(full_html=False)
-
-
-
-
-      
-    else:
   
 
-        data_casos_por_comuna_maule = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Region']==region]
-        data_casos_por_comuna_maule = data_casos_por_comuna_maule.reset_index()
-        data_casos_por_comuna_maule = data_casos_por_comuna_maule.drop(data_casos_por_comuna_maule.index[len(data_casos_por_comuna_maule)-1])
+    data_casos_por_comuna_maule = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Region']==region]
+    data_casos_por_comuna_maule = data_casos_por_comuna_maule.reset_index()
+    data_casos_por_comuna_maule = data_casos_por_comuna_maule.drop(data_casos_por_comuna_maule.index[len(data_casos_por_comuna_maule)-1])
 
-        n_casos_activos =data_casos_por_comuna_maule[fecha].sum()
-        n_casos_activos = str(int(n_casos_activos))+' ('+fecha+')'
 
-        fig2 = px.bar(data_casos_por_comuna_maule.sort_values(fecha), 
+    fig2 = px.bar(data_casos_por_comuna_maule.sort_values(fecha), 
                     x=fecha, y='Comuna',color_discrete_sequence=['#84DCC6'],height=600,
                     title='Número de casos Activos Reg: '+region+' fecha: '+fecha, text=fecha, orientation='h')
-        fig2.update_xaxes(title_text="Número de Casos Activos")
-        fig2.update_yaxes(title_text="Comunas")
+    fig2.update_xaxes(title_text="Número de Casos Activos")
+    fig2.update_yaxes(title_text="Comunas")
 
         
-        n_casos_region = data_chile[data_chile['Region'] ==region2][ultima_fecha_cl].values
-        n_casos_region =  str(int(n_casos_region))+' ('+ultima_fecha_cl+')'
+    n_casos_region = data_chile[data_chile['Region'] ==region2][ultima_fecha_cl].values
 
-        num_cases_cl = n_casos_region
+    n_casos_region_f = fallecidos_por_region[fallecidos_por_region['Region']==region2][ultima_fecha_region_fallecidos]
+
+
+    f = int(data_casos_por_comuna_maule[fecha].sum())
+
+
+    num_cases_cl = int_format(int(n_casos_region))
+    num_death = int_format(int(n_casos_region_f))
+    casos_act = int_format(f)
+
+    fecha_comuna = '('+fecha+')'
 
         
-        n_casos_region_f = fallecidos_por_region[fallecidos_por_region['Region']==region2][ultima_fecha_region_fallecidos]
-        n_casos_region_f = str(int(n_casos_region_f))+' ('+ultima_fecha_region_fallecidos+')'
-
-        num_death =n_casos_region_f
-
-        fig3 = grafico_Update_Dropdown(region2)
-        graph3 = fig3.to_html(full_html=False)
+    fig3 = grafico_Update_Dropdown(region2)
+    graph3 = fig3.to_html(full_html=False)
 
 
-
-
-   
 
 
     fig = go.Figure(go.Choroplethmapbox(geojson=geo_comunas, locations=data_comunas.Comuna, z=data_comunas.Casos,
-                                    colorscale="Viridis", zmin=0, zmax=1000,
-                                    featureidkey="properties.NOM_COM",
-                                    colorbar = dict(thickness=20, ticklen=3),
-                                    marker_opacity=0.2, marker_line_width=0, text=data_comunas['Poblacion'],
-                                    hovertemplate = '<b>Región</b>: <b>'+data_comunas['Region']+'</b>'+
-                                            '<br><b>Comuna </b>: %{properties.NOM_COM}<br>'+
-                                            '<b>Población: </b>:%{text}<br>'+
-                                            '<b>Casos </b>: %{z}<br>'
-                                    
-                                       
-                                   ))
+                                        colorscale="Viridis", zmin=0, zmax=1000,
+                                        featureidkey="properties.NOM_COM",
+                                        colorbar = dict(thickness=20, ticklen=3),
+                                        marker_opacity=0.2, marker_line_width=0, text=data_comunas['Poblacion'],
+                                        hovertemplate = '<b>Región</b>: <b>'+data_comunas['Region']+'</b>'+
+                                                '<br><b>Comuna </b>: %{properties.NOM_COM}<br>'+
+                                                '<b>Población: </b>:%{text}<br>'+
+                                                '<b>Casos </b>: %{z}<br>'
+                                        
+                                        
+                                    ))
     fig.update_layout(mapbox_style="carto-positron",
-                  mapbox_zoom=zoom,height=600,mapbox_center = {"lat": lat, "lon": lon})
+                    mapbox_zoom=zoom,height=600,mapbox_center = {"lat": lat, "lon": lon})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
 
 
- 
+    
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
-
-    fecha_act = '('+data_casos_por_comuna.columns[-2]+')'
-    
+        
     
 
     
-    return render(request,"mapa_casos_comunas_busqueda.html", {"region":region,"fecha_act":fecha_act,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":n_casos_activos, "num_death":num_death})
+    return render(request,"mapa_casos_comunas_busqueda.html", {"fecha_comuna":fecha,"region":region,"fecha_act":fecha_comuna,"fecha_c":fecha_casos,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
