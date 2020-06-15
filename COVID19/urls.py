@@ -18,7 +18,7 @@ from django.urls import path
 from COVID19.vistas.menu import menu
 from COVID19.vistas.predicciones import total_defunciones_chile,modelo_predictivo
 from COVID19.vistas.ventiladores import pacientes_ventiladores,num_ventiladores
-from COVID19.vistas.grupo_edad import busqueda_casos_por_grupo,busqueda_fallecidos_por_grupo,busqueda_por_grupo_edad,busqueda_hosp_por_grupo
+from COVID19.vistas.grupo_edad import busqueda_fallecidos_por_grupo,busqueda_por_grupo_edad,busqueda_hosp_por_grupo
 from COVID19.vistas.regiones import busqueda_region,examenes_pcr
 from COVID19.vistas.mapa_comunas import mapa_comunas,mapa_comunas_busqueda
 from COVID19.vistas.mapa_regiones import mapa_region
@@ -27,6 +27,8 @@ from COVID19.vistas.mapa_mundo import mapa_mundo
 from COVID19.vistas.evolucionCasosRegiones import regiones
 from COVID19.vistas.hopitalizacionesRegiones import busqueda_hospitalizacion_region
 from COVID19.vistas.casos_criticos import casos_criticos
+from COVID19.vistas.casos_grupo_edad import busqueda_casos_por_grupo
+
 
 urlpatterns = [
     path('', mapa_comunas),

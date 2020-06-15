@@ -89,15 +89,33 @@ fecha_casos = ' ('+ultima_fecha_cl+')'
 fecha = data_casos_por_comuna_activos.columns
 fecha= fecha[-1]
 
+#casos activos totales por region
 data_activos_region = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Comuna']=='Total']
 data_activos_region = data_activos_region.reset_index()
 data_activos_region = data_activos_region[['Region',fecha]]
 data_activos_region = data_activos_region.rename(columns={fecha:'Casos Activos'})
+data_activos_region.loc[data_activos_region['Region'] == 'Magallanes y la Antartica', "Region"] = 'Magallanes'
+data_activos_region.loc[data_activos_region['Region'] == 'Del Libertador General Bernardo O’Higgins', "Region"] = 'O’Higgins'
+data_activos_region = data_activos_region.sort_values('Casos Activos')
+
+#casos acumulados totales por region
+data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
+
+data_reg_ac = data_casos_por_comuna
+data_reg_ac= data_reg_ac[['Region',fecha]]
+data_reg_ac= data_reg_ac.groupby(['Region']).sum()
+data_reg_ac = data_reg_ac.sort_values(fecha)
+
+
+
 
 data_comunas = pd.read_csv('https://raw.githubusercontent.com/rodrigorm93/Datos-Chile/master/Casos-Comunas/COVID19.csv')
 
 resp_comunas = requests.get('https://raw.githubusercontent.com/rgcl/geojson-cl/master/comunas.json')
 geo_comunas = json.loads(resp_comunas.content)
+
+
+
 
 
 
@@ -300,6 +318,139 @@ def grafico_Update_Dropdown(region):
     return fig
 
 
+
+button_layer_1_height = 1.08
+def casos_regiones_ac_act():
+    fig = go.Figure()
+
+    
+    fig.add_trace(go.Bar(x=data_reg_ac[fecha].values,y=list(data_reg_ac.index),orientation='h',
+                        name="Casos Acumulados",marker_color='#5DADE2')
+                 )
+
+    fig.add_trace(go.Bar(x=data_activos_region['Casos Activos'].values, y=data_activos_region['Region'],orientation='h',
+                        name="Casos Activos",marker_color='lightsalmon',visible=False)
+                 )
+    fig.update_layout(height=600)
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                active=0,
+                buttons=list([
+                    dict(label="Acumulados",
+                         method="update",
+                         args=[{"visible": [True, False]},
+                               {"title": "Total de Casos Acumulados",
+                                "annotations": []}]),
+                    dict(label="Activos",
+                         method="update",
+                         args=[{"visible": [False, True]},
+                               {"title": "Total de Casos Activos",
+                                "annotations": []}]),
+                    
+                                
+
+                ]),
+            direction="down",
+            pad={"r": 20, "t": 1},
+            showactive=True,
+            x=0.3,
+            xanchor="left",
+            y=button_layer_1_height,
+            yanchor="top"
+            )
+           
+        ])
+
+    # Set title
+    fig.update_layout(title_text="Regiones")
+    fig.update_layout(
+    annotations=[
+        dict(text="Casos", x=0.2, xref="paper", y=1.06, yref="paper",
+                             align="left", showarrow=False)
+    ])
+
+    return fig
+
+def casos_comunas_activo_acum(region,region2):
+    fig = go.Figure()
+
+     #casos activos
+
+    data_casos_por_comuna_maule = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Region']==region]
+    data_casos_por_comuna_maule = data_casos_por_comuna_maule.reset_index()
+    data_casos_por_comuna_maule = data_casos_por_comuna_maule.drop(data_casos_por_comuna_maule.index[len(data_casos_por_comuna_maule)-1])
+
+    f = int(data_casos_por_comuna_maule[fecha].sum())
+
+    data_casos_por_comuna_maule = data_casos_por_comuna_maule[['Comuna',fecha]]
+    data_ordenado = data_casos_por_comuna_maule.sort_values(fecha)
+
+    #Numero de Casos
+    data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
+
+    data_casos_por_comuna_data = data_casos_por_comuna[data_casos_por_comuna['Region']==region2]
+    data_casos_por_comuna_data = data_casos_por_comuna_data.reset_index()
+
+    data_casos_por_comuna_data = data_casos_por_comuna_data[['Comuna',fecha]]
+    data_ordenado_casos = data_casos_por_comuna_data.sort_values(fecha)
+
+
+
+    fig.add_trace(go.Bar(x=data_ordenado_casos[fecha].values, y=data_ordenado_casos['Comuna'],orientation='h',
+                        name="Casos Acumulados",marker_color='#5DADE2')
+                 )
+    fig.update_layout(height=700)
+
+    fig.add_trace(go.Bar(x=data_ordenado[fecha].values, y=data_ordenado['Comuna'],orientation='h',
+                        name="Casos Activos",marker_color='lightsalmon',visible=False)
+                 )
+    
+
+
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                active=0,
+                buttons=list([
+                    dict(label="Acumulados",
+                         method="update",
+                         args=[{"visible": [True, False]},
+                               {"title": "Total de Casos Acumulados",
+                                "annotations": []}]),
+                    dict(label="Activos",
+                         method="update",
+                         args=[{"visible": [False, True]},
+                               {"title": "Total de Casos Activos",
+                                "annotations": []}]),
+                    
+                                
+
+                ]),
+            direction="down",
+            pad={"r": 20, "t": 1},
+            showactive=True,
+            x=0.3,
+            xanchor="left",
+            y=button_layer_1_height,
+            yanchor="top"
+            )
+           
+        ])
+
+    # Set title
+    fig.update_layout(title_text="Regiones")
+    fig.update_layout(
+    annotations=[
+        dict(text="Casos", x=0.2, xref="paper", y=1.06, yref="paper",
+                             align="left", showarrow=False)
+    ])
+
+    return fig,f
+
+
 def grafico_Update_Dropdown_chile():
 
    
@@ -408,11 +559,7 @@ def mapa_comunas(request):
                   mapbox_zoom=3,height=600,mapbox_center = {"lat": -30.0000000, "lon": -71.0000000})
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
-    fig2 = px.bar(data_activos_region.sort_values('Casos Activos'), 
-                    x='Casos Activos', y='Region',color_discrete_sequence=['#84DCC6'],height=600,
-                    title='Número de casos Activos por Región '+fecha, text='Casos Activos', orientation='h')
-    fig2.update_xaxes(title_text="Número de Casos Activos")
-    fig2.update_yaxes(title_text="Comunas")
+    fig2= casos_regiones_ac_act()
 
  
     graph1 = fig.to_html(full_html=False)
@@ -463,18 +610,7 @@ def mapa_comunas_busqueda(request):
 
 
 
-  
-
-    data_casos_por_comuna_maule = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Region']==region]
-    data_casos_por_comuna_maule = data_casos_por_comuna_maule.reset_index()
-    data_casos_por_comuna_maule = data_casos_por_comuna_maule.drop(data_casos_por_comuna_maule.index[len(data_casos_por_comuna_maule)-1])
-
-
-    fig2 = px.bar(data_casos_por_comuna_maule.sort_values(fecha), 
-                    x=fecha, y='Comuna',color_discrete_sequence=['#84DCC6'],height=600,
-                    title='Número de casos Activos Reg: '+region+' fecha: '+fecha, text=fecha, orientation='h')
-    fig2.update_xaxes(title_text="Número de Casos Activos")
-    fig2.update_yaxes(title_text="Comunas")
+    fig2,f = casos_comunas_activo_acum(region,region2)
 
         
     n_casos_region = data_chile[data_chile['Region'] ==region2][ultima_fecha_cl].values
@@ -482,7 +618,7 @@ def mapa_comunas_busqueda(request):
     n_casos_region_f = fallecidos_por_region[fallecidos_por_region['Region']==region2][ultima_fecha_region_fallecidos]
 
 
-    f = int(data_casos_por_comuna_maule[fecha].sum())
+   
 
 
     num_cases_cl = int_format(int(n_casos_region))
@@ -494,8 +630,6 @@ def mapa_comunas_busqueda(request):
         
     fig3 = grafico_Update_Dropdown(region2)
     graph3 = fig3.to_html(full_html=False)
-
-
 
 
     fig = go.Figure(go.Choroplethmapbox(geojson=geo_comunas, locations=data_comunas.Comuna, z=data_comunas.Casos,

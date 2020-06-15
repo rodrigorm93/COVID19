@@ -30,6 +30,22 @@ ultima_fecha_cl_vt = num_vent.columns
 ultima_fecha_cl_vt= ultima_fecha_cl_vt[-1]
 
 
+def int_format(value, decimal_points=3, seperator=u','):
+       value = str(value)
+       if len(value) <= decimal_points:
+           return value
+       # say here we have value = '12345' and the default params above
+       parts = []
+       while value:
+           parts.append(value[-decimal_points:])
+           value = value[:-decimal_points]
+       # now we should have parts = ['345', '12']
+       parts.reverse()
+       # and the return value should be u'12.345'
+       return seperator.join(parts)
+
+
+
 #***************************MENU**************************************
 #Lenar con 0 filas nulas
 data_chile_r = data_chile_r.fillna(0)
@@ -53,10 +69,6 @@ num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
 num_rec = data_chile_r.iloc[2,-1].sum()
 
 #ver el caso de que no se actualicen los registros
-
-estado_r='Act'+ultima_fecha_cl
-estado_f='Act'+ultima_fecha_cl
-estado_a='Act'+ultima_fecha_cl
 
 casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 #dejar el ulktimo registro de recuperados que fue el 2020-06-02
@@ -152,16 +164,16 @@ def num_ventiladores(request):
     graph2 = fig2.to_html(full_html=False)
 
     num_vent_total = num_vent[num_vent['Ventiladores']=='total'][ultima_fecha_cl_vt].sum()
-    num_vent_total = str(int(num_vent_total))+' ('+ultima_fecha_cl_vt+')'
+    num_vent_total = int_format(int(num_vent_total))
 
     num_vent_total_oc = num_vent[num_vent['Ventiladores']=='ocupados'][ultima_fecha_cl_vt].sum()
-    num_vent_total_oc = str(int(num_vent_total_oc))+' ('+ultima_fecha_cl_vt+')'
+    num_vent_total_oc = int_format(int(num_vent_total_oc))
+
 
     num_vent_total_disp = num_vent[num_vent['Ventiladores']=='disponibles'][ultima_fecha_cl_vt].sum()
-    num_vent_total_disp = str(int(num_vent_total_disp))+' ('+ultima_fecha_cl_vt+')'
+    num_vent_total_disp = int_format(int(num_vent_total_disp))
 
-
-
+    fecha_casos_fall='('+ultima_fecha_cl_vt+')'
 
 
     return render(request,"numero_ventiladores.html", {"num_vent":num_vent_total_oc,"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_vent_total,"num_rec":num_vent_total_disp})

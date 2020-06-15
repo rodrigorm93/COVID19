@@ -15,8 +15,8 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Numero de Casos Acumulados</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos}} </div>
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Numero de Casos de Niños</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_recuFIS}} {{fecha_casos_fall}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -32,8 +32,24 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Numero de Casos Activos</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_rec}}</div>
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Numero de Casos de Jovenes</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{n_casos}} {{fecha_casos_fall}}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-calendar fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Numero de Casos de Adultos</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_death}} {{fecha_casos_fall}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -51,8 +67,8 @@
         <div class="card-body">
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Número de Fallecidos</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_death}}</div>
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Número de Casos De Adultos Mayores</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{num_rec}} {{fecha_casos_fall}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -68,7 +84,7 @@
   <div class="row">
 
     <!-- Area Chart -->
-    <div class="col-xl-8 col-lg-7">
+    <div class="col-xl-8-34_2 col-lg-7">
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -87,7 +103,7 @@
     </div>
 
     <!-- Pie Chart -->
-    <div class="col-xl-4 col-lg-5">
+    <div class="col-xl-4_3 col-lg-5">
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -96,6 +112,12 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
+          Distribucion por Edad:</br>
+          Niños: La población infantil es aquella que tiene entre 0 y 14 años.</br>
+          Jóvenes: La población joven  es aquella que tiene entre 15 y 29 años.</br>
+          Adultos: La población Adulta es aquella que tiene entre 30 y 59 años.</br>
+          Adultos mayores: La población adulta mayor es aquella que tiene 60 años y más.</br>
+
           {{grafico2|safe}}
     
         </div>
