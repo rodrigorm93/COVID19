@@ -284,11 +284,31 @@ def total_defunciones_chile(request):
     total_fallecimientos_mes_trans = total_fallecimientos_mes.drop(['Total 4 Meses'], axis=1).T
     #tabla1 = total_fallecimientos_mes_trans.to_html()
 
-    tabla1 = ff.create_table(total_fallecimientos_mes_trans,height_constant=20)
+    fig5 = make_subplots(
+        rows=1, cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.03,
+        specs=[[{"type": "table"}]])
 
+    fig5.add_trace(
+        go.Table(
+            header=dict(
+                values=total_fallecimientos_mes_trans.columns,
+                font=dict(size=15),
+                align="left"
+            ),
+            cells=dict(
+                values=[total_fallecimientos_mes_trans[k].tolist() for k in total_fallecimientos_mes_trans.columns],
+                align = "left",font=dict(size=13))
+        ),
+        row=1, col=1
+    )
+    fig5.update_layout(
+        showlegend=False,
+        title_text="Tabla de Defunsiones",
+    )
 
-    tabla1.layout.margin.update({'t':30, 'b':5})
-    tabla1.layout.update({'title': 'Tabla de Fallecidos 2010-2020'})
+    #tabla1 = ff.create_table(total_fallecimientos_mes_trans,height_constant=20)
 
 
     #GRAFICO 3
@@ -305,7 +325,7 @@ def total_defunciones_chile(request):
     graph2 = fig2.to_html(full_html=False)
     graph3= fig3.to_html(full_html=False)
 
-    tabla1 = tabla1.to_html(full_html=False)
+    tabla1 = fig5.to_html(full_html=False)
 
     return render(request,"numero_defunciones_chile.html", {"grafico3":graph3,"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"tabla1":tabla1,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
