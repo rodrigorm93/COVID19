@@ -1274,7 +1274,7 @@ pre code {
   }
 
   .col-xl-4_3 {
-    flex: 0 0 45%;
+    flex: 0 0 40%;
     max-width: 100%;
   }
 
@@ -1333,7 +1333,7 @@ pre code {
   }
 
   .col-xl-8-34_2{
-    flex: 0 0 50%;
+    flex: 0 0 60%;
     max-width: 100%;
   }
 
