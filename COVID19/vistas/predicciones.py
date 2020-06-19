@@ -35,7 +35,7 @@ grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Dat
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 
 
-seasonal_periods_casos = 7
+seasonal_periods_casos = 2
 
 
 
