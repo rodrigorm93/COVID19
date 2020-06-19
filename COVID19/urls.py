@@ -17,9 +17,9 @@ from django.contrib import admin
 from django.urls import path
 from COVID19.vistas.menu import menu
 from COVID19.vistas.predicciones import total_defunciones_chile,modelo_predictivo
-from COVID19.vistas.ventiladores import pacientes_ventiladores,num_ventiladores
+from COVID19.vistas.ventiladores import pacientes_ventiladores_fun,num_ventiladores
 from COVID19.vistas.grupo_edad import busqueda_fallecidos_por_grupo,busqueda_por_grupo_edad,busqueda_hosp_por_grupo
-from COVID19.vistas.regiones import busqueda_region,examenes_pcr
+from COVID19.vistas.regiones import busqueda_region
 from COVID19.vistas.mapa_comunas import mapa_comunas,mapa_comunas_busqueda
 from COVID19.vistas.mapa_regiones import mapa_region
 from COVID19.vistas.cuarentenas import cuarentenas_activas
@@ -28,7 +28,7 @@ from COVID19.vistas.evolucionCasosRegiones import regiones
 from COVID19.vistas.hopitalizacionesRegiones import busqueda_hospitalizacion_region
 from COVID19.vistas.casos_criticos import casos_criticos
 from COVID19.vistas.casos_grupo_edad import busqueda_casos_por_grupo
-
+from COVID19.vistas.examenes_pcr import examenes_pcr
 
 urlpatterns = [
     path('', mapa_comunas),
@@ -45,7 +45,7 @@ urlpatterns = [
     path('defunciones_chile/', total_defunciones_chile),
     path('predicciones/', modelo_predictivo),
     path('examenes_pcr/', examenes_pcr),
-    path('pacientes_vmi/', pacientes_ventiladores),
+    path('pacientes_vmi/', pacientes_ventiladores_fun),
     path('mapa_comunas/', mapa_comunas),
     path('mapa_comunas_busqueda/', mapa_comunas_busqueda),
     path('cuarentenas_mapa/', cuarentenas_activas),

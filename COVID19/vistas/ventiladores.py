@@ -180,7 +180,7 @@ def num_ventiladores(request):
 
 
 
-def pacientes_ventiladores(request):
+def pacientes_ventiladores_fun(request):
 
     #GRAFICO 1
  
@@ -204,8 +204,17 @@ def pacientes_ventiladores(request):
     fig2.update_traces(textposition='inside')
     fig2.update_layout(uniformtext_minsize=9, uniformtext_mode='hide')
 
+    ultima_fecha_vmi = fecha_vmi_pacientes[-1]
 
+    num_vmi = pc_vmi[-1]
+    num_vmi_no = pc_no_vmi[-1]
+    num_vmi_no_inv = pc_vmi_noinv[-1]
 
+    num_vmi = int_format(int(num_vmi))
+    num_vmi_no = int_format(int(num_vmi_no))
+    num_vmi_no_inv = int_format(int(num_vmi_no_inv))
+
+    fecha_casos_vmi = ' ('+ultima_fecha_vmi+')'
 
     graph1 = fig1.to_html(full_html=False)
 
@@ -213,5 +222,4 @@ def pacientes_ventiladores(request):
 
 
 
-
-    return render(request,"pacientes_vmi.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"pacientes_vmi.html", {"grafico1":graph1,"fecha_casos_vmi":fecha_casos_vmi,"grafico2":graph2,"num_vmi":num_vmi,"num_vmi_no":num_vmi_no, "num_vmi_no_inv":num_vmi_no_inv})

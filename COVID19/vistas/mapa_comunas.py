@@ -441,7 +441,7 @@ def casos_comunas_activo_acum(region,region2):
         ])
 
     # Set title
-    fig.update_layout(title_text="Regiones")
+    fig.update_layout(title_text="Comunas de la Región de: "+region)
     fig.update_layout(
     annotations=[
         dict(text="Casos", x=0.2, xref="paper", y=1.06, yref="paper",

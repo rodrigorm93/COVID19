@@ -305,7 +305,7 @@ def total_defunciones_chile(request):
     )
     fig5.update_layout(
         showlegend=False,
-        title_text="Tabla de Defunsiones",
+        title_text="Tabla de Defunsiones"
     )
 
     #tabla1 = ff.create_table(total_fallecimientos_mes_trans,height_constant=20)
