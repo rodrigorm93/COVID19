@@ -129,19 +129,46 @@ def num_ventiladores(request):
     trace = go.Scatter(
                 x=dates_vent,
                 y=ventiladores_dis,
-                name="Ventiladores Disponibles",
+                text=ventiladores_dis,
+                name="Disponibles",
                 mode='lines+markers',
                 line_color='green')
     trace2 = go.Scatter(
                     x=dates_vent,
                     y=ventiladores_oc,
-                    name="Ventiladores Ocupados",
+                    name="Ocupados",
+                    text=ventiladores_oc,
                     mode='lines+markers',
                     line_color='red')
 
     layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Ventiladores Fecha: '+ ultima_fecha_cl+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig = go.Figure(data = [trace,trace2], layout = layout)
+
+      # style all the traces
+    fig.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.5},
+        marker={"size": 8},
+        mode="lines+markers",
+        showlegend=False
+    )
+
+
+
+
+    # Update layout
+    fig.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        legend=dict(traceorder="reversed"),
+        height=450,
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+        )
 
     ventiladiores = num_vent.drop([0],axis=0)
     #GRAFICO 2
@@ -185,9 +212,9 @@ def pacientes_ventiladores_fun(request):
     #GRAFICO 1
  
     fig1 = go.Figure()
-    fig1.add_trace(go.Scatter(x=fecha_vmi_pacientes, y=pc_vmi, name='Pacientes VMI'))
-    fig1.add_trace(go.Scatter(x=fecha_vmi_pacientes, y=pc_no_vmi, name='Pacientes no VM'))
-    fig1.add_trace(go.Scatter(x=fecha_vmi_pacientes, y=pc_vmi_noinv, name='Pacientes VM no invasiva'))
+    fig1.add_trace(go.Scatter(x=fecha_vmi_pacientes, y=pc_vmi,text=pc_vmi, name='VMI'))
+    fig1.add_trace(go.Scatter(x=fecha_vmi_pacientes, y=pc_no_vmi,text=pc_no_vmi, name='No VM'))
+    fig1.add_trace(go.Scatter(x=fecha_vmi_pacientes, y=pc_vmi_noinv,text=pc_vmi_noinv, name='VM no invasiva'))
 
 
     fig1.layout.update(title_text='Pacientes Hospitalizados en UCI con Ventilación Mecánica',xaxis_showgrid=False, yaxis_showgrid=False,
@@ -197,6 +224,31 @@ def pacientes_ventiladores_fun(request):
             ))
     fig1.layout.plot_bgcolor = 'White'
     fig1.layout.paper_bgcolor = 'White'
+
+          # style all the traces
+    fig1.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.8},
+        marker={"size": 8},
+        mode="lines",
+        showlegend=False
+    )
+
+
+
+
+    # Update layout
+    fig1.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        legend=dict(traceorder="reversed"),
+        height=450,
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+        )
 
 
     #GRAFICO 2

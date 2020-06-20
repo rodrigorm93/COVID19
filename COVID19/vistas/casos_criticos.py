@@ -68,13 +68,39 @@ def casos_criticos(request):
     trace = go.Scatter(
                 x=pacientes_criticos.iloc[:,1:].columns,
                 y=pacientes_criticos.iloc[0,1:],
-                name="Pacientes Criticos",
+                name="P. Criticos",
+                text=pacientes_criticos.iloc[0,1:],
                 mode='lines+markers',
                 line_color='red')
 
     layout = go.Layout(template="ggplot2",title_text = '<b>Número de Pacientes Criticos Fecha: '+ ultima_fecha_cl+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig = go.Figure(data = [trace], layout = layout)
+
+      # style all the traces
+    fig.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.5},
+        marker={"size": 5},
+        mode="lines+markers",
+        showlegend=False
+    )
+
+
+
+
+    # Update layout
+    fig.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        legend=dict(traceorder="reversed"),
+        height=450,
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+        )
 
 
     data_activos = data_chile_r[data_chile_r['Fecha']=='Casos activos']
@@ -84,7 +110,8 @@ def casos_criticos(request):
     trace = go.Scatter(
                 x=data_activos.iloc[:,1:].columns,
                 y=data_activos.iloc[0,1:],
-                name="Pacientes Activos",
+                name="P. Activos",
+                text=data_activos.iloc[0,1:],
                 mode='lines+markers',
                 line_color='red')
 
@@ -92,9 +119,34 @@ def casos_criticos(request):
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace], layout = layout)
 
+      # style all the traces
+    fig2.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.5},
+        marker={"size": 5},
+        mode="lines+markers",
+        showlegend=False
+    )
+
+
+
+
+    # Update layout
+    fig2.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        legend=dict(traceorder="reversed"),
+        height=450,
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+        )
+
 
     fig3=px.bar(x=data_activos.iloc[:,1:].columns,y=data_activos.iloc[0,1:])
-    fig3.update_layout(title="Distribucion del número de Casos Activos",
+    fig3.update_layout(title="Distribución del número de Casos Activos",
                     xaxis_title="Fecha",yaxis_title="Numero de Casos",)
 
     graph1 = fig.to_html(full_html=False)

@@ -89,6 +89,8 @@ data_comunas.loc[data_comunas['Comuna'] == 'San José de Maipo (Área Urbana)', 
 data_comunas.loc[data_comunas['Comuna'] == 'TilTil (Área Urbana)', "Comuna"] = 'Tiltil'
 data_comunas.loc[data_comunas['Comuna'] == 'Pozo Almonte (Radio Urbano)', "Comuna"] = 'Pozo Almonte'
 data_comunas.loc[data_comunas['Comuna'] == 'Peñalolen', "Comuna"] = 'Peñalolén'
+data_comunas.loc[data_comunas['Comuna'] == 'Curicó (Área Urbana)', "Comuna"] = 'Curicó'
+
 
 resp = requests.get('https://raw.githubusercontent.com/rgcl/geojson-cl/master/comunas.json')
 geo_region = json.loads(resp.content)

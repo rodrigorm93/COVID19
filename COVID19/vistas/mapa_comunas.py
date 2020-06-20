@@ -183,12 +183,14 @@ def grafico_Update_Dropdown(region):
         go.Scatter(x=casos_diarios_df.fecha,
                    y=casos_diarios_df.casos,
                    name='Casos Diarios',
+                   text=casos_diarios_df.casos,
                    line=dict(color="#33CFA5")))
 
     fig.add_trace(
         go.Scatter(x=casos_diarios_df.fecha,
                    y=[casos_diarios_df.casos.mean()] * len(casos_diarios_df.fecha),
                    name='Promedio',
+                   text=[casos_diarios_df.casos.mean()] * len(casos_diarios_df.fecha),
                    visible=False,
                     line=dict(color="#2ED456", dash="dash")))
 
@@ -197,6 +199,7 @@ def grafico_Update_Dropdown(region):
         go.Scatter(x=fallecidos_diarios_df.fecha,
                    y=fallecidos_diarios_df.casos,
                    name='Fallecidos Diarios',
+                   text=fallecidos_diarios_df.casos,
                    visible=False,
                   line=dict(color="#F11013")))
 
@@ -205,6 +208,7 @@ def grafico_Update_Dropdown(region):
         go.Scatter(x=fallecidos_diarios_df.fecha,
                    y=[fallecidos_diarios_df.casos.mean()] * len(fallecidos_diarios_df.fecha),
                    name="Promedio",
+                   text=[fallecidos_diarios_df.casos.mean()] * len(fallecidos_diarios_df.fecha),
                    visible=False,
                    line=dict(color="#10CBF1", dash="dash")))
 
@@ -215,6 +219,7 @@ def grafico_Update_Dropdown(region):
         go.Scatter(x=UCI_diarios_df.fecha,
                    y=UCI_diarios_df.casos,
                    name='hosp. en UCI',
+                   text=UCI_diarios_df.casos,
                    visible=False,
                   line=dict(color="#1466F4")))
 
@@ -222,6 +227,7 @@ def grafico_Update_Dropdown(region):
         go.Scatter(x=UCI_diarios_df.fecha,
                    y=[UCI_diarios_df.casos.mean()] * len(UCI_diarios_df.fecha),
                    name="Promedio",
+                   text=[UCI_diarios_df.casos.mean()] * len(UCI_diarios_df.fecha),
                    visible=False,
                    line=dict(color="#C42ABD", dash="dash")))
 
@@ -315,6 +321,31 @@ def grafico_Update_Dropdown(region):
 
     # Set title
     fig.update_layout(title_text='Region: '+region)
+
+    # style all the traces
+    fig.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.5},
+        marker={"size": 8},
+        mode="lines+markers",
+        showlegend=False
+    )
+
+
+
+
+    # Update layout
+    fig.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        legend=dict(traceorder="reversed"),
+        height=450,
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+        )
     return fig
 
 
@@ -476,6 +507,7 @@ def grafico_Update_Dropdown_chile():
     fig.add_trace(
         go.Scatter(x=casos_totales_df.fecha,
                    y=casos_totales_df.casos,
+                   text=casos_totales_df.casos,
                    name='Casos Acumulados',
                    line=dict(color="#33CFA5")))
 
@@ -484,6 +516,7 @@ def grafico_Update_Dropdown_chile():
         go.Scatter(x=fallecidos_totales_df.fecha,
                    y=fallecidos_totales_df.fallecidos,
                    name='Fallecidos Acumulados',
+                   text=fallecidos_totales_df.fallecidos,
                    visible=False,
                   line=dict(color="#F11013")))
 
@@ -493,6 +526,7 @@ def grafico_Update_Dropdown_chile():
         go.Scatter(x=casos_totales_act_df.fecha,
                    y=casos_totales_act_df.casos,
                    name='Casos Activos',
+                   text=casos_totales_act_df.casos,
                    visible=False,
                   line=dict(color="#1466F4")))
 
@@ -531,11 +565,40 @@ def grafico_Update_Dropdown_chile():
                                 "annotations": []}]),
 
                 ]),
+
+                
             )
         ])
 
     # Set title
     fig.update_layout(title_text='Chile')
+
+    # style all the traces
+    fig.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.5},
+        marker={"size": 8},
+        mode="lines+markers",
+        showlegend=False
+    )
+
+
+
+
+    # Update layout
+    fig.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        legend=dict(traceorder="reversed"),
+        height=450,
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+        )
+
+    
     return fig
 
 

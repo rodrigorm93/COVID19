@@ -100,6 +100,7 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
         go.Scatter(x=casos_nuevos_totales_df.fecha,
                    y=casos_nuevos_totales_df.casos,
                    name='Casos Totales',
+                   text=casos_nuevos_totales_df.casos,
                    mode='lines+markers',
                    line=dict(color="#2EECEA")))
 
@@ -107,7 +108,8 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
     fig.add_trace(
         go.Scatter(x=casos_totales_df.fecha,
                    y=casos_totales_df.casos,
-                   name='Casos con sintomas',
+                   name='Con Sintomas',
+                   text=casos_totales_df.casos,
                    mode='lines+markers',
                    visible=False,
                    line=dict(color="#33CFA5")))
@@ -117,7 +119,8 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
     fig.add_trace(
         go.Scatter(x=fallecidos_totales_df.fecha,
                    y=fallecidos_totales_df.casos,
-                   name='Casos sin sintomas',
+                   name='Sin sintomas',
+                   text=fallecidos_totales_df.casos,
                    mode='lines+markers',
                    visible=False,
                   line=dict(color="#1466F4")))
@@ -137,13 +140,13 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
                                {"title": 'Casos Diarios: Totales',
                                 "annotations": []}]),
                     
-                    dict(label="con sintomas",
+                    dict(label="Con sintomas",
                          method="update",
                          args=[{"visible": [False, True,False]},
                                {"title":'Casos Diarios: con sintomas',
                                 "annotations": []}]),
 
-                    dict(label="sin sintomas",
+                    dict(label="Sin sintomas",
                          method="update",
                          args=[{"visible": [False, False,True]},
                                {"title": 'Casos Diarios: sin sintomas',
@@ -159,6 +162,32 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
 
     # Set title
     fig.update_layout(title_text='Casos Diarios')
+
+      # style all the traces
+    fig.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.5},
+        marker={"size": 5},
+        mode="lines+markers",
+        showlegend=False
+    )
+
+
+
+
+    # Update layout
+    fig.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        legend=dict(traceorder="reversed"),
+        height=450,
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+        )
+
     return fig
 
 
