@@ -259,7 +259,7 @@ def total_defunciones_chile(request):
     fig2.update_traces(
         hoverinfo="name+x+text",
         line={"width": 0.5},
-        marker={"size": 8},
+        marker={"size": 7},
         mode="lines+markers",
         showlegend=False
     )
@@ -395,4 +395,74 @@ def modelo_predictivo(request):
     graph2 = fig2.to_html(full_html=False)
 
     return render(request,"predicciones.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+
+
+
+
+def modelo_predictivo(request):
+    
+   
+    
+    days_chile2 = np.array([i for i in range(len(dates_chile))])
+
+    datewise = pd.DataFrame({'Days Since': list(days_chile2), 'Confirmed':casos_chile})
+
+    es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=seasonal_periods_casos,trend='add', seasonal='mul').fit()
+
+    days_in_future_cl = 20
+    future_forcast_cl = np.array([i for i in range(len(dates_chile)+days_in_future_cl)]).reshape(-1, 1)
+    adjusted_dates_cl = future_forcast_cl[:-days_in_future_cl]
+    start_cl = '03/03/2020'
+    start_date_cl = datetime.datetime.strptime(start_cl, '%m/%d/%Y')
+    future_forcast_dates_cl = []
+    for i in range(len(future_forcast_cl)):
+        future_forcast_dates_cl.append((start_date_cl + datetime.timedelta(days=i)).strftime('%m/%d/%Y'))
+        
+    Predict_df_cl_1= pd.DataFrame()
+    Predict_df_cl_1["Fecha"] = list(future_forcast_dates_cl[-days_in_future_cl:])
+    Predict_df_cl_1["N° Casos"] =np.round(list(es.forecast(20)))
+
+       
+    fig=go.Figure()
+    fig.add_trace(go.Scatter(x=np.array(future_forcast_dates_cl), y=datewise["Confirmed"],
+                        mode='lines+markers',name="Casos Reales"))
+    fig.add_trace(go.Scatter(x=Predict_df_cl_1['Fecha'], y=Predict_df_cl_1["N° Casos"],
+                        mode='lines+markers',name="Predicción",))
+
+    fig.update_layout(title="Proyección de casos en 20 días",
+                    xaxis_title="Fecha",yaxis_title="Número de Casos",legend=dict(x=0,y=1,traceorder="normal"))
+
+    graph1 = fig.to_html(full_html=False)
+
+
+    fig2 = make_subplots(
+        rows=1, cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.03,
+        specs=[[{"type": "table"}]])
+
+    fig2.add_trace(
+        go.Table(
+            header=dict(
+                values=Predict_df_cl_1.columns,
+                font=dict(size=15),
+                align="left"
+            ),
+            cells=dict(
+                values=[Predict_df_cl_1[k].tolist() for k in Predict_df_cl_1.columns],
+                align = "left",font=dict(size=13))
+        ),
+        row=1, col=1
+    )
+    fig2.update_layout(
+        showlegend=False,
+        title_text="Tabla de Proyecciones a 20 días",
+    )
+
+
+
+    
+    graph2 = fig2.to_html(full_html=False)
+
+    return render(request,"predicciones_fallecidos.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 

@@ -44,6 +44,7 @@ urlpatterns = [
     path('menu/', menu),
     path('defunciones_chile/', total_defunciones_chile),
     path('predicciones/', modelo_predictivo),
+    #path('predicciones_fallecidos/', modelo_predictivo),
     path('examenes_pcr/', examenes_pcr),
     path('pacientes_vmi/', pacientes_ventiladores_fun),
     path('mapa_comunas/', mapa_comunas),

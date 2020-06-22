@@ -32,6 +32,8 @@ casos_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
 
+data_crec_por_dia = data_crec_por_dia.fillna(0)
+
 
 def int_format(value, decimal_points=3, seperator=u','):
        value = str(value)
@@ -99,14 +101,26 @@ data_activos_region.loc[data_activos_region['Region'] == 'Del Libertador General
 data_activos_region = data_activos_region.sort_values('Casos Activos')
 
 #casos acumulados totales por region
-data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
+data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
+fecha_casos_region = data_chile.columns
+fecha_casos_region= fecha_casos_region[-1]
 
-data_reg_ac = data_casos_por_comuna
-data_reg_ac= data_reg_ac[['Region',fecha]]
-data_reg_ac= data_reg_ac.groupby(['Region']).sum()
-data_reg_ac = data_reg_ac.sort_values(fecha)
+data_reg_ac = data_chile
+data_reg_ac= data_reg_ac[['Region',fecha_casos_region]]
+data_reg_ac = data_reg_ac.sort_values(fecha_casos_region)
+data_reg_ac = data_reg_ac.drop([16],axis=0)
 
 
+#fallecidos por region 
+fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
+fecha_fall_region = fallecidos_por_region.columns
+fecha_fall_region= fecha_fall_region[-1]
+
+data_reg_fall = fallecidos_por_region
+data_reg_fall= data_reg_fall[['Region',fecha_fall_region]]
+data_reg_fall = data_reg_fall.sort_values(fecha_fall_region)
+data_reg_fall = data_reg_fall.rename(columns={fecha_fall_region:'Fallecidos'})
+data_reg_fall = data_reg_fall.drop([16],axis=0)
 
 
 data_comunas = pd.read_csv('https://raw.githubusercontent.com/rodrigorm93/Datos-Chile/master/Casos-Comunas/COVID19.csv')
@@ -326,7 +340,7 @@ def grafico_Update_Dropdown(region):
     fig.update_traces(
         hoverinfo="name+x+text",
         line={"width": 0.5},
-        marker={"size": 8},
+        marker={"size": 6},
         mode="lines+markers",
         showlegend=False
     )
@@ -354,14 +368,23 @@ button_layer_1_height = 1.08
 def casos_regiones_ac_act():
     fig = go.Figure()
 
+
     
-    fig.add_trace(go.Bar(x=data_reg_ac[fecha].values,y=list(data_reg_ac.index),orientation='h',
+    
+    fig.add_trace(go.Bar(x=data_reg_ac[fecha_casos_region].values,y=data_reg_ac['Region'],orientation='h',
                         name="Casos Acumulados",marker_color='#5DADE2')
                  )
 
     fig.add_trace(go.Bar(x=data_activos_region['Casos Activos'].values, y=data_activos_region['Region'],orientation='h',
                         name="Casos Activos",marker_color='lightsalmon',visible=False)
                  )
+
+    fig.add_trace(go.Bar(x=data_reg_fall['Fallecidos'].values, y=data_reg_fall['Region'],orientation='h',
+                        name="Casos Activos",marker_color='red',visible=False)
+                 )
+
+    
+                 
     fig.update_layout(height=600)
 
     fig.update_layout(
@@ -369,15 +392,20 @@ def casos_regiones_ac_act():
             dict(
                 active=0,
                 buttons=list([
-                    dict(label="Acumulados",
+                    dict(label="Casos Acumulados",
                          method="update",
-                         args=[{"visible": [True, False]},
-                               {"title": "Total de Casos Acumulados",
+                         args=[{"visible": [True, False,False]},
+                               {"title": "Total de Casos Acumulados "+fecha_casos_region,
                                 "annotations": []}]),
-                    dict(label="Activos",
+                    dict(label="Casos Activos",
                          method="update",
-                         args=[{"visible": [False, True]},
-                               {"title": "Total de Casos Activos",
+                         args=[{"visible": [False, True,False]},
+                               {"title": "Total de Casos Activos "+fecha,
+                                "annotations": []}]),
+                    dict(label="Fallecidos",
+                         method="update",
+                         args=[{"visible": [False,False,True]},
+                               {"title": "Total de Fallecidos "+fecha_fall_region,
                                 "annotations": []}]),
                     
                                 
@@ -398,7 +426,7 @@ def casos_regiones_ac_act():
     fig.update_layout(title_text="Regiones")
     fig.update_layout(
     annotations=[
-        dict(text="Casos", x=0.2, xref="paper", y=1.06, yref="paper",
+        dict(text="Casos", x=0.1, xref="paper", y=1.06, yref="paper",
                              align="left", showarrow=False)
     ])
 
@@ -428,6 +456,23 @@ def casos_comunas_activo_acum(region,region2):
     data_ordenado_casos = data_casos_por_comuna_data.sort_values(fecha)
 
 
+    #Fallecidos
+
+    data_fallecidos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto38/CasosFallecidosPorComuna.csv')
+
+    fecha_fa_comuna = data_fallecidos_por_comuna.columns
+    fecha_fa_comuna= fecha_fa_comuna[-1]
+
+    data_fallecidos_por_comuna_df = data_fallecidos_por_comuna[data_fallecidos_por_comuna['Region']==region]
+    data_fallecidos_por_comuna_df = data_fallecidos_por_comuna_df.reset_index()
+    data_fallecidos_por_comuna_df = data_fallecidos_por_comuna_df.drop(data_fallecidos_por_comuna_df.index[len(data_fallecidos_por_comuna_df)-1])
+    data_fallecidos_por_comuna_df = data_fallecidos_por_comuna_df[['Comuna',fecha_fa_comuna]]
+    data_ordenado_fallecidos_comuna = data_fallecidos_por_comuna_df.sort_values(fecha_fa_comuna)
+
+
+    
+
+
 
     fig.add_trace(go.Bar(x=data_ordenado_casos[fecha].values, y=data_ordenado_casos['Comuna'],orientation='h',
                         name="Casos Acumulados",marker_color='#5DADE2')
@@ -436,6 +481,10 @@ def casos_comunas_activo_acum(region,region2):
 
     fig.add_trace(go.Bar(x=data_ordenado[fecha].values, y=data_ordenado['Comuna'],orientation='h',
                         name="Casos Activos",marker_color='lightsalmon',visible=False)
+                 )
+
+    fig.add_trace(go.Bar(x=data_ordenado_fallecidos_comuna[fecha_fa_comuna].values, y=data_ordenado_fallecidos_comuna['Comuna'],orientation='h',
+                        name="Fallecidos",marker_color='red',visible=False)
                  )
     
 
@@ -446,15 +495,20 @@ def casos_comunas_activo_acum(region,region2):
             dict(
                 active=0,
                 buttons=list([
-                    dict(label="Acumulados",
+                    dict(label="Casos Acumulados",
                          method="update",
-                         args=[{"visible": [True, False]},
-                               {"title": "Total de Casos Acumulados",
+                         args=[{"visible": [True, False,False]},
+                               {"title": "Total de Casos Acumulados "+fecha,
                                 "annotations": []}]),
-                    dict(label="Activos",
+                    dict(label="Casos Activos",
                          method="update",
-                         args=[{"visible": [False, True]},
-                               {"title": "Total de Casos Activos",
+                         args=[{"visible": [False, True,False]},
+                               {"title": "Total de Casos Activos "+fecha,
+                                "annotations": []}]),
+                    dict(label="Fallecidos",
+                         method="update",
+                         args=[{"visible": [False, False,True]},
+                               {"title": "Total de Fallecidos "+fecha_fa_comuna,
                                 "annotations": []}]),
                     
                                 
@@ -475,7 +529,7 @@ def casos_comunas_activo_acum(region,region2):
     fig.update_layout(title_text="Comunas de la Región de: "+region)
     fig.update_layout(
     annotations=[
-        dict(text="Casos", x=0.2, xref="paper", y=1.06, yref="paper",
+        dict(text="Busqueda: ", x=0.1, xref="paper", y=1.06, yref="paper",
                              align="left", showarrow=False)
     ])
 
@@ -487,6 +541,9 @@ def grafico_Update_Dropdown_chile():
    
     fecha_casos_totales =data_crec_por_dia.columns
     fecha_casos_totales= fecha_casos_totales[1:]
+
+    
+
 
     # Initialize figure
     fig = go.Figure()
@@ -502,6 +559,12 @@ def grafico_Update_Dropdown_chile():
     casos_totales_act_df = pd.DataFrame({"fecha": fecha_casos_totales, 
                                          "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'].iloc[0,1:].values})
 
+
+    casos_recuperados_fis = pd.DataFrame({"fecha": fecha_casos_totales, 
+                                         "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'].iloc[0,1:].values})
+
+    casos_recuperados_fd = pd.DataFrame({"fecha": fecha_casos_totales, 
+                                         "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FD'].iloc[0,1:].values})
 
     #Casos por dia
     fig.add_trace(
@@ -520,8 +583,6 @@ def grafico_Update_Dropdown_chile():
                    visible=False,
                   line=dict(color="#F11013")))
 
-    #UCI
-
     fig.add_trace(
         go.Scatter(x=casos_totales_act_df.fecha,
                    y=casos_totales_act_df.casos,
@@ -530,10 +591,28 @@ def grafico_Update_Dropdown_chile():
                    visible=False,
                   line=dict(color="#1466F4")))
 
+    
+    fig.add_trace(
+        go.Scatter(x=casos_recuperados_fis.fecha,
+                   y=casos_recuperados_fis.casos,
+                   name='Recuperados FIS',
+                   text=casos_recuperados_fis.casos,
+                   visible=False,
+                  line=dict(color="green")))
+
+    fig.add_trace(
+        go.Scatter(x=casos_recuperados_fd.fecha,
+                   y=casos_recuperados_fd.casos,
+                   name='Recuperados FD',
+                   text=casos_recuperados_fd.casos,
+                   visible=False,
+                  line=dict(color="#0AD81D")))
+
+
     high_annotations = [dict(x="2020-06-02",
                          y=21400,
                          xref="x", yref="y",
-                         text="Nueva forma contar los casos",
+                         text="Nueva forma contar los casos por FIS",
                          ax=0, ay=-40)]
 
     fig.update_layout(
@@ -543,13 +622,13 @@ def grafico_Update_Dropdown_chile():
                 buttons=list([
                     dict(label="Casos Totales",
                          method="update",
-                         args=[{"visible": [True, False, False]},
+                         args=[{"visible": [True, False, False,False,False]},
                                {"title":'Chile: Casos Totales',
                                 "annotations": []}]),
 
                     dict(label="Fallecidos Acumulados",
                          method="update",
-                         args=[{"visible": [False, True, False]},
+                         args=[{"visible": [False, True, False,False,False]},
                                {"title": 'Chile: Fallecidos Totales',
                                 "annotations": []}]),
 
@@ -558,9 +637,22 @@ def grafico_Update_Dropdown_chile():
                          args=[{"visible": [False, False, True, False,False]},
                                {"title": 'Chile: Casos Activos Totales',
                                 "annotations": high_annotations}]),
+
+                    dict(label="Casos recuperados por FIS",
+                         method="update",
+                         args=[{"visible": [False, False, False,True,False]},
+                               {"title": 'Chile: Casos recuperados por FIS',
+                                "annotations": []}]),
+
+                     dict(label="Casos recuperados por FD",
+                         method="update",
+                         args=[{"visible": [False, False, False, False,True]},
+                               {"title": 'Chile: Casos recuperados por FD',
+                                "annotations": []}]),
+
                     dict(label="Combinacion",
                          method="update",
-                         args=[{"visible": [True, True, True]},
+                         args=[{"visible": [True, True, True,True,True]},
                                {"title": 'Chile: Casos Combinados',
                                 "annotations": []}]),
 
@@ -577,7 +669,7 @@ def grafico_Update_Dropdown_chile():
     fig.update_traces(
         hoverinfo="name+x+text",
         line={"width": 0.5},
-        marker={"size": 8},
+        marker={"size": 7},
         mode="lines+markers",
         showlegend=False
     )
@@ -605,6 +697,7 @@ def grafico_Update_Dropdown_chile():
 
 def mapa_comunas(request):
 
+    fecha_ult_act_chile = data_crec_por_dia.columns[-1]
 
     fig = go.Figure(go.Choroplethmapbox(geojson=geo_comunas, locations=data_comunas.Comuna, z=data_comunas.Casos,
                                     colorscale="Viridis", zmin=0, zmax=1000,
@@ -635,7 +728,7 @@ def mapa_comunas(request):
     graph3 = fig3.to_html(full_html=False)
 
         
-    return render(request,"mapa_casos_comunas.html", {"fecha_comuna":fecha,"num_recuFIS":num_recuFIS,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"fecha_casos":fecha_casos,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_casos_comunas.html", {"fecha_Act_chile":fecha_ult_act_chile,"fecha_comuna":fecha,"num_recuFIS":num_recuFIS,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"fecha_casos":fecha_casos,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 def mapa_comunas_busqueda(request):
 

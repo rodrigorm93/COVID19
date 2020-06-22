@@ -134,7 +134,7 @@
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Casos Activos {{fecha_comuna}}</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Total de casos Acumulados,Activos y Fallecidos</h6>
           <div class="dropdown no-arrow">
   
           </div>
@@ -157,9 +157,14 @@
       <!-- Illustrations -->
       <div class="card shadow mb-4">
         <div class="card-header py-3">
-          <h6 class="m-0 font-weight-bold text-primary">Casos Totales Chile</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Casos Totales Chile: {{fecha_Act_chile}}</h6>
         </div>
         <div class="card-body">
+Se entiende por casos totales o acumulados el número total de casos confirmados desde el primer caso confirmado hasta la fecha de elaboración del reporte o informe.</br>
+Se entiende en este reporte por "recuperados por fecha de diagnóstico" la proyección de personas que tras ser confirmadas de COVID-19, han estado en cuarentena pasando 14 días sin síntomas.</br> 
+Se entiende en este reporte por "recuperados por fecha de inicio de síntomas" la proyección de recuperados que tras ser confirmados, reportan su fecha de inicio de síntomas y han transcurrido 14 días o más desde ella.</br>
+Se entiende en este reporte por casos activos la diferencia entre el total de casos confirmados y (personas recuperadas y personas fallecidas). Para calcularlos segun fecha de incio de síntomas se utilizan los recuperados por fecha de incio de síntomas, 
+y por fecha de diagnóstico los recuperados por fecha de diagnóstico.
           {{grafico3|safe}}
        
         </div>
