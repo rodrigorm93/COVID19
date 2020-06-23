@@ -615,6 +615,37 @@ def grafico_Update_Dropdown_chile():
                          text="Nueva forma contar los casos por FIS",
                          ax=0, ay=-40)]
 
+    max_c = pd.to_numeric(casos_totales_df.casos).idxmax()
+
+    x_c = casos_totales_df['fecha'].loc[max_c]
+
+    casos_annotations = [dict(x="2020-03-10",
+                             y=casos_totales_df.casos.mean(),
+                             xref="x", yref="y",
+                             text="Promedio Casos:<br> %.1f" % casos_totales_df.casos.mean(),
+                             ax=0, ay=-40),
+                        dict(x=x_c,
+                             y=pd.to_numeric(casos_totales_df.casos).max(),
+                             xref="x", yref="y",
+                             text="Maximo Casos:<br> %.0f" % pd.to_numeric(casos_totales_df.casos).max(),
+                             ax=0, ay=-40)]
+
+    max_f = pd.to_numeric(fallecidos_totales_df.fallecidos).idxmax()
+
+    x_f = fallecidos_totales_df['fecha'].loc[max_f]
+
+    fallecidos_annotations = [dict(x="2020-03-10",
+                             y=fallecidos_totales_df.fallecidos.mean(),
+                             xref="x", yref="y",
+                             text="Promedio Fallecidos:<br> %.1f" % fallecidos_totales_df.fallecidos.mean(),
+                             ax=0, ay=-40),
+                        dict(x=x_f,
+                             y=pd.to_numeric(fallecidos_totales_df.fallecidos).max(),
+                             xref="x", yref="y",
+                             text="Maximo fallecidos:<br> %.0f" % pd.to_numeric(fallecidos_totales_df.fallecidos).max(),
+                             ax=0, ay=-40)]
+
+
     fig.update_layout(
         updatemenus=[
             dict(
@@ -624,13 +655,13 @@ def grafico_Update_Dropdown_chile():
                          method="update",
                          args=[{"visible": [True, False, False,False,False]},
                                {"title":'Chile: Casos Totales',
-                                "annotations": []}]),
+                                "annotations": casos_annotations}]),
 
                     dict(label="Fallecidos Acumulados",
                          method="update",
                          args=[{"visible": [False, True, False,False,False]},
                                {"title": 'Chile: Fallecidos Totales',
-                                "annotations": []}]),
+                                "annotations": fallecidos_annotations}]),
 
                     dict(label="Casos Activos",
                          method="update",
