@@ -149,14 +149,27 @@ def casos_criticos(request):
     fig3.update_layout(title="Distribución del número de Casos Activos",
                     xaxis_title="Fecha",yaxis_title="Numero de Casos",)
 
+
+    pacientes_ventiladores = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto30/PacientesVMI.csv')
+    pacientes_ventiladores = pacientes_ventiladores.fillna(0)
+
+    pc_vmi = pacientes_ventiladores[pacientes_ventiladores['Casos']=='Pacientes VMI'].iloc[0,1:].values
+
+    data_vmi_criticos = pd.DataFrame({'Tipo':['Pacientes VMI','Pacientes criticos'],'Cantidad': [pc_vmi[-1],int(pacientes_criticos['2020-06-23'].values)]})
+
+    fig4 = px.pie(data_vmi_criticos, values='Cantidad', names='Tipo')
+    fig4.update_traces(textposition='inside')
+    fig4.update_layout(uniformtext_minsize=9, uniformtext_mode='hide')
+
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
     graph3 = fig3.to_html(full_html=False)
+    graph4 = fig4.to_html(full_html=False)
 
 
     #graph2 = fig2.to_html(full_html=False)
 
 
 
-    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"grafico3":graph3,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"numero_casos_criticos.html", {"grafico1":graph1,"grafico3":graph3,"grafico4":graph4,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 

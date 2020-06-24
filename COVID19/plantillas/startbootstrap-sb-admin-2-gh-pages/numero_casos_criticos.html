@@ -85,37 +85,28 @@
       </div>
     </div>
 
-    <!-- Pie Chart 
+
     <div class="col-xl-4 col-lg-5">
       <div class="card shadow mb-4">
       
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Porcentaje de Ventiladores</h6>
+          <h6 class="m-0 font-weight-bold text-primary">Porcentaje de Casos Criticos del total de personas en Ventilación Mecanica Invasiva</h6>
           <div class="dropdown no-arrow">
-            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-              <div class="dropdown-header">Dropdown Header:</div>
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Something else here</a>
-            </div>
+         
           </div>
         </div>
 
         
         <div class="card-body">
             
-            {{grafico2|safe}} 
+            {{grafico4|safe}} 
             
 
         </div>
       </div>
     </div>
 
--->
+
     
   </div>
 
@@ -130,10 +121,12 @@
   <!-- Project Card Example -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Casos por Día</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Pacientes Activos por FIS (fecha de incio de síntomas)</h6>
     </div>
     <div class="card-body">
-      <span>Número de pacientes activos según fecha de diagnóstico, reportados diariamente por el Ministerio de Salud desde el 03-03-2020. </span>
+      <span>Se entiende en este reporte por casos activos la diferencia entre el total de casos confirmados y (personas recuperadas y personas fallecidas). 
+        Para calcularlos segun fecha de incio de síntomas se utilizan los recuperados por fecha de incio de síntomas, 
+        y por fecha de diagnóstico los recuperados por fecha de diagnóstico. </span>
       {{grafico2|safe}}
     </div>
   </div>
