@@ -90,6 +90,8 @@ data_comunas.loc[data_comunas['Comuna'] == 'TilTil (Área Urbana)', "Comuna"] = 
 data_comunas.loc[data_comunas['Comuna'] == 'Pozo Almonte (Radio Urbano)', "Comuna"] = 'Pozo Almonte'
 data_comunas.loc[data_comunas['Comuna'] == 'Peñalolen', "Comuna"] = 'Peñalolén'
 data_comunas.loc[data_comunas['Comuna'] == 'Curicó (Área Urbana)', "Comuna"] = 'Curicó'
+data_comunas.loc[data_comunas['Comuna'] == 'Mejillones (Re-ingreso total)', "Comuna"] = 'Mejillones'
+data_comunas.loc[data_comunas['Comuna'] == 'Antofagasta (Re-ingreso total)', "Comuna"] = 'Antofagasta'
 
 
 resp = requests.get('https://raw.githubusercontent.com/rgcl/geojson-cl/master/comunas.json')
