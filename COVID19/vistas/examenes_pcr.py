@@ -60,7 +60,9 @@ num_cases_cl_data = num_cases_cl[ultima_fecha_cl].sum()
 
 
 
-num_death_data =  grupo_fallecidos[ultima_fecha_cl].sum()
+ultima_fecha_fallecidos=grupo_fallecidos.columns[-1]
+
+num_death =  grupo_fallecidos[ultima_fecha_fallecidos].sum()
 
 casos_act_data = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
 
@@ -70,7 +72,7 @@ num_recuFIS_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recupera
 
 num_recuFIS = int_format(int(num_recuFIS_data))
 num_cases_cl = int_format(int(num_cases_cl_data))
-num_death = int_format(int(num_death_data))
+num_death = int_format(int(num_death))
 casos_act = int_format(int(casos_act_data))
 
 

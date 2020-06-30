@@ -45,50 +45,36 @@ def int_format(value, decimal_points=3, seperator=u','):
        return seperator.join(parts)
 
 
-
 #***************************MENU**************************************
 #Lenar con 0 filas nulas
-data_chile_r = data_chile_r.fillna(0)
+data_crec_por_dia = data_crec_por_dia.fillna(0)
 
-ultima_fecha_cl = data_chile.columns
-ultima_fecha_cl= ultima_fecha_cl[-1]
-
-ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r = data_crec_por_dia.columns
 ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
 
+casos_act_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
+casos_totales_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos totales'][ultima_fecha_cl_r].sum()
+casos_fallecidos_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][ultima_fecha_cl_r].sum()
+casos_recuperados_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
 
-ultima_fecha_region_fallecidos = fallecidos_por_region.columns
-ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
-
-nultima_fecha_region_fallecidos = fallecidos_por_region.columns
-ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
-
-num_cases_cl = data_chile.drop([16],axis=0)
-num_cases_cl_data = num_cases_cl[ultima_fecha_cl].sum()
-
-
-
-num_death_data =  grupo_fallecidos[ultima_fecha_cl].sum()
-
-casos_act_data = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
-
-
-#recuperados
-num_recuFIS_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
-
-num_recuFIS = int_format(int(num_recuFIS_data))
-num_cases_cl = int_format(int(num_cases_cl_data))
-num_death = int_format(int(num_death_data))
+num_recuFIS = int_format(int(casos_recuperados_data))
+num_cases_cl = int_format(int(casos_totales_data))
+num_death = int_format(int(casos_fallecidos_data))
 casos_act = int_format(int(casos_act_data))
 
+num_cases_cl = str(num_cases_cl)+' ('+ultima_fecha_cl_r+')'
+num_death = str(num_death)+' ('+ultima_fecha_cl_r+')'
+casos_act = str(casos_act)+' ('+ultima_fecha_cl_r+')'
+num_recuFIS = str(num_recuFIS)+' ('+ultima_fecha_cl_r+')'
 
-fecha_casos = ' ('+ultima_fecha_cl+')'
+fecha_casos = ' ('+ultima_fecha_cl_r+')'
+
 
 #********************************************************************
 def busqueda_hospitalizacion_region(request):
 
 
-
+    ultima_fecha_cl = grupo_uci_reg.columns[-1]
 
     titulo = 'Numero de personas Hospitalizadas en UCI por Región '+ultima_fecha_cl
     fig = px.bar(grupo_uci_reg.sort_values(ultima_fecha_cl), 

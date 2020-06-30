@@ -45,45 +45,32 @@ def int_format(value, decimal_points=3, seperator=u','):
 
 #***************************MENU**************************************
 #Lenar con 0 filas nulas
-data_chile_r = data_chile_r.fillna(0)
+data_crec_por_dia = data_crec_por_dia.fillna(0)
 
-ultima_fecha_cl = data_chile.columns
-ultima_fecha_cl= ultima_fecha_cl[-1]
-
-ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r = data_crec_por_dia.columns
 ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
 
+casos_act_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
+casos_totales_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos totales'][ultima_fecha_cl_r].sum()
+casos_fallecidos_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][ultima_fecha_cl_r].sum()
+casos_recuperados_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
 
-ultima_fecha_region_fallecidos = fallecidos_por_region.columns
-ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
+num_recuFIS = int_format(int(casos_recuperados_data))
+num_cases_cl = int_format(int(casos_totales_data))
+num_death = int_format(int(casos_fallecidos_data))
+casos_act = int_format(int(casos_act_data))
 
-num_cases_cl = data_chile.drop([16],axis=0)
-num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
+num_cases_cl = str(num_cases_cl)+' ('+ultima_fecha_cl_r+')'
+num_death = str(num_death)+' ('+ultima_fecha_cl_r+')'
+casos_act = str(casos_act)+' ('+ultima_fecha_cl_r+')'
+num_recuFIS = str(num_recuFIS)+' ('+ultima_fecha_cl_r+')'
 
-
-
-num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
-
-#ver el caso de que no se actualicen los registros
-
-
-casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
-#dejar el ulktimo registro de recuperados que fue el 2020-06-02
-num_recuFIS = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
-
-
-num_recuFIS = int_format(int(num_recuFIS))
-num_cases_cl = int_format(int(num_cases_cl))
-num_death = int_format(int(num_death))
-casos_act = int_format(int(casos_act))
-
-
-fecha_casos_fall='('+data_chile.columns[-1]+')'
+fecha_casos = ' ('+ultima_fecha_cl_r+')'
 
 #********************************************************************
 
-data_region = data_chile[['Region',ultima_fecha_cl]]
-data_region = data_region.rename(columns={ultima_fecha_cl:'Casos'})
+data_region = data_chile[['Region',ultima_fecha_cl_r]]
+data_region = data_region.rename(columns={ultima_fecha_cl_r:'Casos'})
 
 resp = requests.get('https://raw.githubusercontent.com/rodrigorm93/Datos-Chile/master/geo-json/regiones.json')
 geo_region = json.loads(resp.content)
@@ -99,13 +86,13 @@ data_activos_region = data_activos_region.rename(columns={fecha:'Casos Activos'}
 data_activos_region.loc[data_activos_region['Region'] == 'Magallanes y la Antartica', "Region"] = 'Magallanes'
 data_activos_region.loc[data_activos_region['Region'] == 'Del Libertador General Bernardo O’Higgins', "Region"] = 'O’Higgins'
 
-data_f = fallecidos_por_region[['Region',ultima_fecha_cl]]
-data_f = data_f.rename(columns={ultima_fecha_cl:'Fallecidos'})
+data_f = fallecidos_por_region[['Region',ultima_fecha_cl_r]]
+data_f = data_f.rename(columns={ultima_fecha_cl_r:'Fallecidos'})
 data_f = data_f.drop([16],axis=0)
 
 #funciones
-datos = data_chile[['Region',ultima_fecha_cl]].drop([16],axis=0)
-datos = datos.rename(columns={ultima_fecha_cl:'Casos'})
+datos = data_chile[['Region',ultima_fecha_cl_r]].drop([16],axis=0)
+datos = datos.rename(columns={ultima_fecha_cl_r:'Casos'})
 
 button_layer_1_height = 1.08
 
@@ -138,7 +125,7 @@ def casos_regiones():
                     dict(label="Acumulados",
                          method="update",
                          args=[{"visible": [True, False, False]},
-                               {"title": "Total de Casos Acumulados "+ultima_fecha_cl,
+                               {"title": "Total de Casos Acumulados "+ultima_fecha_cl_r,
                                 "annotations": []}]),
                     dict(label="Activos",
                          method="update",
@@ -148,7 +135,7 @@ def casos_regiones():
                     dict(label="Fallecidos",
                          method="update",
                          args=[{"visible": [False, False, True]},
-                               {"title": "Total de Fallecidos "+ultima_fecha_cl,
+                               {"title": "Total de Fallecidos "+ultima_fecha_cl_r,
                                 "annotations": []}]),
                     
                                 
@@ -191,5 +178,5 @@ def mapa_region(request):
     graph1 = fig.to_html(full_html=False)
     graph2 = fig2.to_html(full_html=False)
     
-    return render(request,"mapa_casos_regiones.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos":fecha_casos_fall,"num_recuFIS":num_recuFIS,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_casos_regiones.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos":ultima_fecha_cl_r,"casos_act":casos_act,"n_casos":num_cases_cl,"num_rec":num_recuFIS, "num_death":num_death})
 

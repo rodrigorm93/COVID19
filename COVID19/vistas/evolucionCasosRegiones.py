@@ -25,42 +25,53 @@ fallecidos_reg = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
 casos_diarios_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 casos_diarios_por_regionT = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo_T.csv')
+data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
 
 comb = pd.merge(casos_diarios_por_regionT,fallecidos_reg, how='outer', on=['Region', 'Region'])
 comb= comb.fillna(0)
 
+def int_format(value, decimal_points=3, seperator=u','):
+       value = str(value)
+       if len(value) <= decimal_points:
+           return value
+       # say here we have value = '12345' and the default params above
+       parts = []
+       while value:
+           parts.append(value[-decimal_points:])
+           value = value[:-decimal_points]
+       # now we should have parts = ['345', '12']
+       parts.reverse()
+       # and the return value should be u'12.345'
+       return seperator.join(parts)
+
+
 #***************************MENU**************************************
 #Lenar con 0 filas nulas
-data_chile_r = data_chile_r.fillna(0)
+data_crec_por_dia = data_crec_por_dia.fillna(0)
 
-ultima_fecha_cl = data_chile.columns
-ultima_fecha_cl= ultima_fecha_cl[-1]
-
-ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r = data_crec_por_dia.columns
 ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
 
+casos_act_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
+casos_totales_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos totales'][ultima_fecha_cl_r].sum()
+casos_fallecidos_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][ultima_fecha_cl_r].sum()
+casos_recuperados_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
 
-ultima_fecha_region_fallecidos = fallecidos_por_region.columns
-ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
+num_recuFIS = int_format(int(casos_recuperados_data))
+num_cases_cl = int_format(int(casos_totales_data))
+num_death = int_format(int(casos_fallecidos_data))
+casos_act = int_format(int(casos_act_data))
 
-num_cases_cl = data_chile.drop([16],axis=0)
-num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
+num_cases_cl = str(num_cases_cl)+' ('+ultima_fecha_cl_r+')'
+num_death = str(num_death)+' ('+ultima_fecha_cl_r+')'
+casos_act = str(casos_act)+' ('+ultima_fecha_cl_r+')'
+num_recuFIS = str(num_recuFIS)+' ('+ultima_fecha_cl_r+')'
 
-num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
-#ver el caso de que no se actualicen los registros
-
-
-casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
-#dejar el ulktimo registro de recuperados que fue el 2020-06-02
-
+fecha_casos = ' ('+ultima_fecha_cl_r+')'
 
 
-num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
-num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
-casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
-
-casos_diarios_por_region = casos_diarios_por_region.drop(16, axis=0)
+#********************************************************************
 
 fecha_casos_fall='('+data_chile.columns[-1]+')'
 fecha_casos_region = casos_diarios_por_region.columns[-1]
@@ -226,7 +237,7 @@ def regiones(request):
     graph1 = fig.to_html(full_html=False)
 
 
-    return render(request,"region.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"region.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"num_recuFIS":num_recuFIS,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 
 

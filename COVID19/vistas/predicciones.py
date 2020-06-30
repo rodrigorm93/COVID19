@@ -33,6 +33,7 @@ data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COV
 data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
+data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
 
 seasonal_periods_casos = 2
@@ -56,46 +57,47 @@ for i in dates_chile:
 #funcion 
 
 
-
 #***************************MENU**************************************
+
+def int_format(value, decimal_points=3, seperator=u','):
+       value = str(value)
+       if len(value) <= decimal_points:
+           return value
+       # say here we have value = '12345' and the default params above
+       parts = []
+       while value:
+           parts.append(value[-decimal_points:])
+           value = value[:-decimal_points]
+       # now we should have parts = ['345', '12']
+       parts.reverse()
+       # and the return value should be u'12.345'
+       return seperator.join(parts)
+
+
+
 #Lenar con 0 filas nulas
-data_chile_r = data_chile_r.fillna(0)
+data_crec_por_dia = data_crec_por_dia.fillna(0)
 
-ultima_fecha_cl = data_chile.columns
-ultima_fecha_cl= ultima_fecha_cl[-1]
-
-ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r = data_crec_por_dia.columns
 ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
 
+casos_act_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
+casos_totales_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos totales'][ultima_fecha_cl_r].sum()
+casos_fallecidos_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][ultima_fecha_cl_r].sum()
+casos_recuperados_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
 
-ultima_fecha_region_fallecidos = fallecidos_por_region.columns
-ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
+num_recuFIS = int_format(int(casos_recuperados_data))
+num_cases_cl = int_format(int(casos_totales_data))
+num_death = int_format(int(casos_fallecidos_data))
+casos_act = int_format(int(casos_act_data))
 
-num_cases_cl = data_chile.drop([16],axis=0)
-num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
+num_cases_cl = str(num_cases_cl)+' ('+ultima_fecha_cl_r+')'
+num_death = str(num_death)+' ('+ultima_fecha_cl_r+')'
+casos_act = str(casos_act)+' ('+ultima_fecha_cl_r+')'
+num_recuFIS = str(num_recuFIS)+' ('+ultima_fecha_cl_r+')'
 
+fecha_casos = ' ('+ultima_fecha_cl_r+')'
 
-
-num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
-num_rec = data_chile_r.iloc[2,-1].sum()
-
-#ver el caso de que no se actualicen los registros
-
-estado_r='Act'+ultima_fecha_cl
-estado_f='Act'+ultima_fecha_cl
-estado_a='Act'+ultima_fecha_cl
-
-casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
-#dejar el ulktimo registro de recuperados que fue el 2020-06-02
-
-
-
-num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
-num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
-casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
-
-
-fecha_casos_fall='('+data_chile.columns[-1]+')'
 
 #********************************************************************
 
@@ -327,7 +329,7 @@ def total_defunciones_chile(request):
 
     tabla1 = fig5.to_html(full_html=False)
 
-    return render(request,"numero_defunciones_chile.html", {"grafico3":graph3,"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"grafico2":graph2,"tabla1":tabla1,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"numero_defunciones_chile.html", {"grafico3":graph3,"grafico1":graph1,"grafico2":graph2,"tabla1":tabla1,"num_recuFIS":num_recuFIS,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 def modelo_predictivo(request):
     
@@ -355,14 +357,41 @@ def modelo_predictivo(request):
        
     fig=go.Figure()
     fig.add_trace(go.Scatter(x=np.array(future_forcast_dates_cl), y=datewise["Confirmed"],
-                        mode='lines+markers',name="Casos Reales"))
+                        mode='lines+markers',name="Casos Reales",text=datewise["Confirmed"]))
     fig.add_trace(go.Scatter(x=Predict_df_cl_1['Fecha'], y=Predict_df_cl_1["N° Casos"],
-                        mode='lines+markers',name="Predicción",))
+                        mode='lines+markers',name="Predicción",text=Predict_df_cl_1["N° Casos"]))
 
     fig.update_layout(title="Proyección de casos en 20 días",
                     xaxis_title="Fecha",yaxis_title="Número de Casos",legend=dict(x=0,y=1,traceorder="normal"))
 
+
+      # style all the traces
+    fig.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.5},
+        marker={"size": 6},
+        mode="lines+markers",
+        showlegend=False
+    )
+
+
+
+
+    # Update layout
+    fig.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        legend=dict(traceorder="reversed"),
+        height=500,
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+    )                     
+
     graph1 = fig.to_html(full_html=False)
+
 
 
     fig2 = make_subplots(
@@ -394,12 +423,12 @@ def modelo_predictivo(request):
     
     graph2 = fig2.to_html(full_html=False)
 
-    return render(request,"predicciones.html", {"grafico1":graph1,"fecha_casos_fall":fecha_casos_fall,"tabla1":graph2,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"predicciones.html", {"grafico1":graph1,"tabla1":graph2,"num_recuFIS":num_recuFIS,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
 
 
 
 
-def modelo_predictivo(request):
+def modelo_predictivo_fall(request):
     
    
     
@@ -432,7 +461,13 @@ def modelo_predictivo(request):
     fig.update_layout(title="Proyección de casos en 20 días",
                     xaxis_title="Fecha",yaxis_title="Número de Casos",legend=dict(x=0,y=1,traceorder="normal"))
 
+
+    
+             
+
     graph1 = fig.to_html(full_html=False)
+
+
 
 
     fig2 = make_subplots(

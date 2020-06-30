@@ -24,6 +24,7 @@ data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-C
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 num_vent = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto20/NumeroVentiladores.csv')
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
+data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
 
 ultima_fecha_cl_vt = num_vent.columns
@@ -46,49 +47,38 @@ def int_format(value, decimal_points=3, seperator=u','):
 
 
 
-#***************************MENU**************************************
 #Lenar con 0 filas nulas
-data_chile_r = data_chile_r.fillna(0)
+data_crec_por_dia = data_crec_por_dia.fillna(0)
 
-ultima_fecha_cl = data_chile.columns
-ultima_fecha_cl= ultima_fecha_cl[-1]
-
-ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r = data_crec_por_dia.columns
 ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
 
+casos_act_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
+casos_totales_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos totales'][ultima_fecha_cl_r].sum()
+casos_fallecidos_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][ultima_fecha_cl_r].sum()
+casos_recuperados_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
 
-ultima_fecha_region_fallecidos = fallecidos_por_region.columns
-ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
+num_recuFIS = int_format(int(casos_recuperados_data))
+num_cases_cl = int_format(int(casos_totales_data))
+num_death = int_format(int(casos_fallecidos_data))
+casos_act = int_format(int(casos_act_data))
 
-num_cases_cl = data_chile.drop([16],axis=0)
-num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
+num_cases_cl = str(num_cases_cl)+' ('+ultima_fecha_cl_r+')'
+num_death = str(num_death)+' ('+ultima_fecha_cl_r+')'
+casos_act = str(casos_act)+' ('+ultima_fecha_cl_r+')'
+num_recuFIS = str(num_recuFIS)+' ('+ultima_fecha_cl_r+')'
 
+fecha_casos = ' ('+ultima_fecha_cl_r+')'
 
-
-num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
-num_rec = data_chile_r.iloc[2,-1].sum()
-
-#ver el caso de que no se actualicen los registros
-
-casos_act = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
-#dejar el ulktimo registro de recuperados que fue el 2020-06-02
-
-
-
-num_cases_cl = str(int(num_cases_cl))+' ('+ultima_fecha_cl+')'
-num_death = str(int(num_death))+' ('+ultima_fecha_cl+')'
-casos_act = str(int(casos_act))+' ('+ultima_fecha_cl_r+')'
-
-
-fecha_casos_fall='('+data_chile.columns[-1]+')'
 
 #********************************************************************
 
 
 #VENTILADORES
 
+ult_vent=num_vent.columns[-1]
 
-dates_vent = num_vent.loc[:, '2020-04-14': ultima_fecha_cl]
+dates_vent = num_vent.loc[:, '2020-04-14': ult_vent]
 dates_vent = dates_vent.keys()
 
 ventiladores_oc =[]
@@ -141,7 +131,7 @@ def num_ventiladores(request):
                     mode='lines+markers',
                     line_color='red')
 
-    layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Ventiladores Fecha: '+ ultima_fecha_cl+'</b>',
+    layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Ventiladores Fecha: '+ ult_vent+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig = go.Figure(data = [trace,trace2], layout = layout)
 
@@ -176,12 +166,12 @@ def num_ventiladores(request):
     colors = ['green','red']
     trace1 = go.Pie(
                     labels=ventiladiores['Ventiladores'],
-                    values=ventiladiores[ultima_fecha_cl],
+                    values=ventiladiores[ult_vent],
                     hoverinfo='label+percent', 
                     textfont_size=12,
                     marker=dict(colors=colors, 
                                 line=dict(color='#000000', width=2)))
-    layout = go.Layout(title_text = '<b>Porcentaje de ventiladores Fecha: '+ultima_fecha_cl+'</b>',
+    layout = go.Layout(title_text = '<b>Porcentaje de ventiladores Fecha: '+ult_vent+'</b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig2 = go.Figure(data = [trace1], layout = layout)
 

@@ -19,7 +19,6 @@ warnings.filterwarnings('ignore')
 
 
 data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
-data_chile_r = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 grupo_fallecidos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto10/FallecidosEtario.csv')
 data_casos_por_comuna_activos = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto19/CasosActivosPorComuna.csv')
 fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo.csv')
@@ -32,7 +31,6 @@ casos_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
 
-data_crec_por_dia = data_crec_por_dia.fillna(0)
 
 
 def int_format(value, decimal_points=3, seperator=u','):
@@ -52,38 +50,27 @@ def int_format(value, decimal_points=3, seperator=u','):
 
 #***************************MENU**************************************
 #Lenar con 0 filas nulas
-data_chile_r = data_chile_r.fillna(0)
+data_crec_por_dia = data_crec_por_dia.fillna(0)
 
-ultima_fecha_cl = data_chile.columns
-ultima_fecha_cl= ultima_fecha_cl[-1]
-
-ultima_fecha_cl_r = data_chile_r.columns
+ultima_fecha_cl_r = data_crec_por_dia.columns
 ultima_fecha_cl_r= ultima_fecha_cl_r[-1]
 
+casos_act_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
+casos_totales_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos totales'][ultima_fecha_cl_r].sum()
+casos_fallecidos_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Fallecidos'][ultima_fecha_cl_r].sum()
+casos_recuperados_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
 
-ultima_fecha_region_fallecidos = fallecidos_por_region.columns
-ultima_fecha_region_fallecidos= ultima_fecha_region_fallecidos[-1]
-
-num_cases_cl = data_chile.drop([16],axis=0)
-num_cases_cl_data = num_cases_cl[ultima_fecha_cl].sum()
-
-
-
-num_death_data =  grupo_fallecidos[ultima_fecha_cl].sum()
-
-casos_act_data = data_chile_r[data_chile_r['Fecha']=='Casos activos'][ultima_fecha_cl_r].sum()
-#dejar el ulktimo registro de recuperados que fue el 2020-06-02
-
-#recuperados
-num_recuFIS_data = data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FIS'][ultima_fecha_cl_r].sum()
-
-num_recuFIS = int_format(int(num_recuFIS_data))
-num_cases_cl = int_format(int(num_cases_cl_data))
-num_death = int_format(int(num_death_data))
+num_recuFIS = int_format(int(casos_recuperados_data))
+num_cases_cl = int_format(int(casos_totales_data))
+num_death = int_format(int(casos_fallecidos_data))
 casos_act = int_format(int(casos_act_data))
 
-fecha_casos = ' ('+ultima_fecha_cl+')'
+num_cases_cl = str(num_cases_cl)+' ('+ultima_fecha_cl_r+')'
+num_death = str(num_death)+' ('+ultima_fecha_cl_r+')'
+casos_act = str(casos_act)+' ('+ultima_fecha_cl_r+')'
+num_recuFIS = str(num_recuFIS)+' ('+ultima_fecha_cl_r+')'
 
+fecha_casos = ' ('+ultima_fecha_cl_r+')'
 
 
 #********************************************************************
@@ -449,7 +436,7 @@ def casos_comunas_activo_acum(region,region2):
     #Numero de Casos
     data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
 
-    data_casos_por_comuna_data = data_casos_por_comuna[data_casos_por_comuna['Region']==region2]
+    data_casos_por_comuna_data = data_casos_por_comuna[data_casos_por_comuna['Region']==region]
     data_casos_por_comuna_data = data_casos_por_comuna_data.reset_index()
 
     data_casos_por_comuna_data = data_casos_por_comuna_data[['Comuna',fecha]]
@@ -799,20 +786,19 @@ def mapa_comunas_busqueda(request):
 
     fig2,f = casos_comunas_activo_acum(region,region2)
 
-        
+
+    ultima_fecha_cl = data_chile.columns[-1]
+    ultima_fecha_region_fallecidos = fallecidos_por_region.columns[-1]
+
     n_casos_region = data_chile[data_chile['Region'] ==region2][ultima_fecha_cl].values
 
     n_casos_region_f = fallecidos_por_region[fallecidos_por_region['Region']==region2][ultima_fecha_region_fallecidos]
 
 
-   
-
-
-    num_cases_cl = int_format(int(n_casos_region))
-    num_death = int_format(int(n_casos_region_f))
-    casos_act = int_format(f)
-
-    fecha_comuna = '('+fecha+')'
+    
+    num_cases_cl = str(int(n_casos_region))+' ('+ultima_fecha_cl+')'
+    num_death = str(int(n_casos_region_f))+' ('+ultima_fecha_region_fallecidos+')'
+    casos_act = str(int(f))+' ('+fecha+')'
 
         
     fig3 = grafico_Update_Dropdown(region2)
@@ -844,4 +830,4 @@ def mapa_comunas_busqueda(request):
     
 
     
-    return render(request,"mapa_casos_comunas_busqueda.html", {"fecha_comuna":fecha,"region":region,"fecha_act":fecha_comuna,"fecha_c":fecha_casos,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})
+    return render(request,"mapa_casos_comunas_busqueda.html", {"fecha_comuna":fecha,"region":region,"grafico1":graph1,"grafico2":graph2,"grafico3":graph3,"n_casos":num_cases_cl,"num_rec":casos_act, "num_death":num_death})

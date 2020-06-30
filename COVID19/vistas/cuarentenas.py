@@ -41,8 +41,9 @@ num_cases_cl = data_chile.drop([16],axis=0)
 num_cases_cl = num_cases_cl[ultima_fecha_cl].sum()
 
 
+ultima_fecha_fallecidos=grupo_fallecidos.columns[-1]
 
-num_death =  grupo_fallecidos[ultima_fecha_cl].sum()
+num_death =  grupo_fallecidos[ultima_fecha_fallecidos].sum()
 num_rec = data_chile_r.iloc[2,-1].sum()
 
 #ver el caso de que no se actualicen los registros
