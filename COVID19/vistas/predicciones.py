@@ -36,7 +36,7 @@ fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCienci
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
 
-seasonal_periods_casos = 2
+seasonal_periods_casos = 6
 
 
 
@@ -339,6 +339,9 @@ def modelo_predictivo(request):
 
     datewise = pd.DataFrame({'Days Since': list(days_chile2), 'Confirmed':casos_chile})
 
+
+
+    '''
     es=ExponentialSmoothing(np.asarray(datewise['Confirmed']),seasonal_periods=seasonal_periods_casos,trend='add', seasonal='mul').fit()
 
     days_in_future_cl = 20
@@ -353,10 +356,30 @@ def modelo_predictivo(request):
     Predict_df_cl_1= pd.DataFrame()
     Predict_df_cl_1["Fecha"] = list(future_forcast_dates_cl[-days_in_future_cl:])
     Predict_df_cl_1["N° Casos"] =np.round(list(es.forecast(20)))
+    '''
+
+    Predict_df_cl_1 = pd.read_csv('https://raw.githubusercontent.com/rodrigorm93/Datos-Chile/master/Predicciones/Predict_df_cl_1.csv')
+
+
+    fechas_chile_crec = data_crec_por_dia.columns[-1]
+    fechas_chile = data_crec_por_dia.loc[:, '2020-03-03': fechas_chile_crec]
+    fechas_chile = fechas_chile.keys()
+
+    fecha_chile_df = []
+    future_f = np.array([i for i in range(len(fechas_chile))]).reshape(-1, 1)
+    start_cl = '03/03/2020'
+    start_date_cl = datetime.datetime.strptime(start_cl, '%m/%d/%Y')
+
+    for i in range(len(future_f)):
+        fecha_chile_df.append((start_date_cl + datetime.timedelta(days=i)).strftime('%m/%d/%Y'))
+            
+
+    data_chile = pd.DataFrame({'Fecha': fecha_chile_df, 'Confirmed':casos_chile})
 
        
     fig=go.Figure()
-    fig.add_trace(go.Scatter(x=np.array(future_forcast_dates_cl), y=datewise["Confirmed"],
+    #fig.add_trace(go.Scatter(x=np.array(future_forcast_dates_cl), y=datewise["Confirmed"], mode='lines+markers',name="Casos Reales",text=datewise["Confirmed"]))
+    fig.add_trace(go.Scatter(x=data_chile['Fecha'], y=data_chile["Confirmed"],
                         mode='lines+markers',name="Casos Reales",text=datewise["Confirmed"]))
     fig.add_trace(go.Scatter(x=Predict_df_cl_1['Fecha'], y=Predict_df_cl_1["N° Casos"],
                         mode='lines+markers',name="Predicción",text=Predict_df_cl_1["N° Casos"]))
@@ -369,7 +392,7 @@ def modelo_predictivo(request):
     fig.update_traces(
         hoverinfo="name+x+text",
         line={"width": 0.5},
-        marker={"size": 6},
+        marker={"size": 4},
         mode="lines+markers",
         showlegend=False
     )
