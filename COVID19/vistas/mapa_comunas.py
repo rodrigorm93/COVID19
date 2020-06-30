@@ -87,6 +87,9 @@ data_activos_region.loc[data_activos_region['Region'] == 'Magallanes y la Antart
 data_activos_region.loc[data_activos_region['Region'] == 'Del Libertador General Bernardo O’Higgins', "Region"] = 'O’Higgins'
 data_activos_region = data_activos_region.sort_values('Casos Activos')
 
+data_activos_region_2 = data_casos_por_comuna_activos[data_casos_por_comuna_activos['Comuna']=='Total']
+data_activos_region_2 = data_activos_region_2.reset_index()
+
 #casos acumulados totales por region
 data_chile = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 fecha_casos_region = data_chile.columns
@@ -155,11 +158,19 @@ def grafico_Update_Dropdown(region):
     fecha_uci=grupo_uci_reg.columns
     fecha_uci= fecha_uci[3:]
 
+    fecha_activos_por_region = data_activos_region_2.columns[6:]
+
+
     # Initialize figure
     fig = go.Figure()
-    
+
+
     # Add Traces
+
     casos_diarios_df = pd.DataFrame({"fecha": fecha_cd, "casos": casos_por_dia[casos_por_dia['Region']==region].iloc[0,1:].values})
+
+    casos_activos_df = pd.DataFrame({"fecha": fecha_activos_por_region, "casos": data_activos_region_2[data_activos_region_2['Region']=='Tarapaca'].iloc[0,6:].values})
+
     fallecidos_diarios_df = pd.DataFrame({"fecha": fecha_fd, "casos": fallecidos_por_dia[fallecidos_por_dia['Region']==region].iloc[0,1:].values})
 
     UCI_diarios_df = pd.DataFrame({"fecha": fecha_uci, "casos": grupo_uci_reg[grupo_uci_reg['Region']==region].iloc[0,3:].values})
@@ -195,11 +206,21 @@ def grafico_Update_Dropdown(region):
                    visible=False,
                     line=dict(color="#2ED456", dash="dash")))
 
+
+    fig.add_trace(
+        go.Scatter(x=casos_activos_df.fecha,
+                   y=casos_activos_df.casos,
+                   name='Casos Activos',
+                   visible=False,
+                   text=casos_activos_df.casos,
+                   line=dict(color="#0FBCF9")))
+
+
     #Fallecidos por dia
     fig.add_trace(
         go.Scatter(x=fallecidos_diarios_df.fecha,
                    y=fallecidos_diarios_df.casos,
-                   name='Fallecidos Diarios',
+                   name='Fallecidos D.',
                    text=fallecidos_diarios_df.casos,
                    visible=False,
                   line=dict(color="#F11013")))
@@ -276,44 +297,51 @@ def grafico_Update_Dropdown(region):
                 buttons=list([
                     dict(label="Casos Diarios",
                          method="update",
-                         args=[{"visible": [True, False, False, False,False,False]},
-                               {"title": region+' Casos Diarios',
+                         args=[{"visible": [True, False, False, False,False,False,False]},
+                               {"title": region+' Casos Diarios '+fecha_cd[-1],
                                 "annotations": []}]),
+                        
 
                     dict(label="Casos Promedios",
                          method="update",
-                         args=[{"visible": [True, True, False, False,False,False]},
-                               {"title": region+' Casos Promedios',
+                         args=[{"visible": [True, True, False, False,False,False,False]},
+                               {"title": region+' Casos Promedios '+fecha_cd[-1],
                                 "annotations": casos_annotations}]),
+
+                    dict(label="Casos Activos",
+                         method="update",
+                         args=[{"visible": [False, False, True, False,False,False,False]},
+                               {"title": region+' Casos Activos '+ fecha_activos_por_region[-1],
+                                "annotations": []}]),
 
                     dict(label="Fallecidos Diarios",
                          method="update",
-                         args=[{"visible": [False, False, True, False,False]},
-                               {"title": region+" Fallecidos Diarios",
+                         args=[{"visible": [False, False, False, True,False,False,False]},
+                               {"title": region+" Fallecidos Diarios "+fecha_fd[-1],
                                 "annotations": []}]),
 
                          dict(label="Fallecidos Promedio",
                          method="update",
-                         args=[{"visible": [False, False, True, True,False,False]},
-                               {"title": region+" Fallecidos Promedios",
+                         args=[{"visible": [False, False, False, True,True,False,False]},
+                               {"title": region+" Fallecidos Promedios "+fecha_fd[-1],
                                 "annotations": fall_annotations}]),
 
                      dict(label="Fallecidos vs Casos",
                          method="update",
-                         args=[{"visible": [True, False, True, False,False,False]},
-                               {"title": region+" Fallecidos vs Casos",
+                         args=[{"visible": [True, False, False, True,False,False,False]},
+                               {"title": region+" Fallecidos vs Casos "+fecha_fd[-1],
                                 "annotations": []}]),
 
                      dict(label="Pacientes en UCI",
                          method="update",
-                         args=[{"visible": [False, False, False, False,True,False]},
-                               {"title": region+" Pacientes en UCI",
+                         args=[{"visible": [False, False, False, False,False,True,False]},
+                               {"title": region+" Pacientes en UCI "+fecha_uci[-1],
                                 "annotations": []}]),
 
                     dict(label="UCI Promedio.",
                          method="update",
-                         args=[{"visible": [False, False, False, False,True,True]},
-                               {"title": region+" Pacientes en UCI Promedio",
+                         args=[{"visible": [False, False, False, False,False,True,True]},
+                               {"title": region+" Pacientes en UCI Promedio "+fecha_uci[-1],
                                 "annotations": uci_annotations}]),
 
                 ]),
