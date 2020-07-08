@@ -139,9 +139,9 @@ def num_ventiladores(request):
     fig.update_traces(
         hoverinfo="name+x+text",
         line={"width": 0.5},
-        marker={"size": 8},
+        marker={"size": 5},
         mode="lines+markers",
-        showlegend=False
+        #showlegend=False
     )
 
 
@@ -151,8 +151,8 @@ def num_ventiladores(request):
     fig.update_layout(
         dragmode="zoom",
         hovermode="x",
-        legend=dict(traceorder="reversed"),
-        height=450,
+        #legend=dict(traceorder="reversed"),
+        #height=450,
         template="plotly_white",
         margin=dict(
             t=100,
@@ -221,7 +221,7 @@ def pacientes_ventiladores_fun(request):
         line={"width": 0.8},
         marker={"size": 8},
         mode="lines",
-        showlegend=False
+        #showlegend=False
     )
 
 
@@ -231,8 +231,8 @@ def pacientes_ventiladores_fun(request):
     fig1.update_layout(
         dragmode="zoom",
         hovermode="x",
-        legend=dict(traceorder="reversed"),
-        height=450,
+        #legend=dict(traceorder="reversed"),
+        #height=450,
         template="plotly_white",
         margin=dict(
             t=100,

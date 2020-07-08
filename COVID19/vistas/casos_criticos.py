@@ -100,7 +100,7 @@ def casos_criticos(request):
         dragmode="zoom",
         hovermode="x",
         legend=dict(traceorder="reversed"),
-        height=450,
+        #height=450,
         template="plotly_white",
         margin=dict(
             t=100,
@@ -142,7 +142,7 @@ def casos_criticos(request):
         dragmode="zoom",
         hovermode="x",
         legend=dict(traceorder="reversed"),
-        height=450,
+        #height=450,
         template="plotly_white",
         margin=dict(
             t=100,

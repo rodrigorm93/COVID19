@@ -22,6 +22,8 @@ fallecidos_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCienci
 casos_diarios_por_region = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv')
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
+pcrEstablecimiento = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto17/PCREstablecimiento.csv')
+pcrEstablecimiento = pcrEstablecimiento.fillna(0)
 
 ultima_fecha_cl = data_chile.columns
 ultima_fecha_cl= ultima_fecha_cl[-1]
@@ -77,13 +79,18 @@ fechas_chile = fechas_chile.keys()
 
 
 
-def grafico_Update_Dropdown_chile(data_crec_por_dia):
+def grafico_Update_Dropdown_chile(data_crec_por_dia,pcrEstablecimiento):
     
     data_crec_por_dia = data_crec_por_dia.fillna(0)
 
 
     fecha_casos_totales =data_crec_por_dia.columns
     fecha_casos_totales= fecha_casos_totales[1:]
+    
+    fecha_pcr =pcrEstablecimiento.columns
+    fecha_pcr= fecha_pcr[2:]
+    
+    
 
     # Initialize figure
     fig = go.Figure()
@@ -96,10 +103,10 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
     fallecidos_totales_df = pd.DataFrame({"fecha": fecha_casos_totales, 
                                           "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos nuevos sin sintomas'].iloc[0,1:].values})
     
-    casos_nuevos_totales_df = pd.DataFrame({"fecha": fecha_casos_totales, 
-                                          "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos nuevos totales'].iloc[0,1:].values})
+    casos_nuevos_totales_df = pd.DataFrame({"fecha": fecha_casos_totales,"casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos nuevos totales'].iloc[0,1:].values})
 
-    
+    pcr_ultimo_dia = pd.DataFrame({"fecha": fecha_pcr,"Total": pcrEstablecimiento[pcrEstablecimiento['Establecimiento']=='Total informados ultimo dia'].iloc[0,2:].values})
+
     #Casos por dia
     fig.add_trace(
         go.Scatter(x=casos_nuevos_totales_df.fecha,
@@ -119,7 +126,7 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
                    visible=False,
                    line=dict(color="#33CFA5")))
 
-    #activos
+
 
     fig.add_trace(
         go.Scatter(x=fallecidos_totales_df.fecha,
@@ -129,6 +136,16 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
                    mode='lines+markers',
                    visible=False,
                   line=dict(color="#1466F4")))
+    
+    #PCR
+    fig.add_trace(
+        go.Scatter(x=pcr_ultimo_dia.fecha,
+                   y=pcr_ultimo_dia.Total,
+                   name='PCR',
+                   text=pcr_ultimo_dia.Total,
+                   mode='lines+markers',
+                   visible=False,
+                  line=dict(color="#9F39CE")))
     
 
 
@@ -141,22 +158,32 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
                     
                     dict(label="Casos Totales",
                          method="update",
-                         args=[{"visible": [True, False,False]},
+                         args=[{"visible": [True, False,False,False]},
                                {"title": 'Casos Diarios: Totales',
                                 "annotations": []}]),
                     
                     dict(label="Con sintomas",
                          method="update",
-                         args=[{"visible": [False, True,False]},
+                         args=[{"visible": [False, True,False,False]},
                                {"title":'Casos Diarios: con sintomas',
                                 "annotations": []}]),
 
                     dict(label="Sin sintomas",
                          method="update",
-                         args=[{"visible": [False, False,True]},
+                         args=[{"visible": [False, False,True,False]},
                                {"title": 'Casos Diarios: sin sintomas',
                                 "annotations": []}]),
+                    dict(label="PCR",
+                         method="update",
+                         args=[{"visible": [False, False,False,True]},
+                               {"title": 'PCR:Total informados ultimo día',
+                                "annotations": []}]),
                     
+                     dict(label="Casos Diarios VS Examenes PCR",
+                         method="update",
+                         args=[{"visible": [True, False,False,True]},
+                               {"title": 'Casos Diarios VS Total Examenes PCR',
+                                "annotations": []}]),
                     
 
                 
@@ -166,7 +193,7 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
         ])
 
     # Set title
-    fig.update_layout(title_text='Casos Diarios')
+    fig.update_layout(title_text='Casos Diarios y PCR ')
 
       # style all the traces
     fig.update_traces(
@@ -185,7 +212,7 @@ def grafico_Update_Dropdown_chile(data_crec_por_dia):
         dragmode="zoom",
         hovermode="x",
         legend=dict(traceorder="reversed"),
-        height=450,
+        #height=450,
         template="plotly_white",
         margin=dict(
             t=100,
@@ -201,7 +228,7 @@ def menu(request):
 
     # Grafico 1:
 
-    fig1 =  grafico_Update_Dropdown_chile(data_crec_por_dia)
+    fig1 =  grafico_Update_Dropdown_chile(data_crec_por_dia,pcrEstablecimiento)
 
 
     #Grafico4

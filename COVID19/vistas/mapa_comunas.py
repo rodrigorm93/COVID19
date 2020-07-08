@@ -30,7 +30,8 @@ casos_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-
 
 data_crec_por_dia = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales.csv')
 
-
+pcrEstablecimiento = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto17/PCREstablecimiento.csv')
+pcrEstablecimiento = pcrEstablecimiento.fillna(0)
 
 
 def int_format(value, decimal_points=3, seperator=u','):
@@ -355,7 +356,7 @@ def grafico_Update_Dropdown(region):
     fig.update_traces(
         hoverinfo="name+x+text",
         line={"width": 0.5},
-        marker={"size": 6},
+        marker={"size": 5},
         mode="lines+markers",
         showlegend=False
     )
@@ -368,7 +369,7 @@ def grafico_Update_Dropdown(region):
         dragmode="zoom",
         hovermode="x",
         legend=dict(traceorder="reversed"),
-        height=450,
+        #height=450,
         template="plotly_white",
         margin=dict(
             t=100,
@@ -464,7 +465,7 @@ def casos_comunas_activo_acum(region,region2):
     #Numero de Casos
     data_casos_por_comuna = pd.read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv')
 
-    data_casos_por_comuna_data = data_casos_por_comuna[data_casos_por_comuna['Region']==region]
+    data_casos_por_comuna_data = data_casos_por_comuna[data_casos_por_comuna['Region']==region2]
     data_casos_por_comuna_data = data_casos_por_comuna_data.reset_index()
 
     data_casos_por_comuna_data = data_casos_por_comuna_data[['Comuna',fecha]]
@@ -557,6 +558,8 @@ def grafico_Update_Dropdown_chile():
     fecha_casos_totales =data_crec_por_dia.columns
     fecha_casos_totales= fecha_casos_totales[1:]
 
+    fecha_pcr =pcrEstablecimiento.columns
+    fecha_pcr= fecha_pcr[2:]
     
 
 
@@ -580,6 +583,9 @@ def grafico_Update_Dropdown_chile():
 
     casos_recuperados_fd = pd.DataFrame({"fecha": fecha_casos_totales, 
                                          "casos": data_crec_por_dia[data_crec_por_dia['Fecha']=='Casos recuperados por FD'].iloc[0,1:].values})
+
+
+    pcr_ultimo_dia = pd.DataFrame({"fecha": fecha_pcr,"Total": pcrEstablecimiento[pcrEstablecimiento['Establecimiento']=='Total realizados'].iloc[0,2:].values})
 
     #Casos por dia
     fig.add_trace(
@@ -621,7 +627,17 @@ def grafico_Update_Dropdown_chile():
                    name='Recuperados FD',
                    text=casos_recuperados_fd.casos,
                    visible=False,
-                  line=dict(color="#0AD81D")))
+                  line=dict(color="green")))
+
+        #PCR
+    fig.add_trace(
+        go.Scatter(x=pcr_ultimo_dia.fecha,
+                   y=pcr_ultimo_dia.Total,
+                   name='PCR',
+                   text=pcr_ultimo_dia.Total,
+                   mode='lines+markers',
+                   visible=False,
+                  line=dict(color="#9F39CE")))
 
 
     high_annotations = [dict(x="2020-06-02",
@@ -668,37 +684,49 @@ def grafico_Update_Dropdown_chile():
                 buttons=list([
                     dict(label="Casos Totales",
                          method="update",
-                         args=[{"visible": [True, False, False,False,False]},
+                         args=[{"visible": [True, False, False,False,False,False]},
                                {"title":'Chile: Casos Totales',
                                 "annotations": casos_annotations}]),
 
                     dict(label="Fallecidos Acumulados",
                          method="update",
-                         args=[{"visible": [False, True, False,False,False]},
+                         args=[{"visible": [False, True, False,False,False,False]},
                                {"title": 'Chile: Fallecidos Totales',
                                 "annotations": fallecidos_annotations}]),
 
                     dict(label="Casos Activos",
                          method="update",
-                         args=[{"visible": [False, False, True, False,False]},
+                         args=[{"visible": [False, False,True, False,False,False]},
                                {"title": 'Chile: Casos Activos Totales',
                                 "annotations": high_annotations}]),
 
                     dict(label="Casos recuperados por FIS",
                          method="update",
-                         args=[{"visible": [False, False, False,True,False]},
+                         args=[{"visible": [False, False, False,True,False,False]},
                                {"title": 'Chile: Casos recuperados por FIS',
                                 "annotations": []}]),
 
                      dict(label="Casos recuperados por FD",
                          method="update",
-                         args=[{"visible": [False, False, False, False,True]},
+                         args=[{"visible": [False, False, False, False,True,False]},
                                {"title": 'Chile: Casos recuperados por FD',
                                 "annotations": []}]),
 
+                     dict(label="PCR",
+                         method="update",
+                         args=[{"visible": [False, False,False, False,False,True]},
+                               {"title": 'Chile: PCR Totales realizados',
+                                "annotations": []}]),    
+
+                    dict(label="Casos Totales vs PCR",
+                         method="update",
+                         args=[{"visible": [True, False, False,False,False,True]},
+                               {"title": 'Casos Totales vs PCR Totales realizados',
+                                "annotations": []}]),        
+
                     dict(label="Combinacion",
                          method="update",
-                         args=[{"visible": [True, True, True,True,True]},
+                         args=[{"visible": [True, True, True,True,True,True]},
                                {"title": 'Chile: Casos Combinados',
                                 "annotations": []}]),
 
@@ -715,7 +743,7 @@ def grafico_Update_Dropdown_chile():
     fig.update_traces(
         hoverinfo="name+x+text",
         line={"width": 0.5},
-        marker={"size": 7},
+        marker={"size": 5},
         mode="lines+markers",
         showlegend=False
     )
@@ -728,7 +756,7 @@ def grafico_Update_Dropdown_chile():
         dragmode="zoom",
         hovermode="x",
         legend=dict(traceorder="reversed"),
-        height=450,
+        #height=450,
         template="plotly_white",
         margin=dict(
             t=100,

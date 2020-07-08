@@ -149,66 +149,77 @@ def total_defunciones_chile(request):
                     x=registros_meses,
                     y=año_2010,
                     name="2010",
+                    text=año_2010,
                     mode='lines+markers',
                     line_color='#800080')
     trace2 = go.Scatter(
                     x=registros_meses,
                     y=año_2011,
                     name="2011",
+                    text=año_2011,
                     mode='lines+markers',
                     line_color='green')
     trace3 = go.Scatter(
                     x=registros_meses,
                     y=año_2012,
                     name="2012",
+                    text=año_2012,
                     mode='lines+markers',
                     line_color='#000080')
     trace4 = go.Scatter(
                     x=registros_meses,
                     y=año_2013,
                     name="2013",
+                    text=año_2013,
                     mode='lines+markers',
                     line_color='#00FFFF')
     trace5 = go.Scatter(
                     x=registros_meses,
                     y=año_2014,
                     name="2014",
+                    text=año_2014,
                     mode='lines+markers',
-                    line_color='#FFFF00')
+                    line_color='#EAAC38')
     trace6 = go.Scatter(
                     x=registros_meses,
                     y=año_2015,
                     name="2015",
+                    text=año_2015,
                     mode='lines+markers',
                     line_color='#000000')
     trace7 = go.Scatter(
                     x=registros_meses,
                     y=año_2016,
                     name="2016",
+                    text=año_2016,
                     mode='lines+markers',
                     line_color='#808080')
     trace8 = go.Scatter(
                     x=registros_meses,
                     y=año_2017,
                     name="2017",
+                    text=año_2017,
                     mode='lines+markers',
                     line_color='#008080')
     trace9 = go.Scatter(
                     x=registros_meses,
                     y=año_2018,
                     name="2018",
+                    text=año_2018,
                     mode='lines+markers',
                     line_color='#00FF00')
     trace10 = go.Scatter(
                     x=registros_meses,
                     y=año_2019,
                     name="2019",
+                    text=año_2019,
                     mode='lines+markers',
                     line_color='#800000')
     trace11 = go.Scatter(
                     x=registros_meses,
                     y=año_2020,
                     name="2020",
+                    text=año_2020,
                     mode='lines+markers',
                     line_color='red')
 
@@ -216,6 +227,26 @@ def total_defunciones_chile(request):
     layout = go.Layout(template="ggplot2",title_text = '<b>Numero de Defunciones  entre 2010- '+str(now)+' </b>',
                     font=dict(family="Arial, Balto, Courier New, Droid Sans",color='black'))
     fig = go.Figure(data = [trace,trace2,trace3,trace4,trace5,trace6,trace7,trace8,trace9,trace10,trace11], layout = layout)
+    # style all the traces
+    fig.update_traces(
+        hoverinfo="name+x+text",
+        line={"width": 0.5},
+        marker={"size": 5},
+        mode="lines+markers",
+        #showlegend=False
+    )
+
+    # Update layout
+    fig.update_layout(
+        dragmode="zoom",
+        hovermode="x",
+        #legend=dict(traceorder="reversed"),
+        template="plotly_white",
+        margin=dict(
+            t=100,
+            b=100
+        ),
+    )
 
     graph1 = fig.to_html(full_html=False)
 
@@ -263,18 +294,14 @@ def total_defunciones_chile(request):
         line={"width": 0.5},
         marker={"size": 7},
         mode="lines+markers",
-        showlegend=False
+        #showlegend=False
     )
-
-
-
-
     # Update layout
     fig2.update_layout(
         dragmode="zoom",
         hovermode="x",
-        legend=dict(traceorder="reversed"),
-        height=600,
+        #legend=dict(traceorder="reversed"),
+        #height=600,
         template="plotly_white",
         margin=dict(
             t=100,
@@ -282,7 +309,6 @@ def total_defunciones_chile(request):
         ),
     )
 
-    
     total_fallecimientos_mes_trans = total_fallecimientos_mes.drop(['Total 4 Meses'], axis=1).T
     #tabla1 = total_fallecimientos_mes_trans.to_html()
 
@@ -315,14 +341,14 @@ def total_defunciones_chile(request):
 
     #GRAFICO 3
     suma_4meses = total_fallecimientos_mes
-    col_list= ['January','February','March','April','May']
-    suma_4meses['Total 4 Meses'] = suma_4meses[col_list].sum(axis=1)
+    col_list= ['January','February','March','April','May','June']
+    suma_4meses['Total 5 Meses'] = suma_4meses[col_list].sum(axis=1)
     data_ord = suma_4meses.sort_values('Total 4 Meses').reset_index()
     data_ord = data_ord.drop(['index'], axis=1)
     #total 4 primero meses
-    fig3 = px.bar(data_ord, x='Años', y='Total 4 Meses',
-             hover_data=['Total 4 Meses'], color='Total 4 Meses',
-             labels={'pop':'population of Canada'}, height=400)
+    fig3 = px.bar(data_ord, x='Años', y='Total 5 Meses',
+             hover_data=['Total 5 Meses'], color='Total 5 Meses',
+             labels={'pop':'population of Canada'}, height=500)
 
     graph2 = fig2.to_html(full_html=False)
     graph3= fig3.to_html(full_html=False)
@@ -394,7 +420,7 @@ def modelo_predictivo(request):
         line={"width": 0.5},
         marker={"size": 4},
         mode="lines+markers",
-        showlegend=False
+        #showlegend=False
     )
 
 
@@ -404,8 +430,8 @@ def modelo_predictivo(request):
     fig.update_layout(
         dragmode="zoom",
         hovermode="x",
-        legend=dict(traceorder="reversed"),
-        height=500,
+        #legend=dict(traceorder="reversed"),
+        #height=500,
         template="plotly_white",
         margin=dict(
             t=100,
