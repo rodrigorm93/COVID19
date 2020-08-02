@@ -179,4 +179,3 @@ def mapa_region(request):
     graph2 = fig2.to_html(full_html=False)
     
     return render(request,"mapa_casos_regiones.html", {"grafico1":graph1,"grafico2":graph2,"fecha_casos":ultima_fecha_cl_r,"casos_act":casos_act,"n_casos":num_cases_cl,"num_rec":num_recuFIS, "num_death":num_death})
-
